@@ -11,14 +11,31 @@ export interface Env {
   BUILD_TIME: string;
   SWEEP_TOKEN?: string;
   TOKEN_HMAC_KEY?: string;
+  GITHUB_TOKEN?: string;
+  GITHUB_WEBHOOK_SECRET?: string;
 }
 import { authenticate, writeAudit, PolicyUnavailable, type Caller } from './auth';
 import { publishDoc, getDoc, changes, CoreError, type Outcome } from './core';
 import { authenticateMachine, ingest, fleetStatus, fileCompare } from './connector';
 
+import { issueGet, issueList, githubWebhook, reconcile } from './issues';
+import { recallQuery, recallHealth, syncRecall } from './recall';
+
 const STAGE = 'spike-core';
 const ROUTES: Record<string, { method: string; operation: string;
   run: (env: Env, c: Caller, r: Request, u: URL, now: Date) => Promise<Outcome> }> = {
+  '/v1/issues/get': { method:'GET', operation:'issue_get', run:(e,c,_r,u,n)=>issueGet(e,c,u.searchParams,n) },
+  '/v1/issues/list': { method:'GET', operation:'issue_list', run:(e,c,_r,u,n)=>issueList(e,c,u.searchParams,n) },
+  '/v1/recall/query': { method:'GET', operation:'recall_query', run:(e,c,_r,u,n)=>recallQuery(e,c,u.searchParams,n) },
+  '/v1/recall/health': { method:'GET', operation:'recall_store_health', run:(e,c,_r,u,n)=>recallHealth(e,c,u.searchParams,n) },
+  '/admin/sync/recall': { method:'POST', operation:'recall_sync', run:async(e,c,r,_u,n)=> {
+    let input; try { input=await r.json(); } catch { throw new CoreError(400,'invalid_input'); }
+    return syncRecall(e,c,input,n);
+  } },
+  '/admin/sync/github': { method:'POST', operation:'github_reconcile', run:async(e,c,_r,u)=> {
+    if(!c.capabilities.includes('admin')) throw new CoreError(403,'forbidden');
+    return {body:await reconcile(e,c,u.searchParams.get('repo')??'')};
+  } },
   '/v1/docs/get': { method: 'GET', operation: 'exemplar_get_doc', run: (env, c, _r, u, now) => getDoc(env, c, {
     name: u.searchParams.get('name'), version: u.searchParams.get('version'), since_version: u.searchParams.get('since_version'),
     max_age_s: u.searchParams.get('max_age_s'), allow_stale: u.searchParams.get('allow_stale'), consistency: u.searchParams.get('consistency'),
@@ -86,6 +103,7 @@ const json = (value: unknown, status = 200) => Response.json(value, {
 
 export async function handle(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url), path = url.pathname;
+  if(path === '/webhooks/github' && request.method === 'POST') return githubWebhook(request,env);
   const route = ROUTES[path];
   if (path === '/ingest/fleet') return request.method === 'POST' ? connectorIngest(request, env) : json({ error: 'method_not_allowed' }, 405);
   if (route) return request.method === route.method ? protectedRoute(request, env, url, route) : json({ error: 'method_not_allowed' }, 405);

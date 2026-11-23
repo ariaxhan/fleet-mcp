@@ -199,7 +199,7 @@ export async function changes(env: Env, c: Caller, cursor: string | null, now: D
   const { results } = await env.DB.prepare(`SELECT seq, kind, name, version, change_kind, source_repo, created_at, source_observed_at FROM change_events
     WHERE tenant_id = ? AND namespace_id = ? AND seq > ? ORDER BY seq LIMIT ?`).bind(...scope, from, FEED_PAGE).all<any>();
   const last = results.length ? results[results.length - 1].seq : from;
-  const events = results.filter(e => visible(c, e.source_repo))
+  const events = results.filter(e => visible(c, e.source_repo) && (e.kind !== 'issue' || c.capabilities.includes('issue:read')))
     .map(({ seq, source_repo, source_observed_at, ...e }) => source_observed_at ? { ...e, source_observed_at } : e);
   return { body: { events, unchanged: events.length === 0, has_more: results.length === FEED_PAGE,
     next_cursor: await cursorFor(env, c, last), meta: { served_at: now.toISOString(), source: 'd1', cache_status: 'bypass' } } };

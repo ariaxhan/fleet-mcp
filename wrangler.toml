@@ -13,6 +13,8 @@ new_sqlite_classes = ["FleetWait", "HandoffCoordinator"]
 
 [env.staging]
 name = "fleet-mcp-staging"
+[env.staging.triggers]
+crons = ["*/15 * * * *"] # Spike reconciliation interval, design decision.
 [env.staging.vars]
 ENVIRONMENT = "staging"
 FIXTURE_NAMESPACE = "fixture-staging"
@@ -38,6 +40,8 @@ class_name = "HandoffCoordinator"
 
 [env.production]
 name = "fleet-mcp"
+[env.production.triggers]
+crons = ["*/15 * * * *"] # Spike reconciliation interval, design decision.
 [env.production.vars]
 ENVIRONMENT = "production"
 FIXTURE_NAMESPACE = "fixture-production"
