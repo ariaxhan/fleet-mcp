@@ -60,3 +60,13 @@ Unit tests are producer checks, not independent verification. Raw live receipts
 are functional observations, not benchmark claims. G1 remains NO-GO until its
 owning chat evaluates the complete platform evidence. No comparative result is
 published here. No screenshot is applicable to these backend JSON routes.
+
+## Live validation fixes
+
+- Python's default user agent was rejected with edge code 1010. The sync client
+  now identifies itself as fleet-mcp-recall-sync/0.1.
+- Workers rejects fetch redirect=error at runtime despite the DOM TypeScript
+  type accepting it. Upstream reads use manual redirects and reject every
+  non-success response, so credentials never follow redirects. Raw diagnostic
+  receipt: artifacts/issue-debug-tail.json (operator-local, contains request metadata).
+- Live sweep receipts have unique timestamps; failed captures are retained.

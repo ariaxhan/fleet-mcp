@@ -21,7 +21,7 @@ async function github(env: Env, path: string): Promise<any> {
     'user-agent': 'fleet-mcp-spike', 'x-github-api-version': '2022-11-28' };
   if (env.GITHUB_TOKEN) headers.authorization = `Bearer ${env.GITHUB_TOKEN}`;
   const r = await fetch(`https://api.github.com/repos/${REPO}/${path}`, {
-    headers, redirect: 'error', signal: AbortSignal.timeout(10000) });
+    headers, redirect: 'manual', signal: AbortSignal.timeout(10000) });
   if (!r.ok) throw new CoreError(r.status === 404 ? 404 : 503, r.status === 404 ? 'not_found' : 'github_unavailable');
   return r.json();
 }

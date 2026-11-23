@@ -30,7 +30,7 @@ try {
  receipt.pass=true;
 } finally {
  await mkdir('artifacts',{recursive:true});
- const file=`artifacts/read-paths-${origin.includes('-staging')?'staging':'production'}.json`;
+ const file=`artifacts/read-paths-${origin.includes('-staging')?'staging':'production'}-${Date.now()}.json`;
  await writeFile(file,JSON.stringify(receipt,null,2)+'\n');
  console.log(file,receipt.pass?'PASS':'FAIL');
 }

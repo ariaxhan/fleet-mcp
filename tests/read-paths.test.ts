@@ -13,7 +13,8 @@ const fixture=(title:string)=>({number:13,title,body:'personal project',state:'o
 test('issue snapshots, signed invalidation, missed-webhook reconciliation and freshness failure',async()=>{
  const {env,db}=await setup(); env.GITHUB_WEBHOOK_SECRET='test-key';
  const original=globalThis.fetch; let title='original',offline=false,calls=0;
- globalThis.fetch=async(input:any)=>{
+ globalThis.fetch=async(input:any,init:any)=>{
+  assert.equal(init.redirect,'manual');
   calls++; assert.ok(String(input).startsWith('https://api.github.com/repos/ariaxhan/fleet-mcp/'));
   if(offline) throw new Error('offline');
   return Response.json(String(input).includes('issues?')?[fixture(title)]:fixture(title));
