@@ -110,3 +110,23 @@ test('older concurrent recall sync rolls back membership and freshness atomicall
  assert.equal(db.prepare('SELECT count(*) n FROM observation_guards').get()!.n,0);
  db.close();
 });
+
+
+test('repeated invalidation during an observation has a distinct commit fence',async()=>{
+ const {env,db}=await setup(); const original=globalThis.fetch;
+ globalThis.fetch=async()=>Response.json(fixture('prior snapshot'));
+ let release!:(value:Response)=>void,entered!:()=>void;
+ const started=new Promise<void>(r=>entered=r);
+ try {
+  await issueGet(env,caller,p('repo=ariaxhan/fleet-mcp&number=13'),now());
+  db.exec('UPDATE issue_heads SET invalidated=1,invalidation_epoch=invalidation_epoch+1');
+  globalThis.fetch=async()=>{entered();return new Promise<Response>(r=>release=r);};
+  const pending=issueGet(env,caller,p('repo=ariaxhan/fleet-mcp&number=13'),now());
+  const rejected=assert.rejects(pending,/freshness_unmet/);
+  await started;
+  db.exec('UPDATE issue_heads SET invalidated=1,invalidation_epoch=invalidation_epoch+1');
+  release(Response.json(fixture('older pending response')));await rejected;
+  assert.equal(db.prepare('SELECT invalidated FROM issue_heads').get()!.invalidated,1);
+  assert.equal(db.prepare('SELECT count(*) n FROM issue_snapshots').get()!.n,1);
+ } finally {globalThis.fetch=original;db.close();}
+});

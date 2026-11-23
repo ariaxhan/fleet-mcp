@@ -26,7 +26,7 @@ async function github(env: Env, path: string): Promise<any> {
   return r.json();
 }
 async function current(env: Env, c: Caller, repo: string, number: number): Promise<any> {
-  return env.DB.prepare(`SELECT s.*, h.invalidated, h.source_observed_at AS validated_at FROM issue_heads h
+  return env.DB.prepare(`SELECT s.*, h.invalidated, h.invalidation_epoch, h.source_observed_at AS validated_at FROM issue_heads h
     JOIN issue_snapshots s ON s.tenant_id=h.tenant_id AND s.namespace_id=h.namespace_id AND s.repo=h.repo
     AND s.number=h.number AND s.version=h.version WHERE h.tenant_id=? AND h.namespace_id=? AND h.repo=? AND h.number=?`)
     .bind(...scope(c), repo, number).first();
@@ -36,9 +36,9 @@ async function observe(env: Env, c: Caller, number: number): Promise<any> {
   // refuses publication if any observation or invalidation changed this identity.
   const old = await current(env,c,REPO,number);
   const guardId=crypto.randomUUID();
-  const expected=old ? `${old.version}:${old.validated_at}:${old.invalidated}` : 'absent';
+  const expected=old ? `${old.version}:${old.validated_at}:${old.invalidation_epoch}` : 'absent';
   const guard=()=>env.DB.prepare(`INSERT INTO observation_guards VALUES (?, ?, ?,
-    COALESCE((SELECT version || ':' || source_observed_at || ':' || invalidated FROM issue_heads
+    COALESCE((SELECT version || ':' || source_observed_at || ':' || invalidation_epoch FROM issue_heads
       WHERE tenant_id=? AND namespace_id=? AND repo=? AND number=?),'absent'), ?)`)
     .bind(...scope(c),guardId,...scope(c),REPO,number,expected);
   const clear=()=>env.DB.prepare('DELETE FROM observation_guards WHERE tenant_id=? AND namespace_id=? AND id=?')
@@ -70,7 +70,7 @@ async function observe(env: Env, c: Caller, number: number): Promise<any> {
       await env.DB.batch([guard(),
         env.DB.prepare('INSERT INTO issue_snapshots VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
           .bind(...scope(c), REPO, number, version, hash, body, observed, at),
-        env.DB.prepare(`INSERT INTO issue_heads VALUES (?, ?, ?, ?, ?, 0, ?)
+        env.DB.prepare(`INSERT INTO issue_heads (tenant_id,namespace_id,repo,number,version,invalidated,source_observed_at) VALUES (?, ?, ?, ?, ?, 0, ?)
           ON CONFLICT DO UPDATE SET version=excluded.version, invalidated=0, source_observed_at=excluded.source_observed_at`)
           .bind(...scope(c), REPO, number, version, observed),
         env.DB.prepare(`INSERT INTO change_events (tenant_id,namespace_id,kind,name,version,change_kind,source_repo,actor_principal_id,created_at)
@@ -152,7 +152,7 @@ export async function issueList(env: Env, c: Caller, p: URLSearchParams, now: Da
     try { coverage = { ...await reconcile(env,c,repo,true), reconciled_at: new Date().toISOString() }; status = 'bypass'; }
     catch (e) { if (!coverage || !f.stale) throw e; status = 'stale'; }
   }
-  const { results } = await env.DB.prepare(`SELECT s.*, h.invalidated, h.source_observed_at AS validated_at FROM issue_heads h
+  const { results } = await env.DB.prepare(`SELECT s.*, h.invalidated, h.invalidation_epoch, h.source_observed_at AS validated_at FROM issue_heads h
     JOIN issue_snapshots s ON s.tenant_id=h.tenant_id AND s.namespace_id=h.namespace_id AND s.repo=h.repo
     AND s.number=h.number AND s.version=h.version WHERE h.tenant_id=? AND h.namespace_id=? AND h.repo=? ORDER BY h.number`)
     .bind(...scope(c), repo).all<any>();
@@ -181,7 +181,7 @@ export async function githubWebhook(r: Request, env: Env): Promise<Response> {
   if (!Number.isInteger(number) || number < 1) return Response.json({error:'invalid_input'},{status:400});
   // Commit invalidation before contacting GitHub. Failed deliveries remain visibly stale.
   await env.DB.batch([
-    env.DB.prepare('UPDATE issue_heads SET invalidated=1 WHERE tenant_id=? AND namespace_id=? AND repo=? AND number=?')
+    env.DB.prepare('UPDATE issue_heads SET invalidated=1,invalidation_epoch=invalidation_epoch+1 WHERE tenant_id=? AND namespace_id=? AND repo=? AND number=?')
       .bind(...scope(connector),REPO,number),
     env.DB.prepare("UPDATE issue_coverage SET reconciled_at='1970-01-01T00:00:00Z' WHERE tenant_id=? AND namespace_id=? AND repo=?")
       .bind(...scope(connector),REPO),
