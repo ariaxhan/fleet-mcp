@@ -21,6 +21,9 @@ import { authenticateMachine, ingest, fleetStatus, fileCompare } from './connect
 import { issueGet, issueList, githubWebhook, reconcile } from './issues';
 import { recallQuery, recallHealth, syncRecall } from './recall';
 
+import { fleetGet, fleetList, fleetChanges } from './fleet';
+import { fleetWait } from './wait';
+
 const STAGE = 'spike-core';
 const ROUTES: Record<string, { method: string; operation: string;
   run: (env: Env, c: Caller, r: Request, u: URL, now: Date) => Promise<Outcome> }> = {
@@ -46,6 +49,13 @@ const ROUTES: Record<string, { method: string; operation: string;
   } },
   '/v1/changes': { method: 'GET', operation: 'doc_what_changed_since', run: (env, c, _r, u, now) =>
     changes(env, c, u.searchParams.get('cursor'), now) },
+  '/v1/fleet/get': { method:'GET', operation:'fleet_get_flight', run:(e,c,_r,u,n)=>fleetGet(e,c,u.searchParams,n) },
+  '/v1/fleet/list': { method:'GET', operation:'fleet_list_flights', run:(e,c,_r,u,n)=>fleetList(e,c,u.searchParams,n) },
+  '/v1/fleet/changes': { method:'GET', operation:'fleet_what_changed_since', run:(e,c,_r,u,n)=>fleetChanges(e,c,u.searchParams,n) },
+  '/v1/fleet/wait': { method:'POST', operation:'fleet_wait_for', run:async(e,c,r)=> {
+    let input; try { input=await r.json(); } catch { throw new CoreError(400,'invalid_input'); }
+    return fleetWait(e,c,input);
+  } },
   '/v1/fleet/status': { method: 'GET', operation: 'fleet_status', run: (env, c, _r, _u, now) => fleetStatus(env, c, now) },
   '/v1/fleet/file-compare': { method: 'GET', operation: 'fleet_file_compare', run: (env, c, _r, u, now) =>
     fileCompare(env, c, u.searchParams.get('repo'), u.searchParams.get('path'), now) },

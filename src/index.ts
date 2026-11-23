@@ -1,11 +1,14 @@
 import { DurableObject } from 'cloudflare:workers';
 import { handle, type Env } from './handler';
 import { connector, reconcile } from './issues';
+import { WaitHub } from './wait';
 export default { fetch: handle, scheduled: (_event: ScheduledController, env: Env, ctx: ExecutionContext) => {
   ctx.waitUntil(reconcile(env,connector,'ariaxhan/fleet-mcp',true));
 } };
 export class FleetWait extends DurableObject<Env> {
-  async fetch(): Promise<Response> { return Response.json({ stage: 'scaffold' }); }
+  private hub = new WaitHub(this.ctx.storage, this.env);
+  async fetch(request: Request): Promise<Response> { return this.hub.fetch(request); }
+  async alarm() { await this.hub.alarm(); }
 }
 export class HandoffCoordinator extends DurableObject<Env> {
   async fetch(): Promise<Response> { return Response.json({ stage: 'scaffold' }); }

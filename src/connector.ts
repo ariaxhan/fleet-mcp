@@ -99,6 +99,12 @@ export async function ingest(env: Env, m: Machine, raw: Uint8Array<ArrayBuffer>,
     sidecar_version = excluded.sidecar_version, last_seq = excluded.last_seq, outbox_depth = excluded.outbox_depth,
     dropped_for_boundary = excluded.dropped_for_boundary, last_heartbeat_at = excluded.last_heartbeat_at`)
     .bind(m.machineId, input.sidecar_version, hb.last_seq, hb.outbox_depth, hb.dropped_for_boundary, at).run();
+  // Durable state commits before wakeup. Duplicate retries also recover a failed notification.
+  if (env.FLEET_WAIT) {
+    const name=JSON.stringify([m.tenantId,m.namespaceId]);
+    const response=await env.FLEET_WAIT.get(env.FLEET_WAIT.idFromName(name)).fetch('https://wait/notify',{method:'POST'});
+    if(!response.ok) throw new CoreError(503,'wait_notification_failed');
+  }
   return { body: { ...result, received_at: at }, targetId: m.machineId, size: raw.byteLength };
 }
 
