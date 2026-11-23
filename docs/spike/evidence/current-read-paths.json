@@ -1,0 +1,154 @@
+{
+  "purpose": "owning surface review of existing personal read paths, not benchmark",
+  "origin": "https://mcp.ariaxhan.com",
+  "version": {
+    "commit": "49ff362a620c46f4988823fbda3935f1ca927066",
+    "build_time": "2026-11-23T17:48:51.192Z",
+    "environment": "production",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+  },
+  "observations": [
+    {
+      "path": "/v1/issues/get?repo=ariaxhan%2Ffleet-mcp&number=15",
+      "status": 200,
+      "observed_at": "2026-11-23T17:52:34.689Z",
+      "body": {
+        "repo": "ariaxhan/fleet-mcp",
+        "number": 15,
+        "title": "Spike: prove the platform",
+        "body": "Phase: 1 (Spike)\nOwner: E (O = Unified MCP Server chat, E = Studio lanes via runner, V = independent verifier)\nGate: Waits on gate G0 (revised PRD) and the other spike slices.\n\nScope boundary: Fleet MCP is a personal project with its own corpus. It does not touch TBS data, TBS repos, TBS issues, or the TBS MCP server's content. Benchmark tasks are drawn from personal-project work only.\n\nSource: docs/execution-plan.md, Section 5 (issue list) and Section 3 (phases).\n\n## Scope\n\nProve the risky platform claims: Streamable HTTP negotiation, tool errors, resource reads, notifications, session handling, cancellation, and reconnect behavior in the Codex client; a fleet_wait_for call across disconnects, deploys, and timeouts; Browser Rendering startup and reuse, context cleanup, concurrency, and a slow queued render completing after the initiating request ends; one named local verification suite executed through the sidecar; connector offline and recovery behavior without fabricated freshness. Also confirm token capture from Codex sessions for the pinned model, measure the tool-schema token overhead, and cost the pilot workload from measurements (Worker, D1, KV, R2, Durable Objects, browser, upstream APIs) with a stated budget.\n\n## Acceptance\n\n- [ ] The Codex client holds the MCP contract: tool calls, resource reads, notifications, cancellation, and reconnect all work against the Worker\n- [ ] A wait survives disconnects, deploys, and timeouts via the resumable wait_id\n- [ ] Browser Rendering reuse, cleanup, concurrency, and queued completion are demonstrated\n- [ ] One named local verification suite runs through the sidecar\n- [ ] The verification cache identity holds under adversarial tests: a dependency change misses, a forced rerun is a distinct record, no stale green is servable\n- [ ] Token capture from Codex sessions is confirmed for the pinned model and the tool-schema token overhead is measured\n- [ ] A staging deploy plus sweep is green and the production deploy path with a fixture namespace is proven\n- [ ] The pilot workload is costed from measurements with a stated budget\n\n## Owner unblock (Unified MCP Server chat, 2026-11-23)\n- Custom domains are live (TBS pattern): production https://mcp.ariaxhan.com, staging https://staging-mcp.ariaxhan.com. Attached via the workers/domains API in the ariaxhan.com zone. Verified 200 from the Studio (the client that got 403 Error 1010 on workers.dev) on 2026-11-23, and workers.dev also answers 200 from the Studio now (the 1010 flag cleared). Update deploy.md surfaces, wrangler.toml (record the custom domains), and the sweep to use the custom domains as the canonical endpoints; workers.dev remains a fallback.\n- Pinned model for the spike (owner decision): Codex model `gpt-6.1-sol`, reasoning effort low, from the Studio personal Codex config (~/.codex/config.toml, read 2026-11-23). Confirm it against the running CLI, record the CLI version in the spike evidence, and validate token field semantics and schema accounting on this exact configuration. The formal benchmark freeze (#33) pins the model again after G2; this spike pin does not replace #33.\n- Re-prove the 8 Section 3.2 criteria against the current deployed revision (8f18164af or later), preserving raw evidence. The G1 NO-GO judged a36932075, which predates the spike slices; the re-review is issue #43 and waits on this issue closing.\n",
+        "state": "open",
+        "labels": [],
+        "assignees": [],
+        "github_updated_at": "2026-11-23T17:32:52Z",
+        "linked_prs": [],
+        "linked_prs_coverage": "issue_pull_request_field_only",
+        "comments": [
+          {
+            "id": 7088961283,
+            "body": "Held by the owning chat (Unified MCP Server) until the gate resolves.\n\nWaits on: Waits on gate G0 (PRD revision). Blocked until ariaxhan/fleet-mcp#2, #3, #4, #5, #6, #7, #8, #9, #10 close (PRD v2 committed, paper skeleton aligned) and the owner signs off G0. No build before G0 (execution plan Section 3.1).",
+            "author": "ariaxhan",
+            "created_at": "2026-11-23T01:12:34Z",
+            "updated_at": "2026-11-23T01:12:34Z"
+          },
+          {
+            "id": 7089357576,
+            "body": "The runner holds this issue until what it waits on resolves.\n\nWaits on: waits on ariaxhan/fleet-mcp#14",
+            "author": "ariaxhan",
+            "created_at": "2026-11-23T01:42:35Z",
+            "updated_at": "2026-11-23T01:42:35Z"
+          },
+          {
+            "id": 7089986906,
+            "body": "The runner holds this issue until what it waits on resolves.\n\nWaits on: Waits on the owner choosing the model for the platform spike. Muse ask 20261123T022634Z_ff061e has had no reply. Execution plan Section 3.2 says the pinned-model token capture must be proven before G1, but #33 only freezes the benchmark model after G2. The SSH signing blocker from the last attempt is gone. That let the audit land on main (tests pass), but all 8 platform acceptance items are still unproven. Live staging and production also answer this client with Cloudflare 403 Error 1010.",
+            "author": "ariaxhan",
+            "created_at": "2026-11-23T02:30:06Z",
+            "updated_at": "2026-11-23T02:30:06Z"
+          }
+        ],
+        "version": 4,
+        "content_hash": "051025f4fda6006f48856dfd1b9328da062f23e450dbb6a1f32548d9ec1e5a8e",
+        "meta": {
+          "content_hash": "051025f4fda6006f48856dfd1b9328da062f23e450dbb6a1f32548d9ec1e5a8e",
+          "version": 4,
+          "cache_status": "bypass",
+          "served_at": "2026-11-23T17:52:34.602Z",
+          "source_observed_at": "2026-11-23T17:52:34.053Z",
+          "last_validated_at": "2026-11-23T17:52:34.053Z",
+          "computed_at": "2026-11-23T17:32:56.538Z",
+          "source": "github+d1"
+        },
+        "correlation_id": "6dc93224-cf32-4487-8614-53690e67cc7d"
+      }
+    },
+    {
+      "path": "/v1/recall/query?query=platform&allow_stale=true",
+      "status": 200,
+      "observed_at": "2026-11-23T17:52:34.939Z",
+      "body": {
+        "lessons": [
+          {
+            "id": "LRN-20261122174221-10363-5802",
+            "content_hash": "27d4b78e0e6d3e71807a962a58dde55bb8ec11963ff0e5bce606a5ee2c7604b2",
+            "kind": "gotcha",
+            "what": "fleet-mcp #15 platform spike cannot run before spike slices #11 core, #12 sidecar, #14 fleet_wait_for land; src at 2026-11-22 is scaffold only (index.ts, handler.ts)",
+            "why": "acceptance needs wait_id and sidecar suite, which those slices build",
+            "hit_count": 17,
+            "last_recalled": "2026-11-23T17:52:34.709Z",
+            "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+            "score": 2
+          }
+        ],
+        "total_matches": 1,
+        "latency_ms": 77,
+        "latency_source": "Worker performance.now, query entry through telemetry commit",
+        "meta": {
+          "content_hash": "fe2c90c309aade883675aa298869be40d7dd8aba85d16870ca7861b30602d91a",
+          "version": 2,
+          "cache_status": "stale",
+          "source": "studio-agentdb+d1",
+          "served_at": "2026-11-23T17:52:34.709Z",
+          "source_observed_at": "2026-11-23T02:13:18.575382+00:00",
+          "last_validated_at": "2026-11-23T02:13:18.575382+00:00",
+          "computed_at": "2026-11-23T02:13:18.575382+00:00"
+        },
+        "correlation_id": "6398fad3-4fca-4203-be4b-6024a573de96"
+      }
+    },
+    {
+      "path": "/v1/recall/health?allow_stale=true",
+      "status": 403,
+      "observed_at": "2026-11-23T17:52:35.086Z",
+      "body": {
+        "error": "forbidden",
+        "correlation_id": "4cb4a6bb-aa31-41aa-bee5-4bd45bf49239"
+      }
+    },
+    {
+      "path": "/v1/recall/health?allow_stale=true",
+      "status": 200,
+      "credential_profile": "existing read-path token with recall:health",
+      "observed_at": "2026-11-23T17:52:55.970Z",
+      "body": {
+        "stores": [
+          {
+            "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+            "schema_version": "017_recall_aliases",
+            "drift_flags": [],
+            "errors_last_write": null,
+            "collection_filter": "project-tagged active agent-visible low-sensitivity lessons",
+            "source_rows": 17,
+            "top_failure_classes": [
+              {
+                "kind": "gotcha",
+                "count": 13
+              },
+              {
+                "kind": "pattern",
+                "count": 4
+              }
+            ],
+            "learnings_count": 17,
+            "never_recalled_count": 0,
+            "never_recalled_rate": 0,
+            "coverage_gaps": [],
+            "coverage_gap_identity": "sha256 of normalized query",
+            "metric_source": "D1 recall_lessons and recall_queries; schema and error timestamp from read-only Studio sync"
+          }
+        ],
+        "meta": {
+          "content_hash": "fe2c90c309aade883675aa298869be40d7dd8aba85d16870ca7861b30602d91a",
+          "version": 2,
+          "cache_status": "stale",
+          "source": "studio-agentdb+d1",
+          "served_at": "2026-11-23T17:52:55.564Z",
+          "source_observed_at": "2026-11-23T02:13:18.575382+00:00",
+          "last_validated_at": "2026-11-23T02:13:18.575382+00:00",
+          "computed_at": "2026-11-23T02:13:18.575382+00:00"
+        },
+        "correlation_id": "644f3b59-6114-408d-b5dd-1819010f8d0b"
+      }
+    }
+  ]
+}

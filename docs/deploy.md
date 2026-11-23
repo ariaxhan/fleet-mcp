@@ -69,7 +69,7 @@ then sweep against the rolled-back SHA. D1 is forward-only: follow migrations/RE
 - `/health`: public liveness only. No dependency details or credentials.
 - `/internal/fixture`: credential-protected fixed fixture namespace checks for
   migrated D1, KV, R2 and both Durable Object classes, plus Browser binding presence.
-- All other GET routes return 404; mutations return 501. No corpus input accepted.
+- Unregistered routes remain disabled. Bounded authenticated spike routes are listed below.
 
 Sweep reads deployed HTTP responses only, never local source files. Each check
 records pass/fail and latency in artifacts/sweep-ENV.json. Failures still produce
@@ -95,7 +95,7 @@ caller tokens; without it protected routes fail closed with 503. Issue a token:
 Publish real files at HEAD: `FLEET_PUBLISH_TOKEN=... node scripts/publish.mjs ORIGIN DIR OWNER/REPO PATH...`.
 The sweep adds core read, strong read, freshness_unmet and change feed checks
 when FLEET_CORE_TOKEN is set. Source repos are limited by PERSONAL_SOURCE_REPOS
-in src/core.ts. Not yet built: MCP transport, diffs, single-flight leases, fencing.
+in src/core.ts. MCP transport is documented below. Full diffs, single-flight leases and fencing remain outside this bounded slice.
 
 Browser execution, MCP negotiation, fixture write/idempotency
 checks, auth matrix and runtime tools belong to the spike/build issues. Binding
@@ -127,3 +127,31 @@ node sidecar/fleet-sidecar.mjs once staging     # collect and push; outbox repla
   `freshness` with the observation time.
 
 Thresholds: stale after 180 s, offline after 900 s without a heartbeat (design decisions, src/connector.ts).
+
+## Platform proof slice (#15)
+
+- `POST /mcp`: authenticated Streamable HTTP, protocol `2025-06-18`, opaque
+  token/policy-bound sessions. Initialization returns `mcp-session-id`; subsequent
+  calls carry it. `DELETE /mcp` terminates it. An expired or foreign ID returns 404.
+- Tool discovery filters by operation capability. Reads use existing protected
+  routes, including authorization, audit and freshness checks. `doc://` resources
+  are personal-project document reads. Progress uses POST response SSE.
+- Cancellation releases the active observation, not the resumable application
+  wait. `fleet_wait_for` retains `wait_id` across reconnect and deployment.
+- `POST /ingest/verification`: signed registered-sidecar suite receipts.
+  `POST /v1/verify/check`: `verify:read`, complete identity required, stale green
+  denied unless explicitly requested as stale. The fixed named suite runs with
+  `node sidecar/verification.mjs run staging` (or production).
+- `POST /v1/render/jobs`: `verify:render`, bounded synthetic personal fixture only.
+  `GET /v1/render/jobs/ID` and `/screenshot`: job state and retained PNG. Durable
+  alarms own queued execution after initiating requests end. No arbitrary URL.
+- Capture and open actual remote screenshots with
+  `node scripts/platform-render-proof.mjs staging` (or production). It writes raw
+  job receipts and PNGs under `artifacts/platform/`; inspect those exact PNGs.
+- Actual Codex transport capture:
+  `python3 scripts/codex-transport-proof.py initial`, `client-timeout`, `interrupt`,
+  or `reconnect WAIT_ID`. Credentials remain in keychain/environment.
+
+These commands are functional acceptance probes, not benchmark or pilot runs.
+See [platform status](spike/platform.md), [token accounting](spike/token-accounting.md)
+and [cost assessment](spike/cost.md). Independent G1 verdict remains #43.

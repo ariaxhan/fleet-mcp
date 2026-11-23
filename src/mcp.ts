@@ -18,7 +18,7 @@ export const MCP_TOOLS = [
   tool('issue_get','/v1/issues/get','issue:read',{repo:string,number:number,include_comments:boolean,since_version:number,...freshness},['repo','number']),
   tool('issue_list','/v1/issues/list','issue:read',{repo:string,state:string,...freshness},['repo']),
   tool('recall_query','/v1/recall/query','recall:read',{query:string,kinds:string,limit:number,...freshness},['query']),
-  tool('recall_store_health','/v1/recall/health','recall:read',{...freshness}),
+  tool('recall_store_health','/v1/recall/health','recall:health',{...freshness}),
   tool('fleet_get_flight','/v1/fleet/get','fleet:read',{id:string},['id']),
   tool('fleet_list_flights','/v1/fleet/list','fleet:read',{state:string,limit:number}),
   tool('fleet_what_changed_since','/v1/fleet/changes','fleet:read',{cursor:string}),

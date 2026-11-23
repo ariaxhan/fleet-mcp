@@ -1,0 +1,404 @@
+{
+  "classification": "independent live HTTP protocol proof, separate from actual Codex evidence",
+  "origin": "https://staging-mcp.ariaxhan.com",
+  "version": {
+    "commit": "49ff362a620c46f4988823fbda3935f1ca927066",
+    "build_time": "2026-11-23T17:48:20.161Z",
+    "environment": "staging",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+  },
+  "calls": [
+    {
+      "method": "initialize",
+      "id": 1,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 200,
+      "observed_at": "2026-11-23T17:51:10.349Z",
+      "elapsed_ms": 155.49625,
+      "body": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "protocolVersion": "2025-06-18",
+          "capabilities": {
+            "tools": {
+              "listChanged": false
+            },
+            "resources": {
+              "subscribe": false,
+              "listChanged": false
+            }
+          },
+          "serverInfo": {
+            "name": "fleet-mcp-spike",
+            "version": "0.1.0"
+          },
+          "instructions": "Bounded personal-project spike. Session-bound request IDs; reconnect fleet_wait_for using durable wait_id. Disconnect releases the current observation, not its durable wait registration."
+        }
+      }
+    },
+    {
+      "method": "notifications/initialized",
+      "id": null,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 202,
+      "observed_at": "2026-11-23T17:51:10.471Z",
+      "elapsed_ms": 121.96720799999997,
+      "body": ""
+    },
+    {
+      "method": "resources/read",
+      "id": 2,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 200,
+      "observed_at": "2026-11-23T17:51:10.961Z",
+      "elapsed_ms": 489.7908329999999,
+      "body": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "contents": [
+            {
+              "uri": "doc://ariaxhan/fleet-mcp/AGENTS.md",
+              "mimeType": "application/json",
+              "text": "{\"name\":\"ariaxhan/fleet-mcp/AGENTS.md\",\"kind\":\"doc\",\"current_version\":1,\"change_note\":\"Publish AGENTS.md at 511dd8015361\",\"created_at\":\"2026-11-23T01:49:50.466Z\",\"provenance\":{\"repo\":\"ariaxhan/fleet-mcp\",\"commit\":\"511dd8015361bb4f0750d7db9a231e2c119f308d\",\"path\":\"AGENTS.md\"},\"body\":\"# AGENTS.md: fleet-mcp repo rules\\n\\n## Writing\\n\\n- No em dashes in any writing: docs, code comments, commit messages, issue text, paper text. Use commas, colons, or parentheses instead.\\n- Every measured number cites its source. A number without a citation is labeled as a target, a threshold, or a design decision, never as a measured result.\\n\\n## Scope boundary (hard)\\n\\n- This is a personal project with its own corpus. Never read, ingest, quote, or serve TBS data, TBS repos, TBS issues, or TBS MCP server content.\\n- Benchmark tasks are drawn from personal-project work only.\\n- Boundary tests use synthetic excluded identifiers and never contact excluded systems.\\n- The TBS Teaching MCP server is a pattern reference only (hosted, typed tools, live data). Its content is never copied into this repo.\\n\\n## Evidence standard (binding, Aria Nov 22, 2026)\\n\\n1. Preregister hypotheses, methods, and success criteria before the \\\"with\\\" side runs.\\n2. Controlled experiments with a real control group, enough runs for significance, and confidence intervals, not just point estimates.\\n3. Traceability: every number traceable to raw data (archive transcripts, run logs, measurements, analysis).\\n4. Independent verification by a party other than the producer.\\n5. UNPROVEN labeling: if a result cannot be proven, report it as UNPROVEN with what it would take to prove it.\\n6. Full reporting: never inflate, never round up, never present a suggestive result as a proven one. Null results are reported as results.\\n\\n## Preregistration rule\\n\\n- Hypotheses, methods, success criteria, the ranked task pool with its selection rule and seed, the exact model ID, the cache condition per run, and the analysis plan freeze in `bench-prereg-v1` (git tag plus SHA-256 plus a remote timestamped registration record) BEFORE the first \\\"with\\\" run, pilot included.\\n- Amendments are dated entries under a new tag. The original preregistration stays in the repo.\\n\\n## Gates (hard ordering)\\n\\n- G0 revision gate: PRD v2 committed, every review item addressed with a dated revision note, paper skeleton aligned. No build work starts before G0.\\n- G1 spike verdict: all eight proof criteria from the execution plan evaluated, dated go/no-go recorded. No full build on an unproven platform claim.\\n- G2 build gate: the full-v1 acceptance matrix green on real personal-project data.\\n- G3 benchmark gate: preregistration frozen before the first \\\"with\\\" run; all 120-plus runs executed per the frozen protocol with complete capture; independent verification complete with a receipt. No result published before G3.\\n- G4 commission gate: all seven deliverables meet their acceptance criteria (execution plan Section 10).\\n\\n## Verification\\n\\n- Done means a commit on main, verified on its surface by the owning chat, never from another agent's report.\\n- An implementing agent's own tests are not evidence. Reviewers use the system for real results.\\n- A missing artifact is a recorded data-loss failure, never silently reconstructed evidence.\\n\\n## Issues\\n\\n- Every issue carries a `## Acceptance` heading plus at least one unchecked checkbox. Runner intake silently drops issues that lack them.\\n- Every issue body carries the scope boundary from this file.\\n\\n## Ownership\\n\\n- The Unified MCP Server chat owns this domain. Main routes to it and never orders execution into a non-owning chat. No chat chains.\\n- Questions for Aria go to `ariaxhan/muse-asks` with the full template, never in chat and never in a digest.\\n\",\"meta\":{\"content_hash\":\"01e7611be4143bf233f47117cdc6c4a35292bdad726f2dc588395a6957b5b73b\",\"version\":1,\"cache_status\":\"hit\",\"served_at\":\"2026-11-23T17:51:10.846Z\",\"source_observed_at\":\"2026-11-23T01:49:50.299Z\",\"last_validated_at\":\"2026-11-23T17:51:10.728Z\",\"computed_at\":\"2026-11-23T01:49:50.466Z\",\"source\":\"kv\"},\"correlation_id\":\"55ca53d5-9fe8-4f24-8fe0-b3d6226bc4d8\"}"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "tools/list",
+      "id": 3,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 200,
+      "observed_at": "2026-11-23T17:51:11.075Z",
+      "elapsed_ms": 114.46804200000008,
+      "body": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "tools": [
+            {
+              "name": "exemplar_get_doc",
+              "description": "Personal-project exemplar_get_doc. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "number"
+                  },
+                  "since_version": {
+                    "type": "number"
+                  },
+                  "max_age_s": {
+                    "type": "number"
+                  },
+                  "allow_stale": {
+                    "type": "boolean"
+                  },
+                  "consistency": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "doc_what_changed",
+              "description": "Personal-project doc_what_changed. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "cursor": {
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "issue_get",
+              "description": "Personal-project issue_get. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "repo": {
+                    "type": "string"
+                  },
+                  "number": {
+                    "type": "number"
+                  },
+                  "include_comments": {
+                    "type": "boolean"
+                  },
+                  "since_version": {
+                    "type": "number"
+                  },
+                  "max_age_s": {
+                    "type": "number"
+                  },
+                  "allow_stale": {
+                    "type": "boolean"
+                  },
+                  "consistency": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "repo",
+                  "number"
+                ],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "issue_list",
+              "description": "Personal-project issue_list. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "repo": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "max_age_s": {
+                    "type": "number"
+                  },
+                  "allow_stale": {
+                    "type": "boolean"
+                  },
+                  "consistency": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "repo"
+                ],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "fleet_get_flight",
+              "description": "Personal-project fleet_get_flight. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "fleet_list_flights",
+              "description": "Personal-project fleet_list_flights. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "fleet_what_changed_since",
+              "description": "Personal-project fleet_what_changed_since. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "cursor": {
+                    "type": "string"
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            },
+            {
+              "name": "fleet_wait_for",
+              "description": "Personal-project fleet_wait_for. Uses the protected HTTP route and its authorization, freshness and audit rules.",
+              "inputSchema": {
+                "type": "object",
+                "properties": {
+                  "wait_id": {
+                    "type": "string"
+                  },
+                  "timeout_s": {
+                    "type": "number"
+                  },
+                  "condition": {
+                    "type": "object",
+                    "properties": {
+                      "repo": {
+                        "type": "string"
+                      },
+                      "flight_id": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string",
+                        "enum": [
+                          "started",
+                          "done",
+                          "failed",
+                          "blocker",
+                          "stalled",
+                          "preempted",
+                          "retired",
+                          "ended"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "required": [],
+                "additionalProperties": false
+              },
+              "annotations": {
+                "readOnlyHint": true,
+                "destructiveHint": false,
+                "idempotentHint": true,
+                "openWorldHint": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "tools/call",
+      "id": 4,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 200,
+      "observed_at": "2026-11-23T17:51:11.670Z",
+      "elapsed_ms": 595.0148340000001,
+      "body": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"met\":false,\"final_state\":null,\"waited_s\":0.14,\"wait_id\":\"538a2fcf-cc12-4328-9cf9-681aabb5ae34\",\"next_cursor\":\"WzI2MiwiW1wiMTE2NjhkZmVlZWI1M2I0YzRjMTMwZjBiMGJmMmUzMzBcIixcInBsYXRmb3JtLXNwaWtlLTE1XCIsXCJwZXJzb25hbFwiLFwicGVyc29uYWwtZG9jc1wiLDEsW1wiYXJpYXhoYW4vZmxlZXQtbWNwXCJdXSJd.f94497c3f6dd54dda0494a16967f83a27b3f2d0459e1319835478b3715467786\",\"correlation_id\":\"721c3a94-d30c-447d-b5c5-da46ef99870c\"}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "method": "notifications/cancelled",
+      "id": null,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 202,
+      "observed_at": "2026-11-23T17:51:12.320Z",
+      "elapsed_ms": 149.50874999999996,
+      "body": ""
+    },
+    {
+      "method": "tools/call",
+      "id": 5,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 200,
+      "observed_at": "2026-11-23T17:51:12.416Z",
+      "elapsed_ms": 745.6460829999999,
+      "body": "event: message\ndata: {\"jsonrpc\":\"2.0\",\"method\":\"notifications/progress\",\"params\":{\"progressToken\":\"independent-live-cancel\",\"progress\":0,\"total\":1}}\n\nevent: message\ndata: {\"jsonrpc\":\"2.0\",\"id\":5,\"error\":{\"code\":-32000,\"message\":\"Request cancelled or transport deadline reached\"}}\n\n"
+    },
+    {
+      "method": "tools/call",
+      "id": 6,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 200,
+      "observed_at": "2026-11-23T17:51:13.031Z",
+      "elapsed_ms": 614.9582499999997,
+      "body": {
+        "jsonrpc": "2.0",
+        "id": 6,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"met\":false,\"final_state\":null,\"waited_s\":0.16,\"wait_id\":\"538a2fcf-cc12-4328-9cf9-681aabb5ae34\",\"next_cursor\":\"WzI2MiwiW1wiMTE2NjhkZmVlZWI1M2I0YzRjMTMwZjBiMGJmMmUzMzBcIixcInBsYXRmb3JtLXNwaWtlLTE1XCIsXCJwZXJzb25hbFwiLFwicGVyc29uYWwtZG9jc1wiLDEsW1wiYXJpYXhoYW4vZmxlZXQtbWNwXCJdXSJd.f94497c3f6dd54dda0494a16967f83a27b3f2d0459e1319835478b3715467786\",\"correlation_id\":\"f659fcc3-50ae-4cc0-acc6-c652ad5f54ed\"}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "method": "ping",
+      "id": 7,
+      "session": "919a1d3c-8a51-49ad-afc0-ce9c4b511036",
+      "status": 404,
+      "observed_at": "2026-11-23T17:51:13.313Z",
+      "elapsed_ms": 124.29362499999979,
+      "body": {
+        "error": "session_not_found"
+      }
+    }
+  ],
+  "pass": true
+}

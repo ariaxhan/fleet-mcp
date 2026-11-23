@@ -1,0 +1,555 @@
+{
+  "classification": "functional-probe usage, not a pilot or efficacy measurement",
+  "captured_at": "2026-11-23T17:45:15.471Z",
+  "window": {
+    "start": "2026-11-23T17:30:00Z",
+    "end": "2026-11-23T17:45:15.471Z"
+  },
+  "scope": "fleet-mcp staging and production only",
+  "queries": [
+    {
+      "label": "staging-workers",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){workersInvocationsAdaptive(limit:100,filter:{scriptName:\"fleet-mcp-staging\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{requests cpuTimeUs subrequests errors duration}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "workersInvocationsAdaptive": [
+                  {
+                    "sum": {
+                      "cpuTimeUs": 893692,
+                      "duration": 12.977783624999997,
+                      "errors": 0,
+                      "requests": 140,
+                      "subrequests": 149
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-d1",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){d1AnalyticsAdaptiveGroups(limit:100,filter:{databaseId:\"9816fd64-4ae0-4321-86ea-f3741fd1c9fd\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{rowsRead rowsWritten readQueries writeQueries}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "d1AnalyticsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "readQueries": 535,
+                      "rowsRead": 5383,
+                      "rowsWritten": 956,
+                      "writeQueries": 531
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-kv",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){kvOperationsAdaptiveGroups(limit:100,filter:{namespaceId:\"24e11b4cb55e4477a115ed96c41af6a8\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){dimensions{actionType} sum{requests objectBytes}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "kvOperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "read"
+                    },
+                    "sum": {
+                      "objectBytes": 6914,
+                      "requests": 4
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-r2",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){r2OperationsAdaptiveGroups(limit:100,filter:{bucketName:\"fleet-mcp-staging-blobs\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){dimensions{actionType} sum{requests responseBytes responseObjectSize}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "r2OperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "HeadObject"
+                    },
+                    "sum": {
+                      "requests": 2,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "PutObject"
+                    },
+                    "sum": {
+                      "requests": 4,
+                      "responseBytes": 0,
+                      "responseObjectSize": 17571
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "GetObject"
+                    },
+                    "sum": {
+                      "requests": 3,
+                      "responseBytes": 23672,
+                      "responseObjectSize": 23672
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "HeadBucket"
+                    },
+                    "sum": {
+                      "requests": 4,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-invocations",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsInvocationsAdaptiveGroups(limit:100,filter:{scriptName:\"fleet-mcp-staging\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{requests errors wallTime}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsInvocationsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "errors": 1,
+                      "requests": 14,
+                      "wallTime": 37128105
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-FLEET_WAIT",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"cf11c44fc1694dacad52ece0e6e12cfc\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 31853358,
+                      "cpuTime": 24055,
+                      "duration": 4.077229823999999,
+                      "rowsRead": 11,
+                      "rowsWritten": 3,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-HANDOFF_COORDINATOR",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"72ba33df527a4f8a832a0e1bc0944b39\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 6015,
+                      "cpuTime": 1059,
+                      "duration": 0.00076992,
+                      "rowsRead": 0,
+                      "rowsWritten": 0,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-RENDER_HUB",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"b29ff8efb6044e0a8f5147a2aa5426af\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": []
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-workers",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){workersInvocationsAdaptive(limit:100,filter:{scriptName:\"fleet-mcp\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{requests cpuTimeUs subrequests errors duration}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "workersInvocationsAdaptive": [
+                  {
+                    "sum": {
+                      "cpuTimeUs": 545324,
+                      "duration": 12.416791875000001,
+                      "errors": 0,
+                      "requests": 91,
+                      "subrequests": 152
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-d1",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){d1AnalyticsAdaptiveGroups(limit:100,filter:{databaseId:\"9e789e32-274b-47a3-a478-b188f0d11549\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{rowsRead rowsWritten readQueries writeQueries}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "d1AnalyticsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "readQueries": 229,
+                      "rowsRead": 1696,
+                      "rowsWritten": 816,
+                      "writeQueries": 458
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-kv",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){kvOperationsAdaptiveGroups(limit:100,filter:{namespaceId:\"05893600c15340c183e8f79ea3fd71dd\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){dimensions{actionType} sum{requests objectBytes}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "kvOperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "read"
+                    },
+                    "sum": {
+                      "objectBytes": 0,
+                      "requests": 2
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-r2",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){r2OperationsAdaptiveGroups(limit:100,filter:{bucketName:\"fleet-mcp-production-blobs\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){dimensions{actionType} sum{requests responseBytes responseObjectSize}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "r2OperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "HeadObject"
+                    },
+                    "sum": {
+                      "requests": 2,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "PutObject"
+                    },
+                    "sum": {
+                      "requests": 2,
+                      "responseBytes": 0,
+                      "responseObjectSize": 1658
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "HeadBucket"
+                    },
+                    "sum": {
+                      "requests": 3,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-invocations",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsInvocationsAdaptiveGroups(limit:100,filter:{scriptName:\"fleet-mcp\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{requests errors wallTime}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsInvocationsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "errors": 0,
+                      "requests": 8,
+                      "wallTime": 76823
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-FLEET_WAIT",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"930e97b1b9804021a1eb0ed9116d8711\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 13480,
+                      "cpuTime": 3773,
+                      "duration": 0.0017254400000000002,
+                      "rowsRead": 0,
+                      "rowsWritten": 0,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-HANDOFF_COORDINATOR",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"6f74495860ff4100a7317fe90bed6227\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 62071,
+                      "cpuTime": 2911,
+                      "duration": 0.007945088,
+                      "rowsRead": 0,
+                      "rowsWritten": 0,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-RENDER_HUB",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"52af04961d2f4a24a79f1e4a10f1b988\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": []
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "known-fleet-browser-session",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){browserRenderingBrowserTimeUsageAdaptiveGroups(limit:100,filter:{sessionId:\"5f9809a6-110a-4362-b6f5-3640a7895f25\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:45:15.471Z\"}){sum{totalSessionDurationMs}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "browserRenderingBrowserTimeUsageAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "totalSessionDurationMs": 72338
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    }
+  ],
+  "settings": [
+    {
+      "env": "staging",
+      "status": 200,
+      "durable_object_bindings": [
+        {
+          "name": "FLEET_WAIT",
+          "class_name": "FleetWait",
+          "namespace_id": "cf11c44fc1694dacad52ece0e6e12cfc"
+        },
+        {
+          "name": "HANDOFF_COORDINATOR",
+          "class_name": "HandoffCoordinator",
+          "namespace_id": "72ba33df527a4f8a832a0e1bc0944b39"
+        },
+        {
+          "name": "RENDER_HUB",
+          "class_name": "RenderCoordinator",
+          "namespace_id": "b29ff8efb6044e0a8f5147a2aa5426af"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "env": "production",
+      "status": 200,
+      "durable_object_bindings": [
+        {
+          "name": "FLEET_WAIT",
+          "class_name": "FleetWait",
+          "namespace_id": "930e97b1b9804021a1eb0ed9116d8711"
+        },
+        {
+          "name": "HANDOFF_COORDINATOR",
+          "class_name": "HandoffCoordinator",
+          "namespace_id": "6f74495860ff4100a7317fe90bed6227"
+        },
+        {
+          "name": "RENDER_HUB",
+          "class_name": "RenderCoordinator",
+          "namespace_id": "52af04961d2f4a24a79f1e4a10f1b988"
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "notes": []
+}

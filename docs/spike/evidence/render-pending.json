@@ -1,0 +1,189 @@
+{
+  "purpose": "functional Browser Rendering probe, not benchmark",
+  "origin": "https://staging-mcp.ariaxhan.com",
+  "observed_at": "2026-11-23T17:41:09.313Z",
+  "version": {
+    "commit": "e6b5bd04029ce3aeb093203b98c2e3a1fbde66e4",
+    "build_time": "2026-11-23T17:39:11.158Z",
+    "environment": "staging",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+  },
+  "enqueue": [
+    {
+      "started": "2026-11-23T17:41:09.480Z",
+      "ended": "2026-11-23T17:41:09.984Z",
+      "status": 202,
+      "body": {
+        "render_id": "55bfc9cf-7ab1-4fe7-95b3-91d9782c8ba0",
+        "state": "queued",
+        "replayed": false,
+        "correlation_id": "15fd9636-89de-4eda-b789-e0781facb4ea"
+      }
+    },
+    {
+      "started": "2026-11-23T17:41:09.479Z",
+      "ended": "2026-11-23T17:41:09.988Z",
+      "status": 202,
+      "body": {
+        "render_id": "14db28e6-9184-4415-9178-4b652c6c5f49",
+        "state": "queued",
+        "replayed": false,
+        "correlation_id": "c982d7b6-644b-46ee-b162-8c78a41b9744"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "id": "14db28e6-9184-4415-9178-4b652c6c5f49",
+      "status": 200,
+      "observed_at": "2026-11-23T17:41:23.297Z",
+      "body": {
+        "id": "14db28e6-9184-4415-9178-4b652c6c5f49",
+        "input": {
+          "idempotency_key": "platform-1795455669479-0",
+          "delay_ms": 3000,
+          "marker": "Fleet MCP platform proof 0"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:41:09.829Z",
+        "started_at": "2026-11-23T17:41:19.799Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "55bfc9cf-7ab1-4fe7-95b3-91d9782c8ba0",
+      "status": 200,
+      "observed_at": "2026-11-23T17:41:23.492Z",
+      "body": {
+        "id": "55bfc9cf-7ab1-4fe7-95b3-91d9782c8ba0",
+        "input": {
+          "idempotency_key": "platform-1795455669480-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "complete",
+        "queued_at": "2026-11-23T17:41:09.827Z",
+        "started_at": "2026-11-23T17:41:09.873Z",
+        "reused": false,
+        "session_id": "5f9809a6-110a-4362-b6f5-3640a7895f25",
+        "browser_version": "Chrome/152.0.7977.64",
+        "context_id": "7C02972C8BC9FF322402DF731FA9FC6F",
+        "initial_cookie_count": 0,
+        "screenshot_hash": "e0aa569a2bf2dab8990d362786fed843e13d05dd2b2d7bd7d76c6d8744a518ca",
+        "screenshot_bytes": 7788,
+        "context_closed": true,
+        "completed_at": "2026-11-23T17:41:19.719Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": true,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "14db28e6-9184-4415-9178-4b652c6c5f49",
+      "status": 200,
+      "observed_at": "2026-11-23T17:41:39.955Z",
+      "body": {
+        "id": "14db28e6-9184-4415-9178-4b652c6c5f49",
+        "input": {
+          "idempotency_key": "platform-1795455669479-0",
+          "delay_ms": 3000,
+          "marker": "Fleet MCP platform proof 0"
+        },
+        "state": "complete",
+        "queued_at": "2026-11-23T17:41:09.829Z",
+        "started_at": "2026-11-23T17:41:19.799Z",
+        "reused": true,
+        "session_id": "5f9809a6-110a-4362-b6f5-3640a7895f25",
+        "browser_version": "Chrome/152.0.7977.64",
+        "context_id": "BA910BCD757A8B255EF509FDF909BEB1",
+        "initial_cookie_count": 0,
+        "screenshot_hash": "72b932c6a2aac2ca3b87eded89f8cd1fe4506bca32c2883b2624fcdea01c2fac",
+        "screenshot_bytes": 8096,
+        "context_closed": true,
+        "completed_at": "2026-11-23T17:41:23.725Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": true,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "55bfc9cf-7ab1-4fe7-95b3-91d9782c8ba0",
+      "status": 200,
+      "observed_at": "2026-11-23T17:41:40.532Z",
+      "body": {
+        "id": "55bfc9cf-7ab1-4fe7-95b3-91d9782c8ba0",
+        "input": {
+          "idempotency_key": "platform-1795455669480-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "complete",
+        "queued_at": "2026-11-23T17:41:09.827Z",
+        "started_at": "2026-11-23T17:41:09.873Z",
+        "reused": false,
+        "session_id": "5f9809a6-110a-4362-b6f5-3640a7895f25",
+        "browser_version": "Chrome/152.0.7977.64",
+        "context_id": "7C02972C8BC9FF322402DF731FA9FC6F",
+        "initial_cookie_count": 0,
+        "screenshot_hash": "e0aa569a2bf2dab8990d362786fed843e13d05dd2b2d7bd7d76c6d8744a518ca",
+        "screenshot_bytes": 7788,
+        "context_closed": true,
+        "completed_at": "2026-11-23T17:41:19.719Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": true,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    }
+  ],
+  "jobs": [
+    "14db28e6-9184-4415-9178-4b652c6c5f49",
+    "55bfc9cf-7ab1-4fe7-95b3-91d9782c8ba0"
+  ]
+}

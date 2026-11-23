@@ -1,0 +1,44 @@
+[
+  {
+    "source": "artifacts/platform/render-pending.json",
+    "sha256": "0cc42a3b19fa5c11a58ba78c765bb00fae86f5d5f9164d7caa144352d22aaa34",
+    "records": [
+      {
+        "id": "55bfc9cf-7ab1-4fe7-95b3-91d9782c8ba0",
+        "session_id": "5f9809a6-110a-4362-b6f5-3640a7895f25",
+        "started_at": "2026-11-23T17:41:09.873Z",
+        "completed_at": "2026-11-23T17:41:19.719Z",
+        "active_ms": 9846
+      },
+      {
+        "id": "14db28e6-9184-4415-9178-4b652c6c5f49",
+        "session_id": "5f9809a6-110a-4362-b6f5-3640a7895f25",
+        "started_at": "2026-11-23T17:41:19.799Z",
+        "completed_at": "2026-11-23T17:41:23.725Z",
+        "active_ms": 3926
+      }
+    ],
+    "active_sum_ms": 13772
+  },
+  {
+    "source": "artifacts/platform/render-staging-1795455981015.json",
+    "sha256": "bfb061fdea0342531bfa67d9fd7bd60accd483692055e18a0f3c4028f9e859f9",
+    "records": [
+      {
+        "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+        "session_id": "f9c35f55-ddae-4e29-95e6-84b623ede800",
+        "started_at": "2026-11-23T17:46:21.390Z",
+        "completed_at": "2026-11-23T17:46:27.974Z",
+        "active_ms": 6584
+      },
+      {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "session_id": "f9c35f55-ddae-4e29-95e6-84b623ede800",
+        "started_at": "2026-11-23T17:46:28.058Z",
+        "completed_at": "2026-11-23T17:46:35.595Z",
+        "active_ms": 7537
+      }
+    ],
+    "active_sum_ms": 14121
+  }
+]

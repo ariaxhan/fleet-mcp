@@ -1,0 +1,80 @@
+{
+  "kind": "functional_probe_not_benchmark",
+  "recorded_at": "2026-11-23T17:50:11.757735+00:00",
+  "client_path": "Installed Codex app-server mcpServer/tool/call and turn/start/turn/interrupt, using its actual RMCP Streamable HTTP client.",
+  "scope": "Personal-project fleet-mcp only. Explicit --disable plugins --disable apps on final probes. No pilot, benchmark or efficacy comparison.",
+  "source_revision_designation": "49ff362 as supplied by deploying owner for final probes; raw probe files independently establish transport responses, not build identity.",
+  "observations": [
+    {
+      "claim": "Actual Codex received negotiated protocol and progress notifications.",
+      "status": "OBSERVED",
+      "source": "codex-contract-interrupt-1795456144952312000.json",
+      "evidence_fields": [
+        "events stderr Service initialized as client",
+        "events stderr MCP server progress notification"
+      ]
+    },
+    {
+      "claim": "A model-generated valid wait call was in progress when the app-server turn was interrupted.",
+      "status": "OBSERVED",
+      "source": "codex-contract-interrupt-1795456144952312000.json",
+      "evidence_fields": [
+        "events stdout item/started mcpToolCall",
+        "events stdin turn/interrupt",
+        "events stdout turn/completed status interrupted"
+      ]
+    },
+    {
+      "claim": "Codex sent an explicit MCP CancelledNotification after turn interruption.",
+      "status": "UNPROVEN",
+      "source": "codex-contract-interrupt-1795456144952312000.json",
+      "limitation": "No outgoing CancelledNotification appears in captured RMCP trace. Generic task cancelled entries occur at process shutdown and cannot establish a protocol cancellation notification."
+    },
+    {
+      "claim": "Server current observation stopped on client disconnect.",
+      "status": "UNPROVEN_IN_THIS_CAPTURE",
+      "source": "codex-contract-interrupt-1795456144952312000.json",
+      "remaining_proof": "Correlate owning chat remote active-request registry snapshots before and after disconnect. Producer tests alone do not establish live behavior."
+    },
+    {
+      "claim": "Actual Codex enforced configured tool timeout.",
+      "status": "OBSERVED",
+      "source": "codex-contract-client-timeout-1795456165864295000.json",
+      "evidence_fields": [
+        "outcome.wait_timeout.error.message"
+      ]
+    },
+    {
+      "claim": "A fresh Codex process immediately after timed-out client work resumed the existing durable wait without the former request-ID collision.",
+      "status": "OBSERVED",
+      "source": "codex-contract-reconnect-1795456168920797000.json",
+      "evidence_fields": [
+        "events stdin mcpServer/tool/call arguments.wait_id",
+        "outcome.wait_timeout.result.content"
+      ],
+      "wait_id": "f409e75c-d442-4ccc-ac9b-485558c4d5ae"
+    }
+  ],
+  "retained_failures": [
+    {
+      "source": "codex-contract-interrupt-1795455788.json",
+      "observation": "Initial model instruction used unsupported state completed. Tool returned invalid_condition before interruption. Not cancellation evidence."
+    },
+    {
+      "source": "codex-contract-interrupt-1795455814.json",
+      "observation": "Probe timed out waiting for tool start while account plugin startup was active. Retained TimeoutError. Final probes disable plugins and apps explicitly."
+    },
+    {
+      "source": "codex-contract-reconnect-1795455916.json",
+      "observation": "Fresh Codex process collided with active numeric request ID under the earlier stateless implementation. This observed product failure motivated durable session isolation."
+    },
+    {
+      "sources": [
+        "codex-contract-reconnect-1795455728.json",
+        "codex-contract-client-timeout-1795455730.json"
+      ],
+      "observation": "Raw JSON capture was written, then temporary-directory cleanup raised Directory not empty in the invoking tool output. Final driver terminates its own process group and bounds reader shutdown."
+    }
+  ],
+  "publication": "No G1 verdict or independent certification is asserted by this producer capture."
+}

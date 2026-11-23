@@ -1,0 +1,637 @@
+{
+  "kind": "functional_probe_not_benchmark",
+  "client_version": "codex-cli 0.163.0",
+  "model_design_decision": "gpt-6.1-sol",
+  "reasoning_design_decision": "low",
+  "endpoint": "https://staging-mcp.ariaxhan.com/mcp",
+  "outcome": {
+    "initialize": {
+      "id": 1,
+      "result": {
+        "userAgent": "fleet-functional-probe/0.163.0 (Mac OS 27.0.1; arm64) dumb (fleet-functional-probe; 1)",
+        "codexHome": "/private/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+        "platformFamily": "unix",
+        "platformOs": "macos"
+      }
+    },
+    "thread": {
+      "id": 2,
+      "result": {
+        "thread": {
+          "id": "01a20983-6002-7741-a180-f9691afd621f",
+          "environments": [
+            {
+              "environmentId": "local",
+              "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+              "runtimeWorkspaceRoots": [
+                "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n"
+              ]
+            }
+          ],
+          "extra": null,
+          "sessionId": "01a20983-6002-7741-a180-f9691afd621f",
+          "forkedFromId": null,
+          "parentThreadId": null,
+          "preview": "",
+          "ephemeral": true,
+          "section": null,
+          "sectionEnteredAt": null,
+          "projectId": null,
+          "historyMode": "paginated",
+          "modelProvider": "openai",
+          "model": "gpt-6.1-sol",
+          "reasoningEffort": "low",
+          "createdAt": 1795455934,
+          "updatedAt": 1795455934,
+          "recencyAt": 1795455934,
+          "status": {
+            "type": "idle"
+          },
+          "path": null,
+          "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+          "cliVersion": "0.163.0",
+          "originator": "fleet-functional-probe",
+          "source": "vscode",
+          "canAcceptDirectInput": true,
+          "threadSource": null,
+          "agentNickname": null,
+          "agentRole": null,
+          "gitInfo": null,
+          "name": null,
+          "daybreakEnabled": null,
+          "turns": []
+        },
+        "model": "gpt-6.1-sol",
+        "modelProvider": "openai",
+        "serviceTier": null,
+        "disabledPluginIds": [],
+        "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+        "runtimeWorkspaceRoots": [
+          "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n"
+        ],
+        "instructionSources": [],
+        "approvalPolicy": "never",
+        "approvalsReviewer": "user",
+        "sandbox": {
+          "type": "readOnly",
+          "networkAccess": false
+        },
+        "activePermissionProfile": null,
+        "reasoningEffort": "low",
+        "multiAgentMode": "explicitRequestOnly"
+      }
+    },
+    "list": {
+      "id": 3,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"flights\":[{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1221\",\"task_ref\":\"ariaxhan/fleet-mcp#19\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:35:05.474Z\",\"updated\":\"2026-11-23T17:35:46.457Z\",\"source_observed_at\":\"2026-11-23T17:35:46.457Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1220\",\"task_ref\":\"ariaxhan/fleet-mcp#23\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:34:36.090Z\",\"updated\":\"2026-11-23T17:35:01.832Z\",\"source_observed_at\":\"2026-11-23T17:35:01.832Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1219\",\"task_ref\":\"ariaxhan/fleet-mcp#27\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:34:21.729Z\",\"updated\":\"2026-11-23T17:34:56.578Z\",\"source_observed_at\":\"2026-11-23T17:34:56.578Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1217\",\"task_ref\":\"ariaxhan/fleet-mcp#26\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:33:54.173Z\",\"updated\":\"2026-11-23T17:34:32.157Z\",\"source_observed_at\":\"2026-11-23T17:34:32.157Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1218\",\"task_ref\":\"ariaxhan/fleet-mcp#18\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:34:04.975Z\",\"updated\":\"2026-11-23T17:34:18.272Z\",\"source_observed_at\":\"2026-11-23T17:34:18.272Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1216\",\"task_ref\":\"ariaxhan/fleet-mcp#43\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:33:53.651Z\",\"updated\":\"2026-11-23T17:34:15.363Z\",\"source_observed_at\":\"2026-11-23T17:34:15.363Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1215\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"started\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:32:55.167Z\",\"updated\":\"2026-11-23T17:32:55.167Z\",\"source_observed_at\":\"2026-11-23T17:32:55.167Z\",\"last_event\":\"started\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1156\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:37:35.458Z\",\"updated\":\"2026-11-23T02:37:56.060Z\",\"source_observed_at\":\"2026-11-23T02:37:56.060Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1155\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:32:29.016Z\",\"updated\":\"2026-11-23T02:33:09.857Z\",\"source_observed_at\":\"2026-11-23T02:33:09.857Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1154\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:29:32.998Z\",\"updated\":\"2026-11-23T02:30:03.771Z\",\"source_observed_at\":\"2026-11-23T02:30:03.771Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1149\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:22:15.847Z\",\"updated\":\"2026-11-23T02:29:26.506Z\",\"source_observed_at\":\"2026-11-23T02:29:26.506Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1153\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:27:21.744Z\",\"updated\":\"2026-11-23T02:28:12.669Z\",\"source_observed_at\":\"2026-11-23T02:28:12.669Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1151\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:22:33.470Z\",\"updated\":\"2026-11-23T02:22:54.160Z\",\"source_observed_at\":\"2026-11-23T02:22:54.160Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1146\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:17:24.430Z\",\"updated\":\"2026-11-23T02:17:47.361Z\",\"source_observed_at\":\"2026-11-23T02:17:47.361Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1143\",\"task_ref\":\"ariaxhan/fleet-mcp#14\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:07:18.216Z\",\"updated\":\"2026-11-23T02:17:16.716Z\",\"source_observed_at\":\"2026-11-23T02:17:16.716Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1133\",\"task_ref\":\"ariaxhan/fleet-mcp#13\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:58.335Z\",\"updated\":\"2026-11-23T02:15:11.931Z\",\"source_observed_at\":\"2026-11-23T02:15:11.931Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1145\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:12:06.567Z\",\"updated\":\"2026-11-23T02:12:57.461Z\",\"source_observed_at\":\"2026-11-23T02:12:57.461Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1144\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:07:20.978Z\",\"updated\":\"2026-11-23T02:07:41.827Z\",\"source_observed_at\":\"2026-11-23T02:07:41.827Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1134\",\"task_ref\":\"ariaxhan/fleet-mcp#12\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:59.325Z\",\"updated\":\"2026-11-23T02:04:47.712Z\",\"source_observed_at\":\"2026-11-23T02:04:47.712Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1140\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:02:57.587Z\",\"updated\":\"2026-11-23T02:03:18.281Z\",\"source_observed_at\":\"2026-11-23T02:03:18.281Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1139\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:02:02.605Z\",\"updated\":\"2026-11-23T02:02:54.133Z\",\"source_observed_at\":\"2026-11-23T02:02:54.133Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1137\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:58:23.244Z\",\"updated\":\"2026-11-23T01:59:14.472Z\",\"source_observed_at\":\"2026-11-23T01:59:14.472Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1136\",\"task_ref\":\"ariaxhan/fleet-mcp#25\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:57:59.621Z\",\"updated\":\"2026-11-23T01:58:20.265Z\",\"source_observed_at\":\"2026-11-23T01:58:20.265Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1135\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:57:09.536Z\",\"updated\":\"2026-11-23T01:57:50.560Z\",\"source_observed_at\":\"2026-11-23T01:57:50.560Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1131\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:30.194Z\",\"updated\":\"2026-11-23T01:53:20.489Z\",\"source_observed_at\":\"2026-11-23T01:53:20.489Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1132\",\"task_ref\":\"ariaxhan/fleet-mcp#19\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:30.966Z\",\"updated\":\"2026-11-23T01:52:55.383Z\",\"source_observed_at\":\"2026-11-23T01:52:55.383Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1129\",\"task_ref\":\"ariaxhan/fleet-mcp#25\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:00.403Z\",\"updated\":\"2026-11-23T01:52:52.118Z\",\"source_observed_at\":\"2026-11-23T01:52:52.118Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1130\",\"task_ref\":\"ariaxhan/fleet-mcp#23\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:02.335Z\",\"updated\":\"2026-11-23T01:52:26.634Z\",\"source_observed_at\":\"2026-11-23T01:52:26.634Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1128\",\"task_ref\":\"ariaxhan/fleet-mcp#27\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:51:58.091Z\",\"updated\":\"2026-11-23T01:52:23.152Z\",\"source_observed_at\":\"2026-11-23T01:52:23.152Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1126\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:50:33.144Z\",\"updated\":\"2026-11-23T01:51:54.329Z\",\"source_observed_at\":\"2026-11-23T01:51:54.329Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1124\",\"task_ref\":\"ariaxhan/fleet-mcp#19\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:49:50.970Z\",\"updated\":\"2026-11-23T01:50:43.314Z\",\"source_observed_at\":\"2026-11-23T01:50:43.314Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1125\",\"task_ref\":\"ariaxhan/fleet-mcp#18\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:50:05.631Z\",\"updated\":\"2026-11-23T01:50:30.089Z\",\"source_observed_at\":\"2026-11-23T01:50:30.089Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1110\",\"task_ref\":\"ariaxhan/fleet-mcp#11\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:43:04.482Z\",\"updated\":\"2026-11-23T01:50:26.422Z\",\"source_observed_at\":\"2026-11-23T01:50:26.422Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1122\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:49:00.151Z\",\"updated\":\"2026-11-23T01:50:01.166Z\",\"source_observed_at\":\"2026-11-23T01:50:01.166Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1123\",\"task_ref\":\"ariaxhan/fleet-mcp#20\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:49:25.135Z\",\"updated\":\"2026-11-23T01:49:47.832Z\",\"source_observed_at\":\"2026-11-23T01:49:47.832Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1119\",\"task_ref\":\"ariaxhan/fleet-mcp#23\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:48:29.972Z\",\"updated\":\"2026-11-23T01:49:20.628Z\",\"source_observed_at\":\"2026-11-23T01:49:20.628Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1120\",\"task_ref\":\"ariaxhan/fleet-mcp#22\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:48:43.429Z\",\"updated\":\"2026-11-23T01:48:56.277Z\",\"source_observed_at\":\"2026-11-23T01:48:56.277Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1118\",\"task_ref\":\"ariaxhan/fleet-mcp#24\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:48:06.592Z\",\"updated\":\"2026-11-23T01:48:40.027Z\",\"source_observed_at\":\"2026-11-23T01:48:40.027Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1116\",\"task_ref\":\"ariaxhan/fleet-mcp#25\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:47:49.811Z\",\"updated\":\"2026-11-23T01:48:26.808Z\",\"source_observed_at\":\"2026-11-23T01:48:26.808Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1114\",\"task_ref\":\"ariaxhan/fleet-mcp#27\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:47:09.590Z\",\"updated\":\"2026-11-23T01:48:02.505Z\",\"source_observed_at\":\"2026-11-23T01:48:02.505Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1115\",\"task_ref\":\"ariaxhan/fleet-mcp#26\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:47:16.183Z\",\"updated\":\"2026-11-23T01:47:46.638Z\",\"source_observed_at\":\"2026-11-23T01:47:46.638Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1105\",\"task_ref\":\"ariaxhan/fleet-mcp#16\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:02.417Z\",\"updated\":\"2026-11-23T01:44:59.971Z\",\"source_observed_at\":\"2026-11-23T01:44:59.971Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1109\",\"task_ref\":\"ariaxhan/fleet-mcp#12\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:43:04.073Z\",\"updated\":\"2026-11-23T01:44:18.511Z\",\"source_observed_at\":\"2026-11-23T01:44:18.511Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1108\",\"task_ref\":\"ariaxhan/fleet-mcp#13\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:36.143Z\",\"updated\":\"2026-11-23T01:43:00.878Z\",\"source_observed_at\":\"2026-11-23T01:43:00.878Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1107\",\"task_ref\":\"ariaxhan/fleet-mcp#14\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:03.290Z\",\"updated\":\"2026-11-23T01:42:56.296Z\",\"source_observed_at\":\"2026-11-23T01:42:56.296Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1106\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:02.822Z\",\"updated\":\"2026-11-23T01:42:33.631Z\",\"source_observed_at\":\"2026-11-23T01:42:33.631Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1097\",\"task_ref\":\"ariaxhan/fleet-mcp#1\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:31:53.625Z\",\"updated\":\"2026-11-23T01:39:53.694Z\",\"source_observed_at\":\"2026-11-23T01:39:53.694Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1101\",\"task_ref\":\"ariaxhan/fleet-mcp#42\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:36:44.405Z\",\"updated\":\"2026-11-23T01:38:36.642Z\",\"source_observed_at\":\"2026-11-23T01:38:36.642Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1095\",\"task_ref\":\"ariaxhan/fleet-mcp#40\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:29:48.063Z\",\"updated\":\"2026-11-23T01:31:51.639Z\",\"source_observed_at\":\"2026-11-23T01:31:51.639Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1094\",\"task_ref\":\"ariaxhan/fleet-mcp#1\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:26:57.400Z\",\"updated\":\"2026-11-23T01:27:17.993Z\",\"source_observed_at\":\"2026-11-23T01:27:17.993Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"}],\"has_more\":true,\"meta\":{\"source\":\"d1\",\"cache_status\":\"bypass\",\"served_at\":\"2026-11-23T17:45:34.993Z\"},\"correlation_id\":\"906cddb9-7b33-45c3-b421-dd536d541a35\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    "wait_timeout": {
+      "id": 4,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"met\":false,\"final_state\":null,\"waited_s\":1.029,\"wait_id\":\"f409e75c-d442-4ccc-ac9b-485558c4d5ae\",\"next_cursor\":\"WzI1NCwiW1wiMTE2NjhkZmVlZWI1M2I0YzRjMTMwZjBiMGJmMmUzMzBcIixcInBsYXRmb3JtLXNwaWtlLTE1XCIsXCJwZXJzb25hbFwiLFwicGVyc29uYWwtZG9jc1wiLDEsW1wiYXJpYXhoYW4vZmxlZXQtbWNwXCJdXSJd.5c57e15f6b302b07c17cebe04de14f500d774252c379e6f3e89d1d0d9a32a778\",\"correlation_id\":\"5f30f367-c0f3-421c-b558-8aa745c66d1b\"}"
+          }
+        ],
+        "isError": false
+      }
+    }
+  },
+  "events": [
+    {
+      "at": "2026-11-23T17:45:34.424492+00:00",
+      "direction": "stdin",
+      "message": {
+        "method": "initialize",
+        "params": {
+          "clientInfo": {
+            "name": "fleet-functional-probe",
+            "version": "1"
+          },
+          "capabilities": {
+            "experimentalApi": true
+          }
+        },
+        "id": 1
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.465685+00:00",
+      "direction": "stdout",
+      "message": {
+        "id": 1,
+        "result": {
+          "userAgent": "fleet-functional-probe/0.163.0 (Mac OS 27.0.1; arm64) dumb (fleet-functional-probe; 1)",
+          "codexHome": "/private/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+          "platformFamily": "unix",
+          "platformOs": "macos"
+        }
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.465704+00:00",
+      "direction": "stdout",
+      "message": {
+        "method": "remoteControl/status/changed",
+        "params": {
+          "status": "disabled",
+          "serverName": "ariasMacStudio.lan",
+          "installationId": "a595361b-993e-4528-ac98-642005beaa4d",
+          "environmentId": null
+        },
+        "emittedAtMs": 1795455934465
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.465744+00:00",
+      "direction": "stdin",
+      "message": {
+        "method": "initialized",
+        "params": {}
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.465760+00:00",
+      "direction": "stdin",
+      "message": {
+        "method": "thread/start",
+        "params": {
+          "model": "gpt-6.1-sol",
+          "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+          "approvalPolicy": "never",
+          "sandbox": "read-only",
+          "ephemeral": true
+        },
+        "id": 2
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.477394+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.477162Z TRACE initialize: codex_rmcp_client::rmcp_client: new"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.477479+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.477213Z TRACE transport_worker{name=\"StreamableHttpClientWorker\"}: rmcp::transport::worker: new"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.480308+00:00",
+      "direction": "stdout",
+      "message": {
+        "id": 2,
+        "result": {
+          "thread": {
+            "id": "01a20983-6002-7741-a180-f9691afd621f",
+            "environments": [
+              {
+                "environmentId": "local",
+                "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+                "runtimeWorkspaceRoots": [
+                  "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n"
+                ]
+              }
+            ],
+            "extra": null,
+            "sessionId": "01a20983-6002-7741-a180-f9691afd621f",
+            "forkedFromId": null,
+            "parentThreadId": null,
+            "preview": "",
+            "ephemeral": true,
+            "section": null,
+            "sectionEnteredAt": null,
+            "projectId": null,
+            "historyMode": "paginated",
+            "modelProvider": "openai",
+            "model": "gpt-6.1-sol",
+            "reasoningEffort": "low",
+            "createdAt": 1795455934,
+            "updatedAt": 1795455934,
+            "recencyAt": 1795455934,
+            "status": {
+              "type": "idle"
+            },
+            "path": null,
+            "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+            "cliVersion": "0.163.0",
+            "originator": "fleet-functional-probe",
+            "source": "vscode",
+            "canAcceptDirectInput": true,
+            "threadSource": null,
+            "agentNickname": null,
+            "agentRole": null,
+            "gitInfo": null,
+            "name": null,
+            "daybreakEnabled": null,
+            "turns": []
+          },
+          "model": "gpt-6.1-sol",
+          "modelProvider": "openai",
+          "serviceTier": null,
+          "disabledPluginIds": [],
+          "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+          "runtimeWorkspaceRoots": [
+            "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n"
+          ],
+          "instructionSources": [],
+          "approvalPolicy": "never",
+          "approvalsReviewer": "user",
+          "sandbox": {
+            "type": "readOnly",
+            "networkAccess": false
+          },
+          "activePermissionProfile": null,
+          "reasoningEffort": "low",
+          "multiAgentMode": "explicitRequestOnly"
+        }
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.480365+00:00",
+      "direction": "stdin",
+      "message": {
+        "method": "mcpServer/tool/call",
+        "params": {
+          "threadId": "01a20983-6002-7741-a180-f9691afd621f",
+          "server": "fleet",
+          "tool": "fleet_list_flights",
+          "arguments": {}
+        },
+        "id": 3
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.480402+00:00",
+      "direction": "stdout",
+      "message": {
+        "method": "thread/started",
+        "params": {
+          "thread": {
+            "id": "01a20983-6002-7741-a180-f9691afd621f",
+            "environments": [
+              {
+                "environmentId": "local",
+                "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+                "runtimeWorkspaceRoots": [
+                  "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n"
+                ]
+              }
+            ],
+            "extra": null,
+            "sessionId": "01a20983-6002-7741-a180-f9691afd621f",
+            "forkedFromId": null,
+            "parentThreadId": null,
+            "preview": "",
+            "ephemeral": true,
+            "section": null,
+            "sectionEnteredAt": null,
+            "projectId": null,
+            "historyMode": "paginated",
+            "modelProvider": "openai",
+            "model": "gpt-6.1-sol",
+            "reasoningEffort": "low",
+            "createdAt": 1795455934,
+            "updatedAt": 1795455934,
+            "recencyAt": 1795455934,
+            "status": {
+              "type": "idle"
+            },
+            "path": null,
+            "cwd": "/var/folders/fx/dv6nn1h9623785trm4_g9qh80000gn/T/fleet-codex-contract-4hl0iy8n",
+            "cliVersion": "0.163.0",
+            "originator": "fleet-functional-probe",
+            "source": "vscode",
+            "canAcceptDirectInput": true,
+            "threadSource": null,
+            "agentNickname": null,
+            "agentRole": null,
+            "gitInfo": null,
+            "name": null,
+            "daybreakEnabled": null,
+            "turns": []
+          }
+        },
+        "emittedAtMs": 1795455934480
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.480420+00:00",
+      "direction": "stdout",
+      "message": {
+        "method": "mcpServer/startupStatus/updated",
+        "params": {
+          "threadId": "01a20983-6002-7741-a180-f9691afd621f",
+          "name": "fleet",
+          "status": "starting",
+          "error": null,
+          "failureReason": null
+        },
+        "emittedAtMs": 1795455934480
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.733634+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.733523Z  INFO initialize:serve_inner: rmcp::service: new"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.733654+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.733534Z  INFO initialize:serve_inner: rmcp::service: Service initialized as client peer_info=Some(ServerPeerInfo { protocol_version: ProtocolVersion(\"2025-06-18\"), capabilities: ServerCapabilities { experimental: None, extensions: None, logging: None, completions: None, prompts: None, resources: Some(ResourcesCapability { subscribe: Some(false), list_changed: Some(false) }), tools: Some(ToolsCapability { list_changed: Some(false) }) }, server_info: Some(Implementation { name: \"fleet-mcp-spike\", title: None, version: \"0.1.0\", description: None, icons: None, website_url: None }), instructions: Some(\"Bounded personal-project spike. Stateless transport; reconnect fleet_wait_for using wait_id. Cancellation aborts the current call; saved wait_id remains resumable.\"), meta: None })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.733702+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.733589Z TRACE list_tools_with_connector_ids: codex_rmcp_client::rmcp_client: new"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.733715+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.733618Z TRACE initialize:serve_inner: rmcp::service: new event evt=ProxyMessage(Request { request: ListToolsRequest(RequestOptionalParam { method: ListToolsRequestMethod, params: None, extensions: Extensions }), id: Number(1), responder: Sender { inner: Some(Inner { state: State { is_complete: false, is_closed: false, is_rx_task_set: true, is_tx_task_set: false } }) } })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.809354+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.809180Z TRACE initialize:serve_inner: rmcp::service: new event evt=PeerMessage(Response(JsonRpcResponse { jsonrpc: JsonRpcVersion2_0, id: Number(1), result: ListToolsResult(ListToolsResult { result_type: None, meta: None, next_cursor: None, ttl_ms: None, cache_scope: None, tools: [Tool { name: \"exemplar_get_doc\", title: None, description: Some(\"Personal-project exemplar_get_doc. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"name\": Object {\"type\": String(\"string\")}, \"version\": Object {\"type\": String(\"number\")}, \"since_version\": Object {\"type\": String(\"number\")}, \"max_age_s\": Object {\"type\": String(\"number\")}, \"allow_stale\": Object {\"type\": String(\"boolean\")}, \"consistency\": Object {\"type\": String(\"string\")}}, \"required\": Array [String(\"name\")], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }, Tool { name: \"doc_what_changed\", title: None, description: Some(\"Personal-project doc_what_changed. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"cursor\": Object {\"type\": String(\"string\")}}, \"required\": Array [], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }, Tool { name: \"issue_get\", title: None, description: Some(\"Personal-project issue_get. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"repo\": Object {\"type\": String(\"string\")}, \"number\": Object {\"type\": String(\"number\")}, \"include_comments\": Object {\"type\": String(\"boolean\")}, \"since_version\": Object {\"type\": String(\"number\")}, \"max_age_s\": Object {\"type\": String(\"number\")}, \"allow_stale\": Object {\"type\": String(\"boolean\")}, \"consistency\": Object {\"type\": String(\"string\")}}, \"required\": Array [String(\"repo\"), String(\"number\")], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }, Tool { name: \"issue_list\", title: None, description: Some(\"Personal-project issue_list. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"repo\": Object {\"type\": String(\"string\")}, \"state\": Object {\"type\": String(\"string\")}, \"max_age_s\": Object {\"type\": String(\"number\")}, \"allow_stale\": Object {\"type\": String(\"boolean\")}, \"consistency\": Object {\"type\": String(\"string\")}}, \"required\": Array [String(\"repo\")], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }, Tool { name: \"fleet_get_flight\", title: None, description: Some(\"Personal-project fleet_get_flight. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"id\": Object {\"type\": String(\"string\")}}, \"required\": Array [String(\"id\")], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }, Tool { name: \"fleet_list_flights\", title: None, description: Some(\"Personal-project fleet_list_flights. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"state\": Object {\"type\": String(\"string\")}, \"limit\": Object {\"type\": String(\"number\")}}, \"required\": Array [], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }, Tool { name: \"fleet_what_changed_since\", title: None, description: Some(\"Personal-project fleet_what_changed_since. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"cursor\": Object {\"type\": String(\"string\")}}, \"required\": Array [], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }, Tool { name: \"fleet_wait_for\", title: None, description: Some(\"Personal-project fleet_wait_for. Uses the protected HTTP route and its authorization, freshness and audit rules.\"), input_schema: {\"type\": String(\"object\"), \"properties\": Object {\"wait_id\": Object {\"type\": String(\"string\")}, \"timeout_s\": Object {\"type\": String(\"number\")}, \"condition\": Object {\"type\": String(\"object\"), \"properties\": Object {\"repo\": Object {\"type\": String(\"string\")}, \"flight_id\": Object {\"type\": String(\"string\")}, \"state\": Object {\"type\": String(\"string\"), \"enum\": Array [String(\"started\"), String(\"done\"), String(\"failed\"), String(\"blocker\"), String(\"stalled\"), String(\"preempted\"), String(\"retired\"), String(\"ended\")]}}}}, \"required\": Array [], \"additionalProperties\": Bool(false)}, output_schema: None, annotations: Some(ToolAnnotations { title: None, read_only_hint: Some(true), destructive_hint: Some(false), idempotent_hint: Some(true), open_world_hint: Some(false) }), icons: None, meta: None }] }) }))"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.809390+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.809220Z TRACE initialize:serve_inner: rmcp::service: new event evt=SendTaskResult(Request { id: Number(1), result: Ok(()) })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.809409+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.809237Z TRACE list_tools_with_connector_ids: codex_rmcp_client::rmcp_client: close time.busy=28.6\u00b5s time.idle=75.6ms"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.809454+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:34.809294Z TRACE initialize:serve_inner: rmcp::service: new event evt=ProxyMessage(Request { request: CallToolRequest(Request { method: CallToolRequestMethod, params: CallToolRequestParams { meta: None, name: \"fleet_list_flights\", arguments: Some({}), input_responses: None, request_state: None }, extensions: Extensions }), id: Number(2), responder: Sender { inner: Some(Inner { state: State { is_complete: false, is_closed: false, is_rx_task_set: true, is_tx_task_set: false } }) } })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:34.809465+00:00",
+      "direction": "stdout",
+      "message": {
+        "method": "mcpServer/startupStatus/updated",
+        "params": {
+          "threadId": "01a20983-6002-7741-a180-f9691afd621f",
+          "name": "fleet",
+          "status": "ready",
+          "error": null,
+          "failureReason": null
+        },
+        "emittedAtMs": 1795455934809
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.010358+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.010218Z TRACE transport_worker{name=\"StreamableHttpClientWorker\"}: rmcp::transport::streamable_http_client: got new sse stream"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.010375+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.010233Z TRACE initialize:serve_inner: rmcp::service: new event evt=SendTaskResult(Request { id: Number(2), result: Ok(()) })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.010394+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.010274Z TRACE initialize:serve_inner: rmcp::service: new event evt=PeerMessage(Notification(JsonRpcNotification { jsonrpc: JsonRpcVersion2_0, notification: ProgressNotification(Notification { method: ProgressNotificationMethod, params: ProgressNotificationParam { progress_token: ProgressToken(Number(1)), progress: 0.0, total: Some(1.0), message: None, meta: None }, extensions: Extensions }) }))"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.010401+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.010286Z  INFO initialize:serve_inner: rmcp::service: received notification notification=ProgressNotification(Notification { method: ProgressNotificationMethod, params: ProgressNotificationParam { progress_token: ProgressToken(Number(1)), progress: 0.0, total: Some(1.0), message: None, meta: None }, extensions: Extensions })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.010441+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.010312Z  INFO initialize:serve_inner: codex_rmcp_client::logging_client_handler: MCP server progress notification (token: ProgressToken(Number(1)), progress: 0, total: Some(1.0), message: None)"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.370462+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.370239Z DEBUG rmcp::transport::streamable_http_client: got response, draining sse stream for connection reuse"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.370483+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.370258Z DEBUG rmcp::transport::common::client_side_sse: sse response ended before an event ID was received; cannot resume"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.370533+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.370283Z TRACE initialize:serve_inner: rmcp::service: new event evt=PeerMessage(Response(JsonRpcResponse { jsonrpc: JsonRpcVersion2_0, id: Number(2), result: CallToolResult(CallToolResult { result_type: None, content: [Text(TextContent { text: \"{\\\"flights\\\":[{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1221\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#19\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T17:35:05.474Z\\\",\\\"updated\\\":\\\"2026-11-23T17:35:46.457Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T17:35:46.457Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1220\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#23\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T17:34:36.090Z\\\",\\\"updated\\\":\\\"2026-11-23T17:35:01.832Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T17:35:01.832Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1219\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#27\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T17:34:21.729Z\\\",\\\"updated\\\":\\\"2026-11-23T17:34:56.578Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T17:34:56.578Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1217\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#26\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T17:33:54.173Z\\\",\\\"updated\\\":\\\"2026-11-23T17:34:32.157Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T17:34:32.157Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1218\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#18\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T17:34:04.975Z\\\",\\\"updated\\\":\\\"2026-11-23T17:34:18.272Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T17:34:18.272Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1216\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#43\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T17:33:53.651Z\\\",\\\"updated\\\":\\\"2026-11-23T17:34:15.363Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T17:34:15.363Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1215\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#15\\\",\\\"status\\\":\\\"started\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T17:32:55.167Z\\\",\\\"updated\\\":\\\"2026-11-23T17:32:55.167Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T17:32:55.167Z\\\",\\\"last_event\\\":\\\"started\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1156\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:37:35.458Z\\\",\\\"updated\\\":\\\"2026-11-23T02:37:56.060Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:37:56.060Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1155\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:32:29.016Z\\\",\\\"updated\\\":\\\"2026-11-23T02:33:09.857Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:33:09.857Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1154\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#15\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:29:32.998Z\\\",\\\"updated\\\":\\\"2026-11-23T02:30:03.771Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:30:03.771Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1149\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#15\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:22:15.847Z\\\",\\\"updated\\\":\\\"2026-11-23T02:29:26.506Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:29:26.506Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1153\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:27:21.744Z\\\",\\\"updated\\\":\\\"2026-11-23T02:28:12.669Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:28:12.669Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1151\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:22:33.470Z\\\",\\\"updated\\\":\\\"2026-11-23T02:22:54.160Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:22:54.160Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1146\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:17:24.430Z\\\",\\\"updated\\\":\\\"2026-11-23T02:17:47.361Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:17:47.361Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1143\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#14\\\",\\\"status\\\":\\\"done\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:07:18.216Z\\\",\\\"updated\\\":\\\"2026-11-23T02:17:16.716Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:17:16.716Z\\\",\\\"last_event\\\":\\\"done\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1133\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#13\\\",\\\"status\\\":\\\"done\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:52:58.335Z\\\",\\\"updated\\\":\\\"2026-11-23T02:15:11.931Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:15:11.931Z\\\",\\\"last_event\\\":\\\"done\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1145\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:12:06.567Z\\\",\\\"updated\\\":\\\"2026-11-23T02:12:57.461Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:12:57.461Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1144\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:07:20.978Z\\\",\\\"updated\\\":\\\"2026-11-23T02:07:41.827Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:07:41.827Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1134\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#12\\\",\\\"status\\\":\\\"done\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:52:59.325Z\\\",\\\"updated\\\":\\\"2026-11-23T02:04:47.712Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:04:47.712Z\\\",\\\"last_event\\\":\\\"done\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1140\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#21\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:02:57.587Z\\\",\\\"updated\\\":\\\"2026-11-23T02:03:18.281Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:03:18.281Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1139\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T02:02:02.605Z\\\",\\\"updated\\\":\\\"2026-11-23T02:02:54.133Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T02:02:54.133Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1137\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#21\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:58:23.244Z\\\",\\\"updated\\\":\\\"2026-11-23T01:59:14.472Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:59:14.472Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1136\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#25\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:57:59.621Z\\\",\\\"updated\\\":\\\"2026-11-23T01:58:20.265Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:58:20.265Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1135\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:57:09.536Z\\\",\\\"updated\\\":\\\"2026-11-23T01:57:50.560Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:57:50.560Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1131\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#21\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:52:30.194Z\\\",\\\"updated\\\":\\\"2026-11-23T01:53:20.489Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:53:20.489Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1132\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#19\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:52:30.966Z\\\",\\\"updated\\\":\\\"2026-11-23T01:52:55.383Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:52:55.383Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1129\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#25\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:52:00.403Z\\\",\\\"updated\\\":\\\"2026-11-23T01:52:52.118Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:52:52.118Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1130\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#23\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:52:02.335Z\\\",\\\"updated\\\":\\\"2026-11-23T01:52:26.634Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:52:26.634Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1128\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#27\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:51:58.091Z\\\",\\\"updated\\\":\\\"2026-11-23T01:52:23.152Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:52:23.152Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1126\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#17\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:50:33.144Z\\\",\\\"updated\\\":\\\"2026-11-23T01:51:54.329Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:51:54.329Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1124\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#19\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:49:50.970Z\\\",\\\"updated\\\":\\\"2026-11-23T01:50:43.314Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:50:43.314Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1125\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#18\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:50:05.631Z\\\",\\\"updated\\\":\\\"2026-11-23T01:50:30.089Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:50:30.089Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1110\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#11\\\",\\\"status\\\":\\\"done\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:43:04.482Z\\\",\\\"updated\\\":\\\"2026-11-23T01:50:26.422Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:50:26.422Z\\\",\\\"last_event\\\":\\\"done\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1122\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#21\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:49:00.151Z\\\",\\\"updated\\\":\\\"2026-11-23T01:50:01.166Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:50:01.166Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1123\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#20\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:49:25.135Z\\\",\\\"updated\\\":\\\"2026-11-23T01:49:47.832Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:49:47.832Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1119\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#23\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:48:29.972Z\\\",\\\"updated\\\":\\\"2026-11-23T01:49:20.628Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:49:20.628Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1120\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#22\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:48:43.429Z\\\",\\\"updated\\\":\\\"2026-11-23T01:48:56.277Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:48:56.277Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1118\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#24\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:48:06.592Z\\\",\\\"updated\\\":\\\"2026-11-23T01:48:40.027Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:48:40.027Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1116\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#25\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:47:49.811Z\\\",\\\"updated\\\":\\\"2026-11-23T01:48:26.808Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:48:26.808Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1114\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#27\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:47:09.590Z\\\",\\\"updated\\\":\\\"2026-11-23T01:48:02.505Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:48:02.505Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1115\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#26\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:47:16.183Z\\\",\\\"updated\\\":\\\"2026-11-23T01:47:46.638Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:47:46.638Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1105\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#16\\\",\\\"status\\\":\\\"done\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:42:02.417Z\\\",\\\"updated\\\":\\\"2026-11-23T01:44:59.971Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:44:59.971Z\\\",\\\"last_event\\\":\\\"done\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1109\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#12\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:43:04.073Z\\\",\\\"updated\\\":\\\"2026-11-23T01:44:18.511Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:44:18.511Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1108\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#13\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:42:36.143Z\\\",\\\"updated\\\":\\\"2026-11-23T01:43:00.878Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:43:00.878Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1107\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#14\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:42:03.290Z\\\",\\\"updated\\\":\\\"2026-11-23T01:42:56.296Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:42:56.296Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1106\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#15\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:42:02.822Z\\\",\\\"updated\\\":\\\"2026-11-23T01:42:33.631Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:42:33.631Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1097\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#1\\\",\\\"status\\\":\\\"done\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:31:53.625Z\\\",\\\"updated\\\":\\\"2026-11-23T01:39:53.694Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:39:53.694Z\\\",\\\"last_event\\\":\\\"done\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1101\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#42\\\",\\\"status\\\":\\\"done\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:36:44.405Z\\\",\\\"updated\\\":\\\"2026-11-23T01:38:36.642Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:38:36.642Z\\\",\\\"last_event\\\":\\\"done\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1095\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#40\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:29:48.063Z\\\",\\\"updated\\\":\\\"2026-11-23T01:31:51.639Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:31:51.639Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"},{\\\"id\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6:1094\\\",\\\"task_ref\\\":\\\"ariaxhan/fleet-mcp#1\\\",\\\"status\\\":\\\"blocker\\\",\\\"worker\\\":\\\"m_18e9418a1b9a9771ff1efa6f32b76da6\\\",\\\"started\\\":\\\"2026-11-23T01:26:57.400Z\\\",\\\"updated\\\":\\\"2026-11-23T01:27:17.993Z\\\",\\\"source_observed_at\\\":\\\"2026-11-23T01:27:17.993Z\\\",\\\"last_event\\\":\\\"blocker\\\",\\\"progress\\\":null,\\\"connector_status\\\":\\\"fresh\\\",\\\"freshness\\\":\\\"fresh\\\"}],\\\"has_more\\\":true,\\\"meta\\\":{\\\"source\\\":\\\"d1\\\",\\\"cache_status\\\":\\\"bypass\\\",\\\"served_at\\\":\\\"2026-11-23T17:45:34.993Z\\\"},\\\"correlation_id\\\":\\\"906cddb9-7b33-45c3-b421-dd536d541a35\\\"}\", meta: None, annotations: None })], structured_content: None, is_error: Some(false), meta: None }) }))"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.370676+00:00",
+      "direction": "stdout",
+      "message": {
+        "id": 3,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"flights\":[{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1221\",\"task_ref\":\"ariaxhan/fleet-mcp#19\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:35:05.474Z\",\"updated\":\"2026-11-23T17:35:46.457Z\",\"source_observed_at\":\"2026-11-23T17:35:46.457Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1220\",\"task_ref\":\"ariaxhan/fleet-mcp#23\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:34:36.090Z\",\"updated\":\"2026-11-23T17:35:01.832Z\",\"source_observed_at\":\"2026-11-23T17:35:01.832Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1219\",\"task_ref\":\"ariaxhan/fleet-mcp#27\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:34:21.729Z\",\"updated\":\"2026-11-23T17:34:56.578Z\",\"source_observed_at\":\"2026-11-23T17:34:56.578Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1217\",\"task_ref\":\"ariaxhan/fleet-mcp#26\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:33:54.173Z\",\"updated\":\"2026-11-23T17:34:32.157Z\",\"source_observed_at\":\"2026-11-23T17:34:32.157Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1218\",\"task_ref\":\"ariaxhan/fleet-mcp#18\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:34:04.975Z\",\"updated\":\"2026-11-23T17:34:18.272Z\",\"source_observed_at\":\"2026-11-23T17:34:18.272Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1216\",\"task_ref\":\"ariaxhan/fleet-mcp#43\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:33:53.651Z\",\"updated\":\"2026-11-23T17:34:15.363Z\",\"source_observed_at\":\"2026-11-23T17:34:15.363Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1215\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"started\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:32:55.167Z\",\"updated\":\"2026-11-23T17:32:55.167Z\",\"source_observed_at\":\"2026-11-23T17:32:55.167Z\",\"last_event\":\"started\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1156\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:37:35.458Z\",\"updated\":\"2026-11-23T02:37:56.060Z\",\"source_observed_at\":\"2026-11-23T02:37:56.060Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1155\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:32:29.016Z\",\"updated\":\"2026-11-23T02:33:09.857Z\",\"source_observed_at\":\"2026-11-23T02:33:09.857Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1154\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:29:32.998Z\",\"updated\":\"2026-11-23T02:30:03.771Z\",\"source_observed_at\":\"2026-11-23T02:30:03.771Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1149\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:22:15.847Z\",\"updated\":\"2026-11-23T02:29:26.506Z\",\"source_observed_at\":\"2026-11-23T02:29:26.506Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1153\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:27:21.744Z\",\"updated\":\"2026-11-23T02:28:12.669Z\",\"source_observed_at\":\"2026-11-23T02:28:12.669Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1151\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:22:33.470Z\",\"updated\":\"2026-11-23T02:22:54.160Z\",\"source_observed_at\":\"2026-11-23T02:22:54.160Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1146\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:17:24.430Z\",\"updated\":\"2026-11-23T02:17:47.361Z\",\"source_observed_at\":\"2026-11-23T02:17:47.361Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1143\",\"task_ref\":\"ariaxhan/fleet-mcp#14\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:07:18.216Z\",\"updated\":\"2026-11-23T02:17:16.716Z\",\"source_observed_at\":\"2026-11-23T02:17:16.716Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1133\",\"task_ref\":\"ariaxhan/fleet-mcp#13\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:58.335Z\",\"updated\":\"2026-11-23T02:15:11.931Z\",\"source_observed_at\":\"2026-11-23T02:15:11.931Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1145\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:12:06.567Z\",\"updated\":\"2026-11-23T02:12:57.461Z\",\"source_observed_at\":\"2026-11-23T02:12:57.461Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1144\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:07:20.978Z\",\"updated\":\"2026-11-23T02:07:41.827Z\",\"source_observed_at\":\"2026-11-23T02:07:41.827Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1134\",\"task_ref\":\"ariaxhan/fleet-mcp#12\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:59.325Z\",\"updated\":\"2026-11-23T02:04:47.712Z\",\"source_observed_at\":\"2026-11-23T02:04:47.712Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1140\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:02:57.587Z\",\"updated\":\"2026-11-23T02:03:18.281Z\",\"source_observed_at\":\"2026-11-23T02:03:18.281Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1139\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T02:02:02.605Z\",\"updated\":\"2026-11-23T02:02:54.133Z\",\"source_observed_at\":\"2026-11-23T02:02:54.133Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1137\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:58:23.244Z\",\"updated\":\"2026-11-23T01:59:14.472Z\",\"source_observed_at\":\"2026-11-23T01:59:14.472Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1136\",\"task_ref\":\"ariaxhan/fleet-mcp#25\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:57:59.621Z\",\"updated\":\"2026-11-23T01:58:20.265Z\",\"source_observed_at\":\"2026-11-23T01:58:20.265Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1135\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:57:09.536Z\",\"updated\":\"2026-11-23T01:57:50.560Z\",\"source_observed_at\":\"2026-11-23T01:57:50.560Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1131\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:30.194Z\",\"updated\":\"2026-11-23T01:53:20.489Z\",\"source_observed_at\":\"2026-11-23T01:53:20.489Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1132\",\"task_ref\":\"ariaxhan/fleet-mcp#19\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:30.966Z\",\"updated\":\"2026-11-23T01:52:55.383Z\",\"source_observed_at\":\"2026-11-23T01:52:55.383Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1129\",\"task_ref\":\"ariaxhan/fleet-mcp#25\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:00.403Z\",\"updated\":\"2026-11-23T01:52:52.118Z\",\"source_observed_at\":\"2026-11-23T01:52:52.118Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1130\",\"task_ref\":\"ariaxhan/fleet-mcp#23\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:52:02.335Z\",\"updated\":\"2026-11-23T01:52:26.634Z\",\"source_observed_at\":\"2026-11-23T01:52:26.634Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1128\",\"task_ref\":\"ariaxhan/fleet-mcp#27\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:51:58.091Z\",\"updated\":\"2026-11-23T01:52:23.152Z\",\"source_observed_at\":\"2026-11-23T01:52:23.152Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1126\",\"task_ref\":\"ariaxhan/fleet-mcp#17\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:50:33.144Z\",\"updated\":\"2026-11-23T01:51:54.329Z\",\"source_observed_at\":\"2026-11-23T01:51:54.329Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1124\",\"task_ref\":\"ariaxhan/fleet-mcp#19\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:49:50.970Z\",\"updated\":\"2026-11-23T01:50:43.314Z\",\"source_observed_at\":\"2026-11-23T01:50:43.314Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1125\",\"task_ref\":\"ariaxhan/fleet-mcp#18\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:50:05.631Z\",\"updated\":\"2026-11-23T01:50:30.089Z\",\"source_observed_at\":\"2026-11-23T01:50:30.089Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1110\",\"task_ref\":\"ariaxhan/fleet-mcp#11\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:43:04.482Z\",\"updated\":\"2026-11-23T01:50:26.422Z\",\"source_observed_at\":\"2026-11-23T01:50:26.422Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1122\",\"task_ref\":\"ariaxhan/fleet-mcp#21\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:49:00.151Z\",\"updated\":\"2026-11-23T01:50:01.166Z\",\"source_observed_at\":\"2026-11-23T01:50:01.166Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1123\",\"task_ref\":\"ariaxhan/fleet-mcp#20\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:49:25.135Z\",\"updated\":\"2026-11-23T01:49:47.832Z\",\"source_observed_at\":\"2026-11-23T01:49:47.832Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1119\",\"task_ref\":\"ariaxhan/fleet-mcp#23\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:48:29.972Z\",\"updated\":\"2026-11-23T01:49:20.628Z\",\"source_observed_at\":\"2026-11-23T01:49:20.628Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1120\",\"task_ref\":\"ariaxhan/fleet-mcp#22\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:48:43.429Z\",\"updated\":\"2026-11-23T01:48:56.277Z\",\"source_observed_at\":\"2026-11-23T01:48:56.277Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1118\",\"task_ref\":\"ariaxhan/fleet-mcp#24\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:48:06.592Z\",\"updated\":\"2026-11-23T01:48:40.027Z\",\"source_observed_at\":\"2026-11-23T01:48:40.027Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1116\",\"task_ref\":\"ariaxhan/fleet-mcp#25\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:47:49.811Z\",\"updated\":\"2026-11-23T01:48:26.808Z\",\"source_observed_at\":\"2026-11-23T01:48:26.808Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1114\",\"task_ref\":\"ariaxhan/fleet-mcp#27\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:47:09.590Z\",\"updated\":\"2026-11-23T01:48:02.505Z\",\"source_observed_at\":\"2026-11-23T01:48:02.505Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1115\",\"task_ref\":\"ariaxhan/fleet-mcp#26\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:47:16.183Z\",\"updated\":\"2026-11-23T01:47:46.638Z\",\"source_observed_at\":\"2026-11-23T01:47:46.638Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1105\",\"task_ref\":\"ariaxhan/fleet-mcp#16\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:02.417Z\",\"updated\":\"2026-11-23T01:44:59.971Z\",\"source_observed_at\":\"2026-11-23T01:44:59.971Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1109\",\"task_ref\":\"ariaxhan/fleet-mcp#12\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:43:04.073Z\",\"updated\":\"2026-11-23T01:44:18.511Z\",\"source_observed_at\":\"2026-11-23T01:44:18.511Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1108\",\"task_ref\":\"ariaxhan/fleet-mcp#13\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:36.143Z\",\"updated\":\"2026-11-23T01:43:00.878Z\",\"source_observed_at\":\"2026-11-23T01:43:00.878Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1107\",\"task_ref\":\"ariaxhan/fleet-mcp#14\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:03.290Z\",\"updated\":\"2026-11-23T01:42:56.296Z\",\"source_observed_at\":\"2026-11-23T01:42:56.296Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1106\",\"task_ref\":\"ariaxhan/fleet-mcp#15\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:42:02.822Z\",\"updated\":\"2026-11-23T01:42:33.631Z\",\"source_observed_at\":\"2026-11-23T01:42:33.631Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1097\",\"task_ref\":\"ariaxhan/fleet-mcp#1\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:31:53.625Z\",\"updated\":\"2026-11-23T01:39:53.694Z\",\"source_observed_at\":\"2026-11-23T01:39:53.694Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1101\",\"task_ref\":\"ariaxhan/fleet-mcp#42\",\"status\":\"done\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:36:44.405Z\",\"updated\":\"2026-11-23T01:38:36.642Z\",\"source_observed_at\":\"2026-11-23T01:38:36.642Z\",\"last_event\":\"done\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1095\",\"task_ref\":\"ariaxhan/fleet-mcp#40\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:29:48.063Z\",\"updated\":\"2026-11-23T01:31:51.639Z\",\"source_observed_at\":\"2026-11-23T01:31:51.639Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1094\",\"task_ref\":\"ariaxhan/fleet-mcp#1\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T01:26:57.400Z\",\"updated\":\"2026-11-23T01:27:17.993Z\",\"source_observed_at\":\"2026-11-23T01:27:17.993Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"fresh\",\"freshness\":\"fresh\"}],\"has_more\":true,\"meta\":{\"source\":\"d1\",\"cache_status\":\"bypass\",\"served_at\":\"2026-11-23T17:45:34.993Z\"},\"correlation_id\":\"906cddb9-7b33-45c3-b421-dd536d541a35\"}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.370738+00:00",
+      "direction": "stdin",
+      "message": {
+        "method": "mcpServer/tool/call",
+        "params": {
+          "threadId": "01a20983-6002-7741-a180-f9691afd621f",
+          "server": "fleet",
+          "tool": "fleet_wait_for",
+          "arguments": {
+            "wait_id": "f409e75c-d442-4ccc-ac9b-485558c4d5ae",
+            "timeout_s": 1
+          },
+          "_meta": {
+            "progressToken": "codex-functional-progress"
+          }
+        },
+        "id": 4
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.370982+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.370927Z TRACE initialize:serve_inner: rmcp::service: new event evt=ProxyMessage(Request { request: CallToolRequest(Request { method: CallToolRequestMethod, params: CallToolRequestParams { meta: None, name: \"fleet_wait_for\", arguments: Some({\"wait_id\": String(\"f409e75c-d442-4ccc-ac9b-485558c4d5ae\"), \"timeout_s\": Number(1)}), input_responses: None, request_state: None }, extensions: Extensions }), id: Number(3), responder: Sender { inner: Some(Inner { state: State { is_complete: false, is_closed: false, is_rx_task_set: true, is_tx_task_set: false } }) } })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.569907+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.569771Z TRACE transport_worker{name=\"StreamableHttpClientWorker\"}: rmcp::transport::streamable_http_client: got new sse stream"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.569926+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.569788Z TRACE initialize:serve_inner: rmcp::service: new event evt=SendTaskResult(Request { id: Number(3), result: Ok(()) })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.569956+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.569811Z TRACE initialize:serve_inner: rmcp::service: new event evt=PeerMessage(Notification(JsonRpcNotification { jsonrpc: JsonRpcVersion2_0, notification: ProgressNotification(Notification { method: ProgressNotificationMethod, params: ProgressNotificationParam { progress_token: ProgressToken(Number(2)), progress: 0.0, total: Some(1.0), message: None, meta: None }, extensions: Extensions }) }))"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.569964+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.569823Z  INFO initialize:serve_inner: rmcp::service: received notification notification=ProgressNotification(Notification { method: ProgressNotificationMethod, params: ProgressNotificationParam { progress_token: ProgressToken(Number(2)), progress: 0.0, total: Some(1.0), message: None, meta: None }, extensions: Extensions })"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:35.569969+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:35.569840Z  INFO initialize:serve_inner: codex_rmcp_client::logging_client_handler: MCP server progress notification (token: ProgressToken(Number(2)), progress: 0, total: Some(1.0), message: None)"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815053+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.814893Z DEBUG rmcp::transport::streamable_http_client: got response, draining sse stream for connection reuse"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815077+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.814922Z TRACE initialize:serve_inner: rmcp::service: new event evt=PeerMessage(Response(JsonRpcResponse { jsonrpc: JsonRpcVersion2_0, id: Number(3), result: CallToolResult(CallToolResult { result_type: None, content: [Text(TextContent { text: \"{\\\"met\\\":false,\\\"final_state\\\":null,\\\"waited_s\\\":1.029,\\\"wait_id\\\":\\\"f409e75c-d442-4ccc-ac9b-485558c4d5ae\\\",\\\"next_cursor\\\":\\\"WzI1NCwiW1wiMTE2NjhkZmVlZWI1M2I0YzRjMTMwZjBiMGJmMmUzMzBcIixcInBsYXRmb3JtLXNwaWtlLTE1XCIsXCJwZXJzb25hbFwiLFwicGVyc29uYWwtZG9jc1wiLDEsW1wiYXJpYXhoYW4vZmxlZXQtbWNwXCJdXSJd.5c57e15f6b302b07c17cebe04de14f500d774252c379e6f3e89d1d0d9a32a778\\\",\\\"correlation_id\\\":\\\"5f30f367-c0f3-421c-b558-8aa745c66d1b\\\"}\", meta: None, annotations: None })], structured_content: None, is_error: Some(false), meta: None }) }))"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815141+00:00",
+      "direction": "stdout",
+      "message": {
+        "id": 4,
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"met\":false,\"final_state\":null,\"waited_s\":1.029,\"wait_id\":\"f409e75c-d442-4ccc-ac9b-485558c4d5ae\",\"next_cursor\":\"WzI1NCwiW1wiMTE2NjhkZmVlZWI1M2I0YzRjMTMwZjBiMGJmMmUzMzBcIixcInBsYXRmb3JtLXNwaWtlLTE1XCIsXCJwZXJzb25hbFwiLFwicGVyc29uYWwtZG9jc1wiLDEsW1wiYXJpYXhoYW4vZmxlZXQtbWNwXCJdXSJd.5c57e15f6b302b07c17cebe04de14f500d774252c379e6f3e89d1d0d9a32a778\",\"correlation_id\":\"5f30f367-c0f3-421c-b558-8aa745c66d1b\"}"
+            }
+          ],
+          "isError": false
+        }
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815573+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815483Z DEBUG rmcp::service: RunningService dropped without explicit close(). The connection will be closed asynchronously. For guaranteed cleanup, call close() or cancel() before dropping."
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815588+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815500Z  INFO initialize:serve_inner: rmcp::service: task cancelled"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815624+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815526Z DEBUG transport_worker{name=\"StreamableHttpClientWorker\"}: rmcp::transport::streamable_http_client: cancelled"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815660+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815539Z TRACE transport_worker{name=\"StreamableHttpClientWorker\"}: rmcp::transport::worker: close time.busy=3.76ms time.idle=2.33s"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815884+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815543Z DEBUG rmcp::transport::worker: worker quit with reason: Cancelled"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815891+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815548Z  INFO initialize:serve_inner: rmcp::service: serve finished quit_reason=Cancelled"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815897+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815564Z  INFO initialize:serve_inner: rmcp::service: close time.busy=412\u00b5s time.idle=2.08s"
+      }
+    },
+    {
+      "at": "2026-11-23T17:45:36.815901+00:00",
+      "direction": "stderr",
+      "message": {
+        "text": "2026-11-23T17:45:36.815566Z TRACE initialize: codex_rmcp_client::rmcp_client: close time.busy=143\u00b5s time.idle=2.34s"
+      }
+    }
+  ]
+}

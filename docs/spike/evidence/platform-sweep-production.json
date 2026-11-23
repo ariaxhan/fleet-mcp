@@ -1,0 +1,39 @@
+{
+  "target": "https://mcp.ariaxhan.com",
+  "commit": "49ff362a620c46f4988823fbda3935f1ca927066",
+  "environment": "production",
+  "observed_at": "2026-11-23T17:49:04.121Z",
+  "checks": [
+    {
+      "name": "liveness",
+      "pass": true,
+      "latency_ms": 288.375475
+    },
+    {
+      "name": "deployed-commit",
+      "pass": true,
+      "latency_ms": 76.50410999999997
+    },
+    {
+      "name": "mcp-unauthenticated",
+      "pass": true,
+      "latency_ms": 84.77993500000002
+    },
+    {
+      "name": "fixture-unauthorized",
+      "pass": true,
+      "latency_ms": 128.93923399999994
+    },
+    {
+      "name": "fixture-bindings",
+      "pass": true,
+      "latency_ms": 336.716222
+    },
+    {
+      "name": "core-unauthenticated",
+      "pass": true,
+      "latency_ms": 191.40237600000012
+    }
+  ],
+  "pass": true
+}

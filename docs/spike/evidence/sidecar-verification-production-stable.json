@@ -1,0 +1,84 @@
+{
+  "classification": "functional platform spike, not benchmark",
+  "environment": "production",
+  "observed_at": "2026-11-23T17:42:06.709Z",
+  "checks": [
+    {
+      "name": "identity_hit",
+      "status": 200,
+      "body": {
+        "cache_status": "hit",
+        "run_id": "6f633fab-8270-4e69-a003-ce1408ea9d8f",
+        "passed": true,
+        "identity": {
+          "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+          "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+          "repo": "ariaxhan/fleet-mcp",
+          "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+          "suite": "fleet-mcp-typecheck",
+          "suite_version": "1",
+          "tree_hash": "84201dbb68a9b8ae5e8f1813e47efb9a39b4fa5d50a04fde68763983e7595723"
+        },
+        "identity_hash": "243ab429bf7213b81920316d4cbdb1beddf996fc7650842573b4de9cd2b1b26a",
+        "evidence": {
+          "exit_code": 0,
+          "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "connector_status": "fresh",
+        "computed_at": "2026-11-23T17:42:07.461Z",
+        "source_observed_at": "2026-11-23T17:42:06.753Z",
+        "last_validated_at": "2026-11-23T17:42:06.753Z",
+        "served_at": "2026-11-23T17:42:08.173Z",
+        "correlation_id": "d80b1c26-0912-469d-9d3b-3c89ba65aeda"
+      }
+    }
+  ],
+  "first_sidecar_record": {
+    "run_id": "6f633fab-8270-4e69-a003-ce1408ea9d8f",
+    "identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "84201dbb68a9b8ae5e8f1813e47efb9a39b4fa5d50a04fde68763983e7595723",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    },
+    "source_observed_at": "2026-11-23T17:42:06.753Z",
+    "computed_at": "2026-11-23T17:42:07.461Z",
+    "passed": true,
+    "exit_code": 0,
+    "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "dependency_change": {
+    "path": "tests/verification.test.ts",
+    "pre_identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "a9baff42ba5e8d94b7597cb07283be0f916d6046f2c672223ba84ea01e4efeb0",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    },
+    "changed_identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "67d7da86f6ebd95432d5123ef2f74cf0d2f9befb179a14ecd1332b9bf31c8925",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    },
+    "restored_identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "a9baff42ba5e8d94b7597cb07283be0f916d6046f2c672223ba84ea01e4efeb0",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    }
+  },
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n+ actual - expected\n\n  {\n    environment_hash: '878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16',\n    lockfile_hash: '884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792',\n    repo: 'ariaxhan/fleet-mcp',\n    runtime_hash: '3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369',\n    suite: 'fleet-mcp-typecheck',\n    suite_version: '1',\n+   tree_hash: 'a9baff42ba5e8d94b7597cb07283be0f916d6046f2c672223ba84ea01e4efeb0'\n-   tree_hash: '84201dbb68a9b8ae5e8f1813e47efb9a39b4fa5d50a04fde68763983e7595723'\n  }\n"
+}

@@ -1,0 +1,39 @@
+{
+  "target": "https://staging-mcp.ariaxhan.com",
+  "commit": "49ff362a620c46f4988823fbda3935f1ca927066",
+  "environment": "staging",
+  "observed_at": "2026-11-23T17:48:30.202Z",
+  "checks": [
+    {
+      "name": "liveness",
+      "pass": true,
+      "latency_ms": 140.68835199999998
+    },
+    {
+      "name": "deployed-commit",
+      "pass": true,
+      "latency_ms": 46.87509499999999
+    },
+    {
+      "name": "mcp-unauthenticated",
+      "pass": true,
+      "latency_ms": 99.807308
+    },
+    {
+      "name": "fixture-unauthorized",
+      "pass": true,
+      "latency_ms": 70.07798000000003
+    },
+    {
+      "name": "fixture-bindings",
+      "pass": true,
+      "latency_ms": 226.22049600000003
+    },
+    {
+      "name": "core-unauthenticated",
+      "pass": true,
+      "latency_ms": 116.62727399999994
+    }
+  ],
+  "pass": true
+}

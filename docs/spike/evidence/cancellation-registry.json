@@ -1,0 +1,2658 @@
+{
+  "purpose": "Read-only observation of current Codex client cancellation; own token registrations only",
+  "observations": [
+    {
+      "at": "2026-11-23T17:49:13.368Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3253
+              },
+              "duration": 0.3253,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:14.011Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2317
+              },
+              "duration": 0.2317,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:14.672Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.305
+              },
+              "duration": 0.305,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:15.300Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3568
+              },
+              "duration": 0.3568,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:15.949Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2708
+              },
+              "duration": 0.2708,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:16.608Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3928
+              },
+              "duration": 0.3928,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:17.267Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2723
+              },
+              "duration": 0.2723,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:17.917Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2837
+              },
+              "duration": 0.2837,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:18.538Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2353
+              },
+              "duration": 0.2353,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:19.189Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.258
+              },
+              "duration": 0.258,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:19.808Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3176
+              },
+              "duration": 0.3176,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:20.445Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.28
+              },
+              "duration": 0.28,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:21.066Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3209
+              },
+              "duration": 0.3209,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:21.707Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.4024
+              },
+              "duration": 0.4024,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:22.360Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3783
+              },
+              "duration": 0.3783,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:22.988Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2804
+              },
+              "duration": 0.2804,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:23.622Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.315
+              },
+              "duration": 0.315,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:24.262Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3163
+              },
+              "duration": 0.3163,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:24.891Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2303
+              },
+              "duration": 0.2303,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:25.563Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.5653
+              },
+              "duration": 0.5653,
+              "changes": 0,
+              "last_row_id": 312,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:26.182Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2226
+              },
+              "duration": 0.2226,
+              "changes": 0,
+              "last_row_id": 2,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:26.855Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2856
+              },
+              "duration": 0.2856,
+              "changes": 0,
+              "last_row_id": 314,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:27.504Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              },
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3172
+              },
+              "duration": 0.3172,
+              "changes": 0,
+              "last_row_id": 315,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 4,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:28.126Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              },
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3307
+              },
+              "duration": 0.3307,
+              "changes": 0,
+              "last_row_id": 315,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 4,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:28.745Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              },
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2864
+              },
+              "duration": 0.2864,
+              "changes": 0,
+              "last_row_id": 315,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 4,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:29.373Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              },
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.4118
+              },
+              "duration": 0.4118,
+              "changes": 0,
+              "last_row_id": 3,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 4,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:30.022Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "fb082f53-0ced-40b6-b3bd-8802278944db",
+                "expires_at": 1795456270213
+              },
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3735
+              },
+              "duration": 0.3735,
+              "changes": 0,
+              "last_row_id": 317,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 4,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:30.682Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              },
+              {
+                "request_key": "[\"70ff182f-a7c7-46ec-8f24-f04b3ac1c7ac\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "70ff182f-a7c7-46ec-8f24-f04b3ac1c7ac",
+                "expires_at": 1795456290088
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.323
+              },
+              "duration": 0.323,
+              "changes": 0,
+              "last_row_id": 319,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 4,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:31.316Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              },
+              {
+                "request_key": "[\"70ff182f-a7c7-46ec-8f24-f04b3ac1c7ac\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "70ff182f-a7c7-46ec-8f24-f04b3ac1c7ac",
+                "expires_at": 1795456290088
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2732
+              },
+              "duration": 0.2732,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 4,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:31.948Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2925
+              },
+              "duration": 0.2925,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:32.578Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.326
+              },
+              "duration": 0.326,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:33.215Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.5695
+              },
+              "duration": 0.5695,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:33.882Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2421
+              },
+              "duration": 0.2421,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:34.517Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3273
+              },
+              "duration": 0.3273,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:35.158Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2434
+              },
+              "duration": 0.2434,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:35.873Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3083
+              },
+              "duration": 0.3083,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:36.506Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2872
+              },
+              "duration": 0.2872,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:37.142Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2578
+              },
+              "duration": 0.2578,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:37.757Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2695
+              },
+              "duration": 0.2695,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:38.368Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3567
+              },
+              "duration": 0.3567,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:39.068Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.284
+              },
+              "duration": 0.284,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:39.700Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2223
+              },
+              "duration": 0.2223,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:40.322Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3461
+              },
+              "duration": 0.3461,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:40.939Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2779
+              },
+              "duration": 0.2779,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:41.592Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.5124
+              },
+              "duration": 0.5124,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:42.230Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2758
+              },
+              "duration": 0.2758,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:42.871Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3457
+              },
+              "duration": 0.3457,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:43.512Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.4229
+              },
+              "duration": 0.4229,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:44.139Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2119
+              },
+              "duration": 0.2119,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:44.759Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2566
+              },
+              "duration": 0.2566,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:45.440Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3012
+              },
+              "duration": 0.3012,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:46.112Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.318
+              },
+              "duration": 0.318,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:46.794Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [
+              {
+                "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+                "cancelled": 0,
+                "session_id": "e8f2bfc2-aaf6-43b3-83c5-878a44117ff7",
+                "expires_at": 1795456286937
+              }
+            ],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.249
+              },
+              "duration": 0.249,
+              "changes": 0,
+              "last_row_id": 320,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 2,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:47.433Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2724
+              },
+              "duration": 0.2724,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:48.114Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2294
+              },
+              "duration": 0.2294,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:48.737Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2087
+              },
+              "duration": 0.2087,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:49.374Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.4275
+              },
+              "duration": 0.4275,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:49.994Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2507
+              },
+              "duration": 0.2507,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:50.618Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2232
+              },
+              "duration": 0.2232,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:51.257Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 1.8018
+              },
+              "duration": 1.8018,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:51.888Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3525
+              },
+              "duration": 0.3525,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:52.519Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2315
+              },
+              "duration": 0.2315,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:53.147Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3031
+              },
+              "duration": 0.3031,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:53.761Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2279
+              },
+              "duration": 0.2279,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:54.423Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.267
+              },
+              "duration": 0.267,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:55.070Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3163
+              },
+              "duration": 0.3163,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:55.688Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.436
+              },
+              "duration": 0.436,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:56.336Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.2802
+              },
+              "duration": 0.2802,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:56.968Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.3266
+              },
+              "duration": 0.3266,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    },
+    {
+      "at": "2026-11-23T17:49:57.609Z",
+      "status": 200,
+      "body": {
+        "result": [
+          {
+            "results": [],
+            "success": true,
+            "meta": {
+              "served_by": "v3-prod",
+              "served_by_region": "WNAM",
+              "served_by_colo": "SJC",
+              "served_by_primary": true,
+              "timings": {
+                "sql_duration_ms": 0.1894
+              },
+              "duration": 0.1894,
+              "changes": 0,
+              "last_row_id": 321,
+              "changed_db": false,
+              "size_after": 753664,
+              "rows_read": 1,
+              "rows_written": 0,
+              "total_attempts": 1
+            }
+          }
+        ],
+        "errors": [],
+        "messages": [],
+        "success": true
+      }
+    }
+  ]
+}

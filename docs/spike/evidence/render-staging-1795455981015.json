@@ -1,0 +1,414 @@
+{
+  "purpose": "functional render acceptance, not benchmark",
+  "origin": "https://staging-mcp.ariaxhan.com",
+  "observed_at": "2026-11-23T17:46:21.015Z",
+  "version": {
+    "commit": "47a503437439e9a8b0f6c43a972e99e9c381fa1a",
+    "build_time": "2026-11-23T17:45:13.138Z",
+    "environment": "staging",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+  },
+  "enqueue": [
+    {
+      "started": "2026-11-23T17:46:21.122Z",
+      "ended": "2026-11-23T17:46:21.482Z",
+      "status": 202,
+      "body": {
+        "render_id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "state": "queued",
+        "replayed": false,
+        "correlation_id": "80df578e-5cad-4fc8-bae8-c25eaf313668"
+      }
+    },
+    {
+      "started": "2026-11-23T17:46:21.122Z",
+      "ended": "2026-11-23T17:46:21.486Z",
+      "status": 202,
+      "body": {
+        "render_id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+        "state": "queued",
+        "replayed": false,
+        "correlation_id": "70814d8a-8a76-47db-9784-2ca316d5b8d7"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+      "observed_at": "2026-11-23T17:46:21.660Z",
+      "status": 200,
+      "body": {
+        "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+        "input": {
+          "idempotency_key": "platform-1795455981015-0",
+          "delay_ms": 3000,
+          "marker": "Fleet MCP platform proof 0"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:21.390Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:21.831Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "queued",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+      "observed_at": "2026-11-23T17:46:23.980Z",
+      "status": 200,
+      "body": {
+        "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+        "input": {
+          "idempotency_key": "platform-1795455981015-0",
+          "delay_ms": 3000,
+          "marker": "Fleet MCP platform proof 0"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:21.390Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:24.136Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "queued",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+      "observed_at": "2026-11-23T17:46:26.304Z",
+      "status": 200,
+      "body": {
+        "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+        "input": {
+          "idempotency_key": "platform-1795455981015-0",
+          "delay_ms": 3000,
+          "marker": "Fleet MCP platform proof 0"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:21.390Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:26.437Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "queued",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+      "observed_at": "2026-11-23T17:46:28.606Z",
+      "status": 200,
+      "body": {
+        "id": "a899be1f-343e-4596-aceb-b6171254c3ce",
+        "input": {
+          "idempotency_key": "platform-1795455981015-0",
+          "delay_ms": 3000,
+          "marker": "Fleet MCP platform proof 0"
+        },
+        "state": "complete",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:21.390Z",
+        "reused": false,
+        "session_id": "f9c35f55-ddae-4e29-95e6-84b623ede800",
+        "browser_version": "Chrome/152.0.7977.64",
+        "context_id": "2CB98F7BD2EAAF1E10555E612D929964",
+        "initial_cookie_count": 0,
+        "screenshot_hash": "72b932c6a2aac2ca3b87eded89f8cd1fe4506bca32c2883b2624fcdea01c2fac",
+        "screenshot_bytes": 8096,
+        "context_closed": true,
+        "completed_at": "2026-11-23T17:46:27.974Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": true,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:28.730Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:28.058Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:30.899Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:28.058Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:33.039Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:28.058Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:35.193Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "running",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:28.058Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": false,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    },
+    {
+      "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+      "observed_at": "2026-11-23T17:46:37.353Z",
+      "status": 200,
+      "body": {
+        "id": "d5f7e521-f304-4fb2-9315-b4bcb19ad83d",
+        "input": {
+          "idempotency_key": "platform-1795455981015-1",
+          "delay_ms": 7000,
+          "marker": "Fleet MCP platform proof 1"
+        },
+        "state": "complete",
+        "queued_at": "2026-11-23T17:46:21.340Z",
+        "started_at": "2026-11-23T17:46:28.058Z",
+        "reused": true,
+        "session_id": "f9c35f55-ddae-4e29-95e6-84b623ede800",
+        "browser_version": "Chrome/152.0.7977.64",
+        "context_id": "4904CBED9CA704A5BBECB18A4F95420B",
+        "initial_cookie_count": 0,
+        "screenshot_hash": "e0aa569a2bf2dab8990d362786fed843e13d05dd2b2d7bd7d76c6d8744a518ca",
+        "screenshot_bytes": 7788,
+        "context_closed": true,
+        "completed_at": "2026-11-23T17:46:35.595Z",
+        "concurrency_limit": 1,
+        "fixture": "fleet-mcp synthetic HTML",
+        "renderer": "fleet-spike-v1",
+        "ready": true,
+        "viewport": {
+          "width": 640,
+          "height": 480,
+          "device_scale_factor": 1
+        },
+        "readiness": {
+          "rule": "fixture status equals ready",
+          "timeout_ms": 30000
+        },
+        "full_page": false
+      }
+    }
+  ],
+  "pass": true
+}

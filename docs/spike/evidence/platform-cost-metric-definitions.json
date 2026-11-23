@@ -1,0 +1,109 @@
+{
+  "data": {
+    "__type": {
+      "fields": [
+        {
+          "description": "Sum of active time - microseconds",
+          "name": "activeTime"
+        },
+        {
+          "description": "Sum of CPU time - microseconds",
+          "name": "cpuTime"
+        },
+        {
+          "description": "Sum of Duration - GB*s, weighted by the configured Durable Object memory limit",
+          "name": "duration"
+        },
+        {
+          "description": "Sum of CPU exceeded errors",
+          "name": "exceededCpuErrors"
+        },
+        {
+          "description": "Sum of memory exceeded errors",
+          "name": "exceededMemoryErrors"
+        },
+        {
+          "description": "Sum of fatal internal server errors",
+          "name": "fatalInternalErrors"
+        },
+        {
+          "description": "Sum of incoming websocket messages",
+          "name": "inboundWebsocketMsgCount"
+        },
+        {
+          "description": "Sum of outbound websocket messages",
+          "name": "outboundWebsocketMsgCount"
+        },
+        {
+          "description": "Sum of rows read (by sqlite backed DOs)",
+          "name": "rowsRead"
+        },
+        {
+          "description": "Sum of rows written (by sqlite backed DOs)",
+          "name": "rowsWritten"
+        },
+        {
+          "description": "Sum of storage deletes (by non-sqlite backed DOs)",
+          "name": "storageDeletes"
+        },
+        {
+          "description": "Sum of storage reads - in 4KB units (by non-sqlite backed DOs)",
+          "name": "storageReadUnits"
+        },
+        {
+          "description": "Sum of storage writes - in 4KB units (by non-sqlite backed DOs)",
+          "name": "storageWriteUnits"
+        },
+        {
+          "description": "Sum of subrequests",
+          "name": "subrequests"
+        }
+      ]
+    },
+    "b": {
+      "fields": [
+        {
+          "description": "The date of the event",
+          "name": "date"
+        },
+        {
+          "description": "The date and time the event occurred",
+          "name": "datetime"
+        },
+        {
+          "description": "The date and time of the event truncated to fifteen minutes",
+          "name": "datetimeFifteenMinutes"
+        },
+        {
+          "description": "The date and time of the event truncated to five minutes",
+          "name": "datetimeFiveMinutes"
+        },
+        {
+          "description": "The date and time of the event truncated to the hour",
+          "name": "datetimeHour"
+        },
+        {
+          "description": "The date and time of the event truncated to the minute",
+          "name": "datetimeMinute"
+        },
+        {
+          "description": "Browser session duration in ms",
+          "name": "sessionDurationMs"
+        },
+        {
+          "description": "End date and time of the browser session",
+          "name": "sessionEnd"
+        },
+        {
+          "description": "Browser session ID",
+          "name": "sessionId"
+        },
+        {
+          "description": "Start date and time of the browser session",
+          "name": "sessionStart"
+        }
+      ]
+    }
+  },
+  "errors": null
+}

@@ -1,0 +1,190 @@
+{
+  "classification": "functional platform spike, not benchmark",
+  "environment": "production",
+  "observed_at": "2026-11-23T17:42:40.516Z",
+  "checks": [
+    {
+      "name": "identity_hit",
+      "status": 200,
+      "body": {
+        "cache_status": "hit",
+        "run_id": "e0d8947d-9f5a-4855-87db-031924030e24",
+        "passed": true,
+        "identity": {
+          "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+          "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+          "repo": "ariaxhan/fleet-mcp",
+          "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+          "suite": "fleet-mcp-typecheck",
+          "suite_version": "1",
+          "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628"
+        },
+        "identity_hash": "cc0d34e612a75bfa6e44e693c0455fcbd84c6e00b7b7edab6fac37c833cc7007",
+        "evidence": {
+          "exit_code": 0,
+          "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "connector_status": "fresh",
+        "computed_at": "2026-11-23T17:42:41.130Z",
+        "source_observed_at": "2026-11-23T17:42:40.553Z",
+        "last_validated_at": "2026-11-23T17:42:40.553Z",
+        "served_at": "2026-11-23T17:42:41.856Z",
+        "correlation_id": "d626d74e-85b5-48b7-a6d5-775ee2e67f70"
+      }
+    },
+    {
+      "name": "actual_dependency_mutation_miss",
+      "status": 200,
+      "body": {
+        "cache_status": "miss",
+        "reason": "identity_not_observed",
+        "identity_hash": "6a18de7f7c77ff05d85e348890c90d26966c5ca5afd30e8ad7b1ce7559a5327b",
+        "correlation_id": "faffd1e5-1da7-4eac-9f77-36ad2a27ed6a"
+      }
+    },
+    {
+      "name": "force_requires_distinct_rerun",
+      "status": 200,
+      "body": {
+        "cache_status": "miss",
+        "reason": "sidecar_rerun_required",
+        "identity_hash": "cc0d34e612a75bfa6e44e693c0455fcbd84c6e00b7b7edab6fac37c833cc7007",
+        "correlation_id": "c279bffd-931b-456f-b7ef-2161b700b4a7"
+      }
+    },
+    {
+      "name": "equal_identity_distinct_rerun_read",
+      "status": 200,
+      "body": {
+        "cache_status": "hit",
+        "run_id": "55c599b3-95d1-4840-9520-85a5568b60b4",
+        "passed": true,
+        "identity": {
+          "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+          "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+          "repo": "ariaxhan/fleet-mcp",
+          "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+          "suite": "fleet-mcp-typecheck",
+          "suite_version": "1",
+          "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628"
+        },
+        "identity_hash": "cc0d34e612a75bfa6e44e693c0455fcbd84c6e00b7b7edab6fac37c833cc7007",
+        "evidence": {
+          "exit_code": 0,
+          "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "connector_status": "fresh",
+        "computed_at": "2026-11-23T17:42:43.210Z",
+        "source_observed_at": "2026-11-23T17:42:42.640Z",
+        "last_validated_at": "2026-11-23T17:42:42.640Z",
+        "served_at": "2026-11-23T17:42:43.719Z",
+        "correlation_id": "5a2b74dc-a86f-41bf-8578-9829b1bf234a"
+      }
+    },
+    {
+      "name": "stale_green_denied",
+      "status": 409,
+      "body": {
+        "error": "freshness_unmet",
+        "source_observed_at": "2026-11-23T17:42:42.640Z",
+        "connector_status": "fresh",
+        "reason": "observation_stale",
+        "correlation_id": "efc20d46-2176-4d05-9b7d-0be82bca21eb"
+      }
+    },
+    {
+      "name": "explicit_stale_opt_in",
+      "status": 200,
+      "body": {
+        "cache_status": "stale",
+        "run_id": "55c599b3-95d1-4840-9520-85a5568b60b4",
+        "passed": true,
+        "identity": {
+          "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+          "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+          "repo": "ariaxhan/fleet-mcp",
+          "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+          "suite": "fleet-mcp-typecheck",
+          "suite_version": "1",
+          "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628"
+        },
+        "identity_hash": "cc0d34e612a75bfa6e44e693c0455fcbd84c6e00b7b7edab6fac37c833cc7007",
+        "evidence": {
+          "exit_code": 0,
+          "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "connector_status": "fresh",
+        "computed_at": "2026-11-23T17:42:43.210Z",
+        "source_observed_at": "2026-11-23T17:42:42.640Z",
+        "last_validated_at": "2026-11-23T17:42:42.640Z",
+        "served_at": "2026-11-23T17:42:44.228Z",
+        "correlation_id": "1cac15db-68fd-4276-9445-398735033adc"
+      }
+    }
+  ],
+  "first_sidecar_record": {
+    "run_id": "e0d8947d-9f5a-4855-87db-031924030e24",
+    "identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    },
+    "source_observed_at": "2026-11-23T17:42:40.553Z",
+    "computed_at": "2026-11-23T17:42:41.130Z",
+    "passed": true,
+    "exit_code": 0,
+    "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "dependency_change": {
+    "path": "tests/verification.test.ts",
+    "pre_identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    },
+    "changed_identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "7fa005b8d532ee60b636c3327882d0112242c0a1d46539aa2e1faaeabc1470a3",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    },
+    "restored_identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    }
+  },
+  "second_sidecar_record": {
+    "run_id": "55c599b3-95d1-4840-9520-85a5568b60b4",
+    "identity": {
+      "repo": "ariaxhan/fleet-mcp",
+      "suite": "fleet-mcp-typecheck",
+      "suite_version": "1",
+      "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628",
+      "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+      "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+      "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+    },
+    "source_observed_at": "2026-11-23T17:42:42.640Z",
+    "computed_at": "2026-11-23T17:42:43.210Z",
+    "passed": true,
+    "exit_code": 0,
+    "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "pass": true
+}

@@ -1,0 +1,626 @@
+{
+  "classification": "functional-probe usage, not a pilot or efficacy measurement",
+  "captured_at": "2026-11-23T17:48:04.511Z",
+  "window": {
+    "start": "2026-11-23T17:30:00Z",
+    "end": "2026-11-23T17:48:04.511Z"
+  },
+  "scope": "fleet-mcp staging and production only",
+  "queries": [
+    {
+      "label": "staging-workers",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){workersInvocationsAdaptive(limit:100,filter:{scriptName:\"fleet-mcp-staging\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{requests cpuTimeUs subrequests errors duration}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "workersInvocationsAdaptive": [
+                  {
+                    "sum": {
+                      "cpuTimeUs": 1197760,
+                      "duration": 19.9652165,
+                      "errors": 0,
+                      "requests": 180,
+                      "subrequests": 255
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-d1",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){d1AnalyticsAdaptiveGroups(limit:100,filter:{databaseId:\"9816fd64-4ae0-4321-86ea-f3741fd1c9fd\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{rowsRead rowsWritten readQueries writeQueries}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "d1AnalyticsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "readQueries": 757,
+                      "rowsRead": 9556,
+                      "rowsWritten": 1012,
+                      "writeQueries": 561
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-kv",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){kvOperationsAdaptiveGroups(limit:100,filter:{namespaceId:\"24e11b4cb55e4477a115ed96c41af6a8\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{actionType} sum{requests objectBytes}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "kvOperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "read"
+                    },
+                    "sum": {
+                      "objectBytes": 6914,
+                      "requests": 6
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-r2",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){r2OperationsAdaptiveGroups(limit:100,filter:{bucketName:\"fleet-mcp-staging-blobs\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{actionType} sum{requests responseBytes responseObjectSize}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "r2OperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "HeadObject"
+                    },
+                    "sum": {
+                      "requests": 4,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "PutObject"
+                    },
+                    "sum": {
+                      "requests": 8,
+                      "responseBytes": 0,
+                      "responseObjectSize": 35131
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "GetObject"
+                    },
+                    "sum": {
+                      "requests": 4,
+                      "responseBytes": 31768,
+                      "responseObjectSize": 31768
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "HeadBucket"
+                    },
+                    "sum": {
+                      "requests": 8,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-invocations",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsInvocationsAdaptiveGroups(limit:100,filter:{scriptName:\"fleet-mcp-staging\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{requests errors wallTime}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsInvocationsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "errors": 1,
+                      "requests": 18,
+                      "wallTime": 58207647
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-FLEET_WAIT",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"cf11c44fc1694dacad52ece0e6e12cfc\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 52930656,
+                      "cpuTime": 37341,
+                      "duration": 6.775123968,
+                      "rowsRead": 17,
+                      "rowsWritten": 4,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-HANDOFF_COORDINATOR",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"72ba33df527a4f8a832a0e1bc0944b39\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 8018,
+                      "cpuTime": 1309,
+                      "duration": 0.001026304,
+                      "rowsRead": 0,
+                      "rowsWritten": 0,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "staging-do-RENDER_HUB",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"b29ff8efb6044e0a8f5147a2aa5426af\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": []
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-workers",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){workersInvocationsAdaptive(limit:100,filter:{scriptName:\"fleet-mcp\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{requests cpuTimeUs subrequests errors duration}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "workersInvocationsAdaptive": [
+                  {
+                    "sum": {
+                      "cpuTimeUs": 719273,
+                      "duration": 16.313875499999998,
+                      "errors": 0,
+                      "requests": 101,
+                      "subrequests": 241
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-d1",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){d1AnalyticsAdaptiveGroups(limit:100,filter:{databaseId:\"9e789e32-274b-47a3-a478-b188f0d11549\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{rowsRead rowsWritten readQueries writeQueries}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "d1AnalyticsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "readQueries": 279,
+                      "rowsRead": 1868,
+                      "rowsWritten": 904,
+                      "writeQueries": 523
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-kv",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){kvOperationsAdaptiveGroups(limit:100,filter:{namespaceId:\"05893600c15340c183e8f79ea3fd71dd\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{actionType} sum{requests objectBytes}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "kvOperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "read"
+                    },
+                    "sum": {
+                      "objectBytes": 0,
+                      "requests": 4
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-r2",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){r2OperationsAdaptiveGroups(limit:100,filter:{bucketName:\"fleet-mcp-production-blobs\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{actionType} sum{requests responseBytes responseObjectSize}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "r2OperationsAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "actionType": "HeadObject"
+                    },
+                    "sum": {
+                      "requests": 4,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "PutObject"
+                    },
+                    "sum": {
+                      "requests": 4,
+                      "responseBytes": 0,
+                      "responseObjectSize": 3326
+                    }
+                  },
+                  {
+                    "dimensions": {
+                      "actionType": "HeadBucket"
+                    },
+                    "sum": {
+                      "requests": 7,
+                      "responseBytes": 0,
+                      "responseObjectSize": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-invocations",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsInvocationsAdaptiveGroups(limit:100,filter:{scriptName:\"fleet-mcp\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{requests errors wallTime}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsInvocationsAdaptiveGroups": [
+                  {
+                    "sum": {
+                      "errors": 0,
+                      "requests": 10,
+                      "wallTime": 89924
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-FLEET_WAIT",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"930e97b1b9804021a1eb0ed9116d8711\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 17478,
+                      "cpuTime": 5042,
+                      "duration": 0.002237184,
+                      "rowsRead": 0,
+                      "rowsWritten": 0,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-HANDOFF_COORDINATOR",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"6f74495860ff4100a7317fe90bed6227\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": [
+                  {
+                    "sum": {
+                      "activeTime": 70862,
+                      "cpuTime": 3663,
+                      "duration": 0.009070336,
+                      "rowsRead": 0,
+                      "rowsWritten": 0,
+                      "storageDeletes": 0,
+                      "storageReadUnits": 0,
+                      "storageWriteUnits": 0,
+                      "subrequests": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "production-do-RENDER_HUB",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){durableObjectsPeriodicGroups(limit:100,filter:{namespaceId:\"52af04961d2f4a24a79f1e4a10f1b988\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){sum{duration activeTime cpuTime rowsRead rowsWritten storageReadUnits storageWriteUnits storageDeletes subrequests}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "durableObjectsPeriodicGroups": []
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "fleet-browser-time-5f9809a6-110a-4362-b6f5-3640a7895f25",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){browserRenderingBrowserTimeUsageAdaptiveGroups(limit:100,filter:{sessionId:\"5f9809a6-110a-4362-b6f5-3640a7895f25\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{sessionId sessionStart sessionEnd} sum{totalSessionDurationMs}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "browserRenderingBrowserTimeUsageAdaptiveGroups": [
+                  {
+                    "dimensions": {
+                      "sessionEnd": "2026-11-23T17:42:23.764Z",
+                      "sessionId": "5f9809a6-110a-4362-b6f5-3640a7895f25",
+                      "sessionStart": "2026-11-23T17:41:11.426Z"
+                    },
+                    "sum": {
+                      "totalSessionDurationMs": 72338
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "fleet-browser-binding-5f9809a6-110a-4362-b6f5-3640a7895f25",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){browserRenderingBindingSessionsAdaptiveGroups(limit:100,filter:{sessionId:\"5f9809a6-110a-4362-b6f5-3640a7895f25\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{sessionId} avg{avgConcurrentSessions} max{maxConcurrentSessions} uniq{sessionIdCount}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "browserRenderingBindingSessionsAdaptiveGroups": [
+                  {
+                    "avg": {
+                      "avgConcurrentSessions": 1
+                    },
+                    "dimensions": {
+                      "sessionId": "5f9809a6-110a-4362-b6f5-3640a7895f25"
+                    },
+                    "max": {
+                      "maxConcurrentSessions": 1
+                    },
+                    "uniq": {
+                      "sessionIdCount": 1
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "fleet-browser-time-f9c35f55-ddae-4e29-95e6-84b623ede800",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){browserRenderingBrowserTimeUsageAdaptiveGroups(limit:100,filter:{sessionId:\"f9c35f55-ddae-4e29-95e6-84b623ede800\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{sessionId sessionStart sessionEnd} sum{totalSessionDurationMs}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "browserRenderingBrowserTimeUsageAdaptiveGroups": []
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    },
+    {
+      "label": "fleet-browser-binding-f9c35f55-ddae-4e29-95e6-84b623ede800",
+      "query": "{viewer{accounts(filter:{accountTag:\"ACCOUNT_ID\"}){browserRenderingBindingSessionsAdaptiveGroups(limit:100,filter:{sessionId:\"f9c35f55-ddae-4e29-95e6-84b623ede800\",datetime_geq:\"2026-11-23T17:30:00Z\",datetime_leq:\"2026-11-23T17:48:04.511Z\"}){dimensions{sessionId} avg{avgConcurrentSessions} max{maxConcurrentSessions} uniq{sessionIdCount}}}}}",
+      "status": 200,
+      "body": {
+        "data": {
+          "viewer": {
+            "accounts": [
+              {
+                "browserRenderingBindingSessionsAdaptiveGroups": []
+              }
+            ]
+          }
+        },
+        "errors": null
+      }
+    }
+  ],
+  "settings": [
+    {
+      "env": "staging",
+      "status": 200,
+      "durable_object_bindings": [
+        {
+          "name": "FLEET_WAIT",
+          "class_name": "FleetWait",
+          "namespace_id": "cf11c44fc1694dacad52ece0e6e12cfc"
+        },
+        {
+          "name": "HANDOFF_COORDINATOR",
+          "class_name": "HandoffCoordinator",
+          "namespace_id": "72ba33df527a4f8a832a0e1bc0944b39"
+        },
+        {
+          "name": "RENDER_HUB",
+          "class_name": "RenderCoordinator",
+          "namespace_id": "b29ff8efb6044e0a8f5147a2aa5426af"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "env": "production",
+      "status": 200,
+      "durable_object_bindings": [
+        {
+          "name": "FLEET_WAIT",
+          "class_name": "FleetWait",
+          "namespace_id": "930e97b1b9804021a1eb0ed9116d8711"
+        },
+        {
+          "name": "HANDOFF_COORDINATOR",
+          "class_name": "HandoffCoordinator",
+          "namespace_id": "6f74495860ff4100a7317fe90bed6227"
+        },
+        {
+          "name": "RENDER_HUB",
+          "class_name": "RenderCoordinator",
+          "namespace_id": "52af04961d2f4a24a79f1e4a10f1b988"
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "notes": []
+}

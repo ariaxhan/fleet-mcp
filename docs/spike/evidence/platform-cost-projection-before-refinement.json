@@ -1,0 +1,217 @@
+{
+  "classification": "planning scenario only, no pilot executed, no spend authorization",
+  "raw_source": "platform-cost-usage-2026-11-23T17-48-04-511Z.json",
+  "measured": {
+    "workers": {
+      "cpuTimeUs": 1917033,
+      "duration": 36.279092,
+      "errors": 0,
+      "requests": 281,
+      "subrequests": 496
+    },
+    "d1": {
+      "readQueries": 1036,
+      "rowsRead": 11424,
+      "rowsWritten": 1916,
+      "writeQueries": 1084
+    },
+    "do_invocations": {
+      "errors": 1,
+      "requests": 28,
+      "wallTime": 58297571
+    },
+    "do_periodic": {
+      "activeTime": 53027014,
+      "cpuTime": 47355,
+      "duration": 6.787457792,
+      "rowsRead": 17,
+      "rowsWritten": 4,
+      "storageDeletes": 0,
+      "storageReadUnits": 0,
+      "storageWriteUnits": 0,
+      "subrequests": 0
+    },
+    "kv_actions": [
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "read"
+        },
+        "sum": {
+          "objectBytes": 6914,
+          "requests": 6
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "read"
+        },
+        "sum": {
+          "objectBytes": 0,
+          "requests": 4
+        }
+      }
+    ],
+    "r2_actions": [
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "HeadObject"
+        },
+        "sum": {
+          "requests": 4,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      },
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "PutObject"
+        },
+        "sum": {
+          "requests": 8,
+          "responseBytes": 0,
+          "responseObjectSize": 35131
+        }
+      },
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "GetObject"
+        },
+        "sum": {
+          "requests": 4,
+          "responseBytes": 31768,
+          "responseObjectSize": 31768
+        }
+      },
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "HeadBucket"
+        },
+        "sum": {
+          "requests": 8,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "HeadObject"
+        },
+        "sum": {
+          "requests": 4,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "PutObject"
+        },
+        "sum": {
+          "requests": 4,
+          "responseBytes": 0,
+          "responseObjectSize": 3326
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "HeadBucket"
+        },
+        "sum": {
+          "requests": 7,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      }
+    ]
+  },
+  "rates": {
+    "checked_at": "2026-11-23T17:48:04.511Z",
+    "units": "USD paid-plan overage list rates, no included allowance deducted",
+    "sources": {
+      "workers": "https://developers.cloudflare.com/workers/platform/pricing/",
+      "d1": "https://developers.cloudflare.com/d1/platform/pricing/",
+      "kv": "https://developers.cloudflare.com/kv/platform/pricing/",
+      "r2": "https://developers.cloudflare.com/r2/pricing/",
+      "durable_objects": "https://developers.cloudflare.com/durable-objects/platform/pricing/",
+      "browser": "https://developers.cloudflare.com/browser-run/pricing/"
+    },
+    "workers_request_per_million": 0.3,
+    "workers_cpu_ms_per_million": 0.02,
+    "d1_read_per_million": 0.001,
+    "d1_write_per_million": 1,
+    "kv_read_per_million": 0.5,
+    "r2_class_a_per_million": 4.5,
+    "r2_class_b_per_million": 0.36,
+    "do_request_per_million": 0.15,
+    "do_gb_s_per_million": 12.5,
+    "do_sql_read_per_million": 0.001,
+    "do_sql_write_per_million": 1,
+    "browser_hour": 0.09,
+    "storage_gb_month": {
+      "d1": 0.75,
+      "kv": 0.5,
+      "r2": 0.015,
+      "durable_objects_sql": 0.2
+    },
+    "account_subscription_month": 5
+  },
+  "design": {
+    "future_task_executions": 20,
+    "functional_baskets_per_execution": 1,
+    "browser_sessions_per_execution": 2,
+    "browser_seconds_per_session": 60,
+    "retained_gb_month_per_store": 1,
+    "incremental_infrastructure_budget_target_usd": 25,
+    "account_subscription_allocation_months": 1,
+    "concurrent_browsers_cap": 1
+  },
+  "projected_units": {
+    "workers_requests": 5620,
+    "workers_cpu_ms": 38340.659999999996,
+    "d1_rows_read": 228480,
+    "d1_rows_written": 38320,
+    "kv_reads": 200,
+    "r2_class_a": 240,
+    "r2_class_b": 540,
+    "do_requests": 560,
+    "do_gb_s": 135.74915584,
+    "do_rows_read": 340,
+    "do_rows_written": 80,
+    "browser_hours": 0.6666666666666666
+  },
+  "linear_allocated_usd": {
+    "workers_requests": 0.001686,
+    "workers_cpu": 0.0007668131999999999,
+    "d1_reads": 0.00022847999999999998,
+    "d1_writes": 0.03832,
+    "kv_reads": 0.0001,
+    "r2_class_a": 0.00108,
+    "r2_class_b": 0.00019439999999999998,
+    "do_requests": 0.000084,
+    "do_duration": 0.0016968644479999997,
+    "do_reads": 3.4000000000000003e-7,
+    "do_writes": 0.00008,
+    "browser": 0.06,
+    "storage": 1.4649999999999999,
+    "subscription": 5
+  },
+  "linear_allocated_total_usd": 6.569236897648,
+  "limitations": [
+    "Adaptive analytics are a lagging capture, not a billing invoice or complete accounting.",
+    "Empty browser-session and render-namespace series are unavailable, not measured zero.",
+    "Future task work may differ from the functional basket; scenario does not prove an upper bound.",
+    "Browser time and storage are design assumptions, not measurements.",
+    "DO and R2 billing-unit rounding can exceed proportional allocation. Account-wide allowances were not inspected.",
+    "GitHub-specific upstream counts and model/Studio costs are UNPROVEN and excluded.",
+    "Budget is a design target, not user approval or a platform limit."
+  ]
+}

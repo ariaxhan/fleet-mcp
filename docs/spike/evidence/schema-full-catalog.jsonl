@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a2097e-b761-7463-b770-05f2838b7b4a"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"FLEET_SCHEMA_CALIBRATION_OK"}}
+{"type":"turn.completed","usage":{"input_tokens":24533,"cached_input_tokens":12288,"cache_write_input_tokens":0,"output_tokens":12,"reasoning_output_tokens":0}}

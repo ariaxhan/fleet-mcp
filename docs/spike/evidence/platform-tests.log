@@ -1,0 +1,279 @@
+
+> fleet-mcp@0.1.0 test
+> tsx --test tests/*.test.ts && python3 tests/migrations.py
+
+TAP version 13
+# (node:76315) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: publish, read, version history, feed and audit hold together
+ok 1 - publish, read, version history, feed and audit hold together
+  ---
+  duration_ms: 32.261167
+  type: 'test'
+  ...
+# Subtest: freshness requirement is enforced, never silently downgraded
+ok 2 - freshness requirement is enforced, never silently downgraded
+  ---
+  duration_ms: 3.763791
+  type: 'test'
+  ...
+# Subtest: auth denies by default and hides foreign resources
+ok 3 - auth denies by default and hides foreign resources
+  ---
+  duration_ms: 5.288792
+  type: 'test'
+  ...
+# Subtest: corrupt cached copy is never served
+ok 4 - corrupt cached copy is never served
+  ---
+  duration_ms: 2.864458
+  type: 'test'
+  ...
+# (node:76316) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: real SQL flight summary, latest observation, filters and permissions
+ok 5 - real SQL flight summary, latest observation, filters and permissions
+  ---
+  duration_ms: 23.813292
+  type: 'test'
+  ...
+# Subtest: scoped feed bootstrap, delta and tamper refusal
+ok 6 - scoped feed bootstrap, delta and tamper refusal
+  ---
+  duration_ms: 6.004958
+  type: 'test'
+  ...
+# Subtest: bounded timeout, restart resume and event-driven wake without client polling
+ok 7 - bounded timeout, restart resume and event-driven wake without client polling
+  ---
+  duration_ms: 59.217875
+  type: 'test'
+  ...
+# Subtest: repo wait catches events between calls after restart
+ok 8 - repo wait catches events between calls after restart
+  ---
+  duration_ms: 2.374333
+  type: 'test'
+  ...
+# Subtest: resume binds policy and repository scope, invalid payload fails closed
+ok 9 - resume binds policy and repository scope, invalid payload fails closed
+  ---
+  duration_ms: 2.074375
+  type: 'test'
+  ...
+# (node:76317) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: MCP session negotiation, discovery, protected calls and error framing
+ok 10 - MCP session negotiation, discovery, protected calls and error framing
+  ---
+  duration_ms: 26.68975
+  type: 'test'
+  ...
+# Subtest: MCP rejects foreign origins, credentials, session IDs and exposes capability-scoped discovery
+ok 11 - MCP rejects foreign origins, credentials, session IDs and exposes capability-scoped discovery
+  ---
+  duration_ms: 3.288083
+  type: 'test'
+  ...
+# Subtest: initialized notification accepted, D1 cancellation aborts active dispatch
+ok 12 - initialized notification accepted, D1 cancellation aborts active dispatch
+  ---
+  duration_ms: 104.423791
+  type: 'test'
+  ...
+# Subtest: progress token receives SSE notification then one final response
+ok 13 - progress token receives SSE notification then one final response
+  ---
+  duration_ms: 2.708292
+  type: 'test'
+  ...
+# Subtest: cancellation requires the original token even inside the same namespace
+ok 14 - cancellation requires the original token even inside the same namespace
+  ---
+  duration_ms: 129.944375
+  type: 'test'
+  ...
+# Subtest: separate client sessions isolate identical active request IDs and session lifecycle
+ok 15 - separate client sessions isolate identical active request IDs and session lifecycle
+  ---
+  duration_ms: 4.166167
+  type: 'test'
+  ...
+# Subtest: SSE disconnect aborts current observation without deleting transport session
+ok 16 - SSE disconnect aborts current observation without deleting transport session
+  ---
+  duration_ms: 2.786125
+  type: 'test'
+  ...
+# (node:76318) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# issue_observation_failed offline
+# issue_observation_failed offline
+# Subtest: issue snapshots, signed invalidation, missed-webhook reconciliation and freshness failure
+ok 17 - issue snapshots, signed invalidation, missed-webhook reconciliation and freshness failure
+  ---
+  duration_ms: 24.329875
+  type: 'test'
+  ...
+# Subtest: owned recall collection, store report, rank, telemetry, removal and stale refusal
+ok 18 - owned recall collection, store report, rank, telemetry, removal and stale refusal
+  ---
+  duration_ms: 4.30525
+  type: 'test'
+  ...
+# issue_observation_failed version_conflict
+# Subtest: a slower issue observation cannot replace a newer committed snapshot
+ok 19 - a slower issue observation cannot replace a newer committed snapshot
+  ---
+  duration_ms: 3.189
+  type: 'test'
+  ...
+# Subtest: older concurrent recall sync rolls back membership and freshness atomically
+ok 20 - older concurrent recall sync rolls back membership and freshness atomically
+  ---
+  duration_ms: 2.524666
+  type: 'test'
+  ...
+# issue_observation_failed version_conflict
+# Subtest: repeated invalidation during an observation has a distinct commit fence
+ok 21 - repeated invalidation during an observation has a distinct commit fence
+  ---
+  duration_ms: 3.255583
+  type: 'test'
+  ...
+# (node:76319) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: durable queued jobs complete after enqueue response, reuse browser, isolate and close contexts
+ok 22 - durable queued jobs complete after enqueue response, reuse browser, isolate and close contexts
+  ---
+  duration_ms: 29.680541
+  type: 'test'
+  ...
+# Subtest: capacity and fixture-only inputs are enforced, revocation cancels queued dispatch
+ok 23 - capacity and fixture-only inputs are enforced, revocation cancels queued dispatch
+  ---
+  duration_ms: 5.757209
+  type: 'test'
+  ...
+# Subtest: render failure closes context and an interrupted run is recorded as data loss
+ok 24 - render failure closes context and an interrupted run is recorded as data loss
+  ---
+  duration_ms: 2.547125
+  type: 'test'
+  ...
+# Subtest: total deadline bounds launch and releases queue ownership
+ok 25 - total deadline bounds launch and releases queue ownership
+  ---
+  duration_ms: 87.63425
+  type: 'test'
+  ...
+# Subtest: total deadline bounds context and releases queue ownership
+ok 26 - total deadline bounds context and releases queue ownership
+  ---
+  duration_ms: 88.205458
+  type: 'test'
+  ...
+# Subtest: total deadline bounds screenshot and releases queue ownership
+ok 27 - total deadline bounds screenshot and releases queue ownership
+  ---
+  duration_ms: 85.451958
+  type: 'test'
+  ...
+# Subtest: total deadline bounds r2 and releases queue ownership
+ok 28 - total deadline bounds r2 and releases queue ownership
+  ---
+  duration_ms: 84.273292
+  type: 'test'
+  ...
+# Subtest: total deadline bounds cleanup and releases queue ownership
+ok 29 - total deadline bounds cleanup and releases queue ownership
+  ---
+  duration_ms: 127.896459
+  type: 'test'
+  ...
+# Subtest: total deadline bounds browser-close and releases queue ownership
+ok 30 - total deadline bounds browser-close and releases queue ownership
+  ---
+  duration_ms: 128.63075
+  type: 'test'
+  ...
+# (node:76320) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: signed fleet events enter the change feed with observed-at times, once
+ok 31 - signed fleet events enter the change feed with observed-at times, once
+  ---
+  duration_ms: 26.904375
+  type: 'test'
+  ...
+# Subtest: unsigned, replayed, foreign and excluded pushes are refused
+ok 32 - unsigned, replayed, foreign and excluded pushes are refused
+  ---
+  duration_ms: 6.784
+  type: 'test'
+  ...
+# Subtest: probe and file hash are served with freshness, then labeled stale offline, never fabricated
+ok 33 - probe and file hash are served with freshness, then labeled stale offline, never fabricated
+  ---
+  duration_ms: 6.430375
+  type: 'test'
+  ...
+# Subtest: sidecar collects only allowlisted runner rows and guards paths
+ok 34 - sidecar collects only allowlisted runner rows and guards paths
+  ---
+  duration_ms: 3.105625
+  type: 'test'
+  ...
+# (node:76321) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: workspace identity, forced append-only reruns, source freshness and recovery
+ok 35 - workspace identity, forced append-only reruns, source freshness and recovery
+  ---
+  duration_ms: 13.502125
+  type: 'test'
+  ...
+# Subtest: sidecar spool survives offline delivery and drains on recovery
+ok 36 - sidecar spool survives offline delivery and drains on recovery
+  ---
+  duration_ms: 9.110625
+  type: 'test'
+  ...
+# Subtest: public liveness exposes no dependency details
+ok 37 - public liveness exposes no dependency details
+  ---
+  duration_ms: 9.668834
+  type: 'test'
+  ...
+# Subtest: version identifies scaffold without claiming a working protocol
+ok 38 - version identifies scaffold without claiming a working protocol
+  ---
+  duration_ms: 0.259
+  type: 'test'
+  ...
+# Subtest: unconfigured, missing and incorrect fixture credentials fail closed
+ok 39 - unconfigured, missing and incorrect fixture credentials fail closed
+  ---
+  duration_ms: 0.489917
+  type: 'test'
+  ...
+# Subtest: all ingestion and corpus routes remain disabled
+ok 40 - all ingestion and corpus routes remain disabled
+  ---
+  duration_ms: 0.680459
+  type: 'test'
+  ...
+# Subtest: dependency failure returns bounded error without secret details
+ok 41 - dependency failure returns bounded error without secret details
+  ---
+  duration_ms: 0.257625
+  type: 'test'
+  ...
+1..41
+# tests 41
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 805.008333
+PASS forward migrations and fixture namespace constraint

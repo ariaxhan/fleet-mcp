@@ -1,0 +1,23 @@
+{
+  "origin": "https://staging-mcp.ariaxhan.com",
+  "registered_at": "2026-11-23T17:42:00.969Z",
+  "version": {
+    "commit": "e6b5bd04029ce3aeb093203b98c2e3a1fbde66e4",
+    "build_time": "2026-11-23T17:39:11.158Z",
+    "environment": "staging",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+  },
+  "registration": {
+    "status": 200,
+    "body": {
+      "met": false,
+      "final_state": null,
+      "waited_s": 0.112,
+      "wait_id": "f409e75c-d442-4ccc-ac9b-485558c4d5ae",
+      "next_cursor": "WzI1NCwiW1wiMTE2NjhkZmVlZWI1M2I0YzRjMTMwZjBiMGJmMmUzMzBcIixcInBsYXRmb3JtLXNwaWtlLTE1XCIsXCJwZXJzb25hbFwiLFwicGVyc29uYWwtZG9jc1wiLDEsW1wiYXJpYXhoYW4vZmxlZXQtbWNwXCJdXSJd.5c57e15f6b302b07c17cebe04de14f500d774252c379e6f3e89d1d0d9a32a778",
+      "correlation_id": "88f98724-c99d-4634-aaf5-78b031ae30ca"
+    }
+  },
+  "disconnect": "AbortError"
+}

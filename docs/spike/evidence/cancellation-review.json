@@ -1,0 +1,29 @@
+{
+  "reviewer": "owning lane, independently observed remote D1 while Codex lane interrupted actual client",
+  "classification": "functional platform observation, not efficacy",
+  "raw_source": "cancellation-registry.json",
+  "client_source": "codex-contract-interrupt-1795456144952312000.json",
+  "client_interrupt_sent": "2026-11-23T17:49:11.066861Z",
+  "client_turn_interrupted": "2026-11-23T17:49:11.170717Z",
+  "client_process_disconnected": "2026-11-23T17:49:19.173Z",
+  "active_request_windows": [
+    {
+      "request_key": "[\"fb082f53-0ced-40b6-b3bd-8802278944db\",\"number\",3]",
+      "first_seen": "2026-11-23T17:49:13.368Z",
+      "last_seen": "2026-11-23T17:49:30.022Z"
+    },
+    {
+      "request_key": "[\"e8f2bfc2-aaf6-43b3-83c5-878a44117ff7\",\"number\",3]",
+      "first_seen": "2026-11-23T17:49:27.504Z",
+      "last_seen": "2026-11-23T17:49:46.794Z"
+    },
+    {
+      "request_key": "[\"70ff182f-a7c7-46ec-8f24-f04b3ac1c7ac\",\"number\",3]",
+      "first_seen": "2026-11-23T17:49:30.682Z",
+      "last_seen": "2026-11-23T17:49:31.316Z"
+    }
+  ],
+  "finding": "The interrupted call registration remained visible after client process disconnect, then disappeared near expected bounded completion. This timing does not independently identify the cleanup cause. Immediate remote cancellation and an explicit Codex MCP cancellation notification are not proven.",
+  "separate_server_proof": "independent-http-protocol.json proves an explicit protocol cancellation can end the current Worker observation while retaining wait_id.",
+  "verdict": "Codex remote cancellation remains UNPROVEN; current evidence is contrary to immediate disconnect cleanup."
+}

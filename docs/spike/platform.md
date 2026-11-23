@@ -1,5 +1,81 @@
 # Platform spike status (#15)
 
+Date: 2026-11-23. **NOT COMPLETE. No G1 GO or efficacy result.**
+
+The old model/access blockers are resolved. The owner supplied `gpt-6.1-sol`,
+low effort, and canonical custom domains. [Actual custom-domain responses](evidence/platform-custom-domains.json)
+verified the prior deployed revision. New bounded proof paths landed and were
+deployed through the documented staging-first pipeline. No previous effects or
+missing receipts were reconstructed. No pilot, benchmark treatment run,
+preregistration freeze or efficacy publication occurred.
+
+## Current acceptance disposition
+
+| Issue acceptance item | Disposition and actual evidence |
+|---|---|
+| Codex MCP contract | PARTIAL. Actual Codex negotiation, calls, expected tool error, resource read, progress, sessions and fresh-process reconnect observed. [Client summary](evidence/codex-contract-summary.json), [owning client run](evidence/codex-contract-initial-1795456348649251000.json), [resource/error captures](token-accounting.md). Cancellation is not green: see below. |
+| Wait across disconnect, deployment and timeout | OBSERVED. [Registration/disconnect before deployment](evidence/wait-across-deploy.json) at the earlier revision, then [owning Codex resume](evidence/codex-contract-reconnect-1795456351256745000.json) after deployment returns the identical wait_id. Actual client timeout and immediate fresh-process resume are archived in the client summary. Earlier real event-driven wake receipts remain in [fleet.md](fleet.md). |
+| Browser lifecycle and queued completion | OBSERVED on real staging and production Browser Rendering. [Staging receipt](evidence/render-staging-1795455981015.json), [production receipt](evidence/render-production-1795456318306.json). Concurrent submissions complete serially after initiating requests end, reuse a browser session, create distinct empty-cookie contexts and close them. Retained PNG hashes match remote bytes; the owning lane opened the actual PNG. Total-deadline repair followed independent review; regression tests are producer checks only. |
+| Named suite through sidecar | OBSERVED. Fixed `fleet-mcp-typecheck` executed locally by the registered sidecar, signed uploads and actual serving results in [controlled production capture](evidence/sidecar-verification-production-controlled.json). |
+| Verification-cache adversaries | OBSERVED on serving surface. Controlled production capture proves actual temporary dependency-byte mutation miss, exact restored identity, distinct UUID reruns under equal identity, forced miss and actual elapsed-age stale-green rejection. [Independent live verifier](evidence/independent-verification.json) reproduced serving behavior without implementing the suite. Earlier concurrent-write failures remain archived, never relabeled as passes. |
+| Pinned-model capture/schema accounting | OBSERVED with explicit limits. [Token accounting](token-accounting.md) links exact model/effort, CLI version, raw fields and serialized-schema payload accounting. Deferred provider framing/first-use overhead is not inferred from the initial-input null delta. The formal benchmark pin remains #33. |
+| Staging and production fixture sweeps | OBSERVED. [Staging](evidence/platform-sweep-staging.json), [production](evidence/platform-sweep-production.json), [Actions receipt](evidence/platform-ci.json) identify the deployed source revision and green fixture checks. Manual deployment collided with CI creating the same namespace; [failure retained](evidence/platform-manual-deploy-collision.log.json), CI completed deployment without recreating or deleting state. |
+| Measured workload costing/budget | Defined planning workload costed from scoped actual component telemetry, including provider browser duration, with explicit missing-meter reserves. [Cost assessment](cost.md) links raw usage, exact arithmetic, sources and stated budget. This is a projection, not a pilot result, invoice or spending limit. |
+
+## Cancellation: the unresolved platform claim
+
+The actual client accepts `turn/interrupt`, ends its turn and enforces its tool
+call deadline. The captured RMCP trace does not show an outgoing MCP
+`notifications/cancelled`. [Independent remote registry observations](evidence/cancellation-review.json)
+show the interrupted request still registered after the Codex process disconnects,
+and later disappeared near its expected bounded completion. The reason for that
+disappearance is inferred, not independently identified. This contradicts an immediate server-cleanup
+claim. New `request.signal` and stream-cancel hooks are defensive code, not live
+proof of that claim.
+
+[Independent live HTTP protocol use](evidence/independent-http-protocol.json)
+proves that an explicit MCP cancellation notification does terminate the current
+Worker observation and preserves the durable application wait. It does not prove
+that this Codex version sends that notification. Earlier stateless request-ID
+collisions were repaired with token/policy-bound opaque sessions; actual immediate
+fresh-process reconnect after a timed-out call now succeeds. These are separate
+observations and must remain separate.
+
+Execution-plan Section 3.2 says a failed proof requires a design revision or an
+explicit scope narrowing. The owning Unified MCP Server chat must decide whether
+the supported contract can be client interruption plus bounded server observation,
+with explicit wire cancellation remaining UNPROVEN, or whether an upstream Codex
+change is required. This lane cannot turn a negative observation into a green
+criterion. The existing G1 NO-GO is unchanged; #43 owns re-review.
+
+## Scope incident
+
+A broad credential-related search inside this repository displayed fragments of
+its historical mixed-corpus baseline files. Those fragments included excluded-domain
+aggregates. This violated the read boundary even though no excluded checkout,
+issue or MCP server was contacted. No such content was ingested, uploaded,
+served, used as a functional fixture or used to derive these measurements.
+This attempt cannot certify an unbroken read boundary. The subsequent corpus
+reads and captures were explicitly scoped to personal fleet-mcp sources. The
+owning gate review must account for this incident; it must not be omitted from a
+clean-scope claim. Future searches must name files/directories whose contents
+have already been confirmed personal-only, excluding historical baseline inputs.
+
+## Verification limits and reproduction
+
+- `npm test`, `npm run typecheck`, `npm run build`: passed producer regression
+  checks, archived [test output](evidence/platform-tests.log) and [bundle output](evidence/platform-build.log.json).
+- The owning lane used actual Codex, HTTP reads, remote D1 observations and the
+  deployed renderer. The independent verifier used real cache-serving results.
+  None of these receipts grants the owning G1 verdict or runner issue closure.
+- [Deployment and capture commands](../deploy.md),
+  [pre-probe functional protocol](protocol.md), [raw artifact manifest](evidence/platform-manifest.json).
+- Signing initially failed because this process lacked SSH_AUTH_SOCK. Reusing the
+  existing launchd agent socket exposed the already loaded signing key. Signing
+  was not disabled; commits landed only through `runner land`.
+
+# Historical attempt: 2026-11-22
+
 Date: 2026-11-22 PT. **NOT COMPLETE. No G1 GO.**
 
 Scope boundary: personal-project corpus only. No excluded data, repos, issues,

@@ -1,0 +1,266 @@
+{
+  "classification": "planning scenario only, no pilot executed, no spend authorization",
+  "raw_source": "platform-cost-usage-2026-11-23T17-49-19-111Z.json",
+  "measured": {
+    "workers": {
+      "cpuTimeUs": 1926164,
+      "duration": 36.317693375,
+      "errors": 0,
+      "requests": 291,
+      "subrequests": 498
+    },
+    "d1": {
+      "readQueries": 1196,
+      "rowsRead": 11971,
+      "rowsWritten": 2206,
+      "writeQueries": 1293
+    },
+    "do_invocations": {
+      "errors": 1,
+      "requests": 30,
+      "wallTime": 58306064
+    },
+    "do_periodic": {
+      "activeTime": 53035321,
+      "cpuTime": 50700,
+      "duration": 6.788521088,
+      "rowsRead": 17,
+      "rowsWritten": 4,
+      "storageDeletes": 0,
+      "storageReadUnits": 0,
+      "storageWriteUnits": 0,
+      "subrequests": 0
+    },
+    "kv_actions": [
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "read"
+        },
+        "sum": {
+          "objectBytes": 6914,
+          "requests": 6
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "read"
+        },
+        "sum": {
+          "objectBytes": 0,
+          "requests": 4
+        }
+      }
+    ],
+    "r2_actions": [
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "HeadObject"
+        },
+        "sum": {
+          "requests": 4,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      },
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "PutObject"
+        },
+        "sum": {
+          "requests": 8,
+          "responseBytes": 0,
+          "responseObjectSize": 35131
+        }
+      },
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "GetObject"
+        },
+        "sum": {
+          "requests": 5,
+          "responseBytes": 39556,
+          "responseObjectSize": 39556
+        }
+      },
+      {
+        "environment": "staging",
+        "dimensions": {
+          "actionType": "HeadBucket"
+        },
+        "sum": {
+          "requests": 8,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "HeadObject"
+        },
+        "sum": {
+          "requests": 4,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "PutObject"
+        },
+        "sum": {
+          "requests": 4,
+          "responseBytes": 0,
+          "responseObjectSize": 3326
+        }
+      },
+      {
+        "environment": "production",
+        "dimensions": {
+          "actionType": "HeadBucket"
+        },
+        "sum": {
+          "requests": 7,
+          "responseBytes": 0,
+          "responseObjectSize": 0
+        }
+      }
+    ],
+    "browser_sessions": [
+      {
+        "dimensions": {
+          "sessionEnd": "2026-11-23T17:42:23.764Z",
+          "sessionId": "5f9809a6-110a-4362-b6f5-3640a7895f25",
+          "sessionStart": "2026-11-23T17:41:11.426Z"
+        },
+        "sum": {
+          "totalSessionDurationMs": 72338
+        }
+      }
+    ],
+    "render_active_sources": "platform-cost-render-timings.json",
+    "render_max_basket_active_ms": 14121
+  },
+  "rates": {
+    "checked_at": "2026-11-23T17:49:19.111Z",
+    "units": "USD paid-plan overage list rates, no included allowance deducted",
+    "sources": {
+      "workers": "https://developers.cloudflare.com/workers/platform/pricing/",
+      "d1": "https://developers.cloudflare.com/d1/platform/pricing/",
+      "kv": "https://developers.cloudflare.com/kv/platform/pricing/",
+      "r2": "https://developers.cloudflare.com/r2/pricing/",
+      "durable_objects": "https://developers.cloudflare.com/durable-objects/platform/pricing/",
+      "browser": "https://developers.cloudflare.com/browser-run/pricing/"
+    },
+    "workers_request_per_million": 0.3,
+    "workers_cpu_ms_per_million": 0.02,
+    "d1_read_per_million": 0.001,
+    "d1_write_per_million": 1,
+    "kv_read_per_million": 0.5,
+    "r2_class_a_per_million": 4.5,
+    "r2_class_b_per_million": 0.36,
+    "do_request_per_million": 0.15,
+    "do_gb_s_per_million": 12.5,
+    "do_sql_read_per_million": 0.001,
+    "do_sql_write_per_million": 1,
+    "browser_hour": 0.09,
+    "storage_gb_month": {
+      "d1": 0.75,
+      "kv": 0.5,
+      "r2": 0.015,
+      "durable_objects_sql": 0.2
+    },
+    "account_subscription_month": 5
+  },
+  "design": {
+    "future_task_executions": 20,
+    "functional_baskets_per_execution": 1,
+    "browser_sessions_per_execution": 2,
+    "browser_seconds_per_session": 104.121,
+    "retained_gb_month_per_store": 1,
+    "incremental_infrastructure_budget_target_usd": 25,
+    "account_subscription_allocation_months": 1,
+    "concurrent_browsers_cap": 1,
+    "browser_idle_reserve_s": 60,
+    "browser_deadline_reserve_s": 30,
+    "reserve_source": "src/render.ts RENDER_IDLE_MS and RENDER_TIMEOUT_MS",
+    "render_do_memory_gb": 0.128,
+    "render_do_reserved_seconds_per_execution": 120,
+    "calibration_requests_per_execution": 1,
+    "model_cost_basis": "API-equivalent Fast list rates, not subscription invoice attribution",
+    "upstream_api_reserve_usd": 1,
+    "upstream_call_budget": 9960,
+    "upstream_basis": "Treat every Worker subrequest as an upstream API call for throughput planning; not an attributed GitHub count. Existing GitHub REST integration requires no additional metered service provisioned by this forecast.",
+    "upstream_rate_source": "https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api",
+    "total_budget_target_usd": 30,
+    "browser_concurrency_extra_browser_month_reserve": 1,
+    "browser_extra_concurrent_browser_month_usd": 2
+  },
+  "projected_units": {
+    "workers_requests": 5820,
+    "workers_cpu_ms": 38523.28,
+    "d1_rows_read": 239420,
+    "d1_rows_written": 44120,
+    "kv_reads": 200,
+    "r2_class_a": 240,
+    "r2_class_b": 560,
+    "do_requests": 600,
+    "do_gb_s": 442.97042176,
+    "do_rows_read": 340,
+    "do_rows_written": 80,
+    "browser_hours": 1.1569
+  },
+  "linear_allocated_usd": {
+    "workers_requests": 0.001746,
+    "workers_cpu": 0.0007704656,
+    "d1_reads": 0.00023942,
+    "d1_writes": 0.04412,
+    "kv_reads": 0.0001,
+    "r2_class_a": 0.00108,
+    "r2_class_b": 0.00020159999999999997,
+    "do_requests": 8.999999999999999e-05,
+    "do_duration": 0.005537130272,
+    "do_reads": 3.4000000000000003e-07,
+    "do_writes": 8e-05,
+    "browser": 0.104121,
+    "storage": 1.4649999999999999,
+    "subscription": 5,
+    "model": 0.6810719999999999,
+    "upstream_reserve": 1
+  },
+  "linear_allocated_total_usd": 8.304157955872,
+  "limitations": [
+    "Projection of a defined functional workload, not a measured pilot or billed invoice.",
+    "Browser duration measured for the older exact fleet session; newer exact session and RenderHub periodic series may lag. Explicit code-derived reserves cover these in the scenario.",
+    "Future task workloads may differ; measured active render time is not a billed-session lower bound or upper bound.",
+    "Storage retention volume, upstream reserve and concurrency cap are design assumptions. No account-wide allowance inspection.",
+    "API-equivalent model allocation uses actual calibration tokens and Fast list rates; the Codex subscription invoice is not inferred.",
+    "Total budget is a stated planning target. No experiment or additional spending was initiated."
+  ],
+  "model": {
+    "id": "gpt-6.1-sol",
+    "source": "token-calibration-metadata.json",
+    "rates_source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+    "input_usd_per_million": 2,
+    "cached_input_usd_per_million": 0.1,
+    "output_usd_per_million": 10,
+    "fast_multiplier": 2,
+    "usage": {
+      "input_tokens": 20137,
+      "cached_input_tokens": 12288,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 10,
+      "reasoning_output_tokens": 0,
+      "total_tokens": 20147
+    },
+    "uncached_input_tokens": 7849,
+    "standard_calibration_cost_usd": 0.017026799999999998
+  },
+  "rounding_adjusted_scenario_usd": 27.8072492256
+}

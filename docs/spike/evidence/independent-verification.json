@@ -1,0 +1,449 @@
+{
+  "classification": "independent live functional verification, not benchmark",
+  "verifier": "browser lane, did not implement verification or sidecar",
+  "staging": {
+    "source_receipt": "docs/spike/evidence/sidecar-verification-staging.json",
+    "checks": [
+      {
+        "name": "same_identity",
+        "observed_at": "2026-11-23T17:41:27.343Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 100000
+        },
+        "status": 409,
+        "body": {
+          "error": "freshness_unmet",
+          "source_observed_at": "2026-11-23T17:38:54.924Z",
+          "connector_status": "stale",
+          "reason": "connector_offline",
+          "correlation_id": "a4e866ec-cbc9-4013-b1d6-e893c91daa7a"
+        }
+      },
+      {
+        "name": "stale_denied",
+        "observed_at": "2026-11-23T17:41:27.672Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 0
+        },
+        "status": 409,
+        "body": {
+          "error": "freshness_unmet",
+          "source_observed_at": "2026-11-23T17:38:54.924Z",
+          "connector_status": "stale",
+          "reason": "connector_offline",
+          "correlation_id": "974c3831-35e2-46fb-a62e-0027ec32d922"
+        }
+      },
+      {
+        "name": "changed_dependency",
+        "observed_at": "2026-11-23T17:41:27.889Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "43edc10df57e30467ed66e889d535043795031b97c2aafa2a8b0ee0c2f971252",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 100000
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "miss",
+          "reason": "identity_not_observed",
+          "identity_hash": "bc726b764e2e22f469d3ca43d5db8c768efb5444aae0fab34e27cd0b2530eb0e",
+          "correlation_id": "de9f91b6-ff79-454e-8a6d-13aa15fb5225"
+        }
+      },
+      {
+        "name": "force",
+        "observed_at": "2026-11-23T17:41:28.089Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "force": true
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "miss",
+          "reason": "sidecar_rerun_required",
+          "identity_hash": "5649017cd8df6f0154bfcdc296214431d81eb8d17288f59c594a98d8c4695111",
+          "correlation_id": "a543a4cc-574b-4a65-8d0e-ab3959a0cc88"
+        }
+      },
+      {
+        "name": "explicit_stale",
+        "observed_at": "2026-11-23T17:41:28.245Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 0,
+          "allow_stale": true
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "stale",
+          "run_id": "861d7e3b-1a9b-4c41-982b-3d62b94699cb",
+          "passed": true,
+          "identity": {
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "repo": "ariaxhan/fleet-mcp",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1"
+          },
+          "identity_hash": "5649017cd8df6f0154bfcdc296214431d81eb8d17288f59c594a98d8c4695111",
+          "evidence": {
+            "exit_code": 0,
+            "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "connector_status": "stale",
+          "computed_at": "2026-11-23T17:38:55.612Z",
+          "source_observed_at": "2026-11-23T17:38:54.924Z",
+          "last_validated_at": "2026-11-23T17:38:54.924Z",
+          "served_at": "2026-11-23T17:41:28.291Z",
+          "correlation_id": "98ef7dd1-c109-4824-9bba-b7c3e1d4ba93"
+        }
+      },
+      {
+        "name": "same_identity_after_real_heartbeat",
+        "observed_at": "2026-11-23T17:42:46.433Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 100000
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "hit",
+          "run_id": "861d7e3b-1a9b-4c41-982b-3d62b94699cb",
+          "passed": true,
+          "identity": {
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "repo": "ariaxhan/fleet-mcp",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1"
+          },
+          "identity_hash": "5649017cd8df6f0154bfcdc296214431d81eb8d17288f59c594a98d8c4695111",
+          "evidence": {
+            "exit_code": 0,
+            "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "connector_status": "fresh",
+          "computed_at": "2026-11-23T17:38:55.612Z",
+          "source_observed_at": "2026-11-23T17:38:54.924Z",
+          "last_validated_at": "2026-11-23T17:38:54.924Z",
+          "served_at": "2026-11-23T17:42:46.559Z",
+          "correlation_id": "4c3d9974-dbf4-4d43-bed5-aa53b6144a6a"
+        }
+      },
+      {
+        "name": "same_identity_after_independent_heartbeat",
+        "observed_at": "2026-11-23T17:43:14.990Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 100000
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "hit",
+          "run_id": "861d7e3b-1a9b-4c41-982b-3d62b94699cb",
+          "passed": true,
+          "identity": {
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "repo": "ariaxhan/fleet-mcp",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1"
+          },
+          "identity_hash": "5649017cd8df6f0154bfcdc296214431d81eb8d17288f59c594a98d8c4695111",
+          "evidence": {
+            "exit_code": 0,
+            "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "connector_status": "fresh",
+          "computed_at": "2026-11-23T17:38:55.612Z",
+          "source_observed_at": "2026-11-23T17:38:54.924Z",
+          "last_validated_at": "2026-11-23T17:38:54.924Z",
+          "served_at": "2026-11-23T17:43:15.179Z",
+          "correlation_id": "0ef8fe8c-93c3-4414-9b6a-06d6f47280e6"
+        }
+      },
+      {
+        "name": "stale_denied",
+        "observed_at": "2026-11-23T17:43:15.333Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 0
+        },
+        "status": 409,
+        "body": {
+          "error": "freshness_unmet",
+          "source_observed_at": "2026-11-23T17:38:54.924Z",
+          "connector_status": "fresh",
+          "reason": "observation_stale",
+          "correlation_id": "80c3fe30-94c3-4eed-8fdc-5b74df90a7de"
+        }
+      },
+      {
+        "name": "changed_dependency",
+        "observed_at": "2026-11-23T17:43:15.525Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "43edc10df57e30467ed66e889d535043795031b97c2aafa2a8b0ee0c2f971252",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 100000
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "miss",
+          "reason": "identity_not_observed",
+          "identity_hash": "bc726b764e2e22f469d3ca43d5db8c768efb5444aae0fab34e27cd0b2530eb0e",
+          "correlation_id": "1f4431d1-33fa-42f0-8542-e8a9f56a34aa"
+        }
+      },
+      {
+        "name": "force",
+        "observed_at": "2026-11-23T17:43:15.741Z",
+        "url": "https://staging-mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "3ff392f47104012a068c380b3e7979f6225b7d76e362c6b63273e338dc8479f1",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "force": true
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "miss",
+          "reason": "sidecar_rerun_required",
+          "identity_hash": "5649017cd8df6f0154bfcdc296214431d81eb8d17288f59c594a98d8c4695111",
+          "correlation_id": "6c0e5287-44c0-48ff-b7d3-060a5d128fad"
+        }
+      }
+    ],
+    "independent_heartbeat": {
+      "started_at": "2026-11-23T17:43:14.191Z",
+      "command": "node sidecar/fleet-sidecar.mjs once staging",
+      "stdout": "{\"pushed\":4,\"accepted\":4,\"duplicate\":0,\"dropped_for_boundary\":0,\"rejected\":0,\"received_at\":\"2026-11-23T17:43:14.616Z\",\"correlation_id\":\"01489c8b-e82f-4381-aab0-27654a0c4bd6\"}\n"
+    },
+    "pass": true
+  },
+  "production": {
+    "source_receipt": "docs/spike/evidence/sidecar-verification-production-controlled.json",
+    "independent_heartbeat": {
+      "started_at": "2026-11-23T17:43:15.891Z",
+      "command": "node sidecar/fleet-sidecar.mjs once production",
+      "stdout": "{\"pushed\":5,\"accepted\":5,\"duplicate\":0,\"dropped_for_boundary\":0,\"rejected\":0,\"received_at\":\"2026-11-23T17:43:16.329Z\",\"correlation_id\":\"2d96b61b-22c3-4382-92a6-949323de8b3d\"}\n"
+    },
+    "checks": [
+      {
+        "name": "same_identity_after_independent_heartbeat",
+        "observed_at": "2026-11-23T17:43:16.968Z",
+        "url": "https://mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 100000
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "hit",
+          "run_id": "55c599b3-95d1-4840-9520-85a5568b60b4",
+          "passed": true,
+          "identity": {
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "repo": "ariaxhan/fleet-mcp",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628"
+          },
+          "identity_hash": "cc0d34e612a75bfa6e44e693c0455fcbd84c6e00b7b7edab6fac37c833cc7007",
+          "evidence": {
+            "exit_code": 0,
+            "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "connector_status": "fresh",
+          "computed_at": "2026-11-23T17:42:43.210Z",
+          "source_observed_at": "2026-11-23T17:42:42.640Z",
+          "last_validated_at": "2026-11-23T17:42:42.640Z",
+          "served_at": "2026-11-23T17:43:17.077Z",
+          "correlation_id": "b8197afc-dd77-47b0-baf4-92e05515adfb"
+        }
+      },
+      {
+        "name": "stale_denied",
+        "observed_at": "2026-11-23T17:43:17.224Z",
+        "url": "https://mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 0
+        },
+        "status": 409,
+        "body": {
+          "error": "freshness_unmet",
+          "source_observed_at": "2026-11-23T17:42:42.640Z",
+          "connector_status": "fresh",
+          "reason": "observation_stale",
+          "correlation_id": "79e7a93f-fd9a-4e7d-940a-369e7a724950"
+        }
+      },
+      {
+        "name": "changed_dependency",
+        "observed_at": "2026-11-23T17:43:17.443Z",
+        "url": "https://mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "7fa005b8d532ee60b636c3327882d0112242c0a1d46539aa2e1faaeabc1470a3",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "max_age_s": 100000
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "miss",
+          "reason": "identity_not_observed",
+          "identity_hash": "6a18de7f7c77ff05d85e348890c90d26966c5ca5afd30e8ad7b1ce7559a5327b",
+          "correlation_id": "29e683df-f4e7-4f6e-a3c6-e2ee6b48649d"
+        }
+      },
+      {
+        "name": "force",
+        "observed_at": "2026-11-23T17:43:17.773Z",
+        "url": "https://mcp.ariaxhan.com/v1/verify/check",
+        "input": {
+          "identity": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck",
+            "suite_version": "1",
+            "tree_hash": "73a0e7635a93ee0e4bd971c9a9d4bf31e1fef053dc1a270e6b944a4dff221628",
+            "lockfile_hash": "884058a26786caaf9941635ef95fff03b497240e97758280ffa9002cedaf0792",
+            "runtime_hash": "3f8604f5e345bceb492587e607e901e1163c0171610dfbedc4bb6d43192f8369",
+            "environment_hash": "878f07450d6d72fe93dd9e362e1552925853a013bbe067e8618c634090cd5c16"
+          },
+          "force": true
+        },
+        "status": 200,
+        "body": {
+          "cache_status": "miss",
+          "reason": "sidecar_rerun_required",
+          "identity_hash": "cc0d34e612a75bfa6e44e693c0455fcbd84c6e00b7b7edab6fac37c833cc7007",
+          "correlation_id": "d23fb9ce-83b6-496d-a636-f6eba60d74c2"
+        }
+      }
+    ],
+    "pass": true
+  },
+  "observed_at": "2026-11-23T17:43:17.937Z",
+  "pass": true,
+  "limitations": [
+    "Independent verifier queried producer-supplied recorded computation identities, did not repeat source mutation or named suite execution.",
+    "Initial staging stale heartbeat rejection retained, fresh hit confirmed after real collector recovery."
+  ]
+}
