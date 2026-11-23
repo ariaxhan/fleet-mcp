@@ -48,6 +48,13 @@ with explicit wire cancellation remaining UNPROVEN, or whether an upstream Codex
 change is required. This lane cannot turn a negative observation into a green
 criterion. The existing G1 NO-GO is unchanged; #43 owns re-review.
 
+Owner-side disposition was requested through Muse inbox ask
+`20261123T175658Z_e11d08` on 2026-11-23, after landing the concrete evidence.
+It requests the cancellation-contract and scope-incident disposition, not more
+runner work or permission to claim G1. The old model/access replies were
+acknowledged only after independent verification of their resolved surfaces.
+Do not duplicate this pending ask or repeat landed probes merely to poll it.
+
 ## Scope incident
 
 A broad credential-related search inside this repository displayed fragments of
