@@ -1,0 +1,70 @@
+{
+  "checked_at": "2026-11-23T01:09:29.063684+00:00",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "1f11d37bc32a7871edff53219768c6dfdba52305\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "--name-only",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": ".nexus.py\nAGENTS.md\nPRD.md\nREADME.md\n_meta/chronicles/2026/fleet-mcp-2026-11-22-001.md\ndocs/baseline/analysis/agentdb-recent-findings.md\ndocs/baseline/analysis/antigravity-findings.md\ndocs/baseline/analysis/codex-findings.md\ndocs/baseline/report.md\ndocs/execution-plan.md\ndocs/report/build.py\ndocs/report/index.html\ndocs/reviews/claude-review.md\ndocs/reviews/codex-review.md\npaper/skeleton.md\nreport/report.md\nreport/scored.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "tag",
+        "--list"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--tags",
+        "origin"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "docs/report/build.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "docs/report/index.html matches report/scored.json\n",
+      "stderr": ""
+    }
+  ],
+  "scored_sha256": "7f546b909e8283e6f97b52ef0705fa391d37b3df559dace38e8e03f838ef3cde",
+  "missing_paths": [
+    "benchmark/preregistration.md",
+    "benchmark/preregistration.json",
+    "benchmark/metrics.md",
+    "benchmark/README.md",
+    "benchmark/harness",
+    "benchmark/tasks",
+    "benchmark/data/index.jsonl",
+    "benchmark/data/DATA_INDEX.md",
+    "benchmark/data/ledger.md"
+  ]
+}
