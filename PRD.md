@@ -160,6 +160,8 @@ Grounded in: 27.3% repeat prompt bytes; the L042 block pasted 8 times (97,622 re
 | `exemplar_what_changed` | `name`, `since_version` (required) | Diff between versions (unified diff for text, field-level diff for JSON), `from_version`, `to_version` | Diffs computed on demand and cached per (name, from, to) triple |
 | `exemplar_get_doc` | `path`, `version` (optional) | Canonical doc body plus version metadata (same shape as `exemplar_get`) | Same as `exemplar_get` |
 | `exemplar_list_docs` | none | The canonical doc set (the docs every lane re-establishes from scratch today) | List cached 60 s |
+| `doc_what_changed` | `path`, `since_version` (required) | Diff between canonical doc versions, same shape as `exemplar_what_changed` | Cached per (path, from, to) triple |
+| `ref_publish` | `kind` (exemplar or doc), `name` or `path`, `body`, `base_version` (required for an update, absent for a create; mismatch returns `version_conflict`), `change_note` (required), `source` (repo plus commit SHA and path, must be allowlisted), `idempotency_key` | New `version`, `content_hash`, `change_feed_seq` | Write-through: body to R2, metadata to D1, then the current-version pointer; invalidates the pointer and list caches; requires `write` scope plus the `publish` grant (Section 3.3) |
 
 Resources: `exemplar://<name>`, `doc://<path>`. A resource read returns the current version; a resource read with a version fragment returns that version.
 
@@ -170,8 +172,9 @@ Grounded in: 36 recall plus 55 learn calls via bash across 12 Claude sessions; r
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
 | `recall_query` | `query` (string, required), `limit` (default 8), `kinds` (optional filter: failure, gotcha, pattern, preference) | Ranked lessons: `id` (stable), `content_hash`, `kind`, `what`, `why`, `hit_count`, `last_recalled`, `source_db`, `score`, plus `total_matches` | Query results cached 5 min per normalized query; recall also bumps `hit_count` in D1 (the usage telemetry the bash path never produced) |
-| `recall_learn` | `kind` (required), `what` (required), `why` (required), `source` (optional: session or task ref) | Created lesson `id`, `version`, `content_hash` | Write-through: D1 first, then the agentdb store sync (Section 4.4); invalidates matching query caches |
+| `recall_learn` | `kind` (required), `what` (required), `why` (required), `source` (optional: session or task ref), `supersedes` (optional: lesson id to correct; keeps that id and creates a new version, Section 3.3), `idempotency_key` | Created or corrected lesson `id`, `version`, `content_hash` | Write-through: D1 first, then the agentdb store sync (Section 4.4); invalidates matching query caches |
 | `recall_list_lessons` | `topic` (required), `limit` (default 20) | Lessons on the topic, newest first, with hit counts | Cached 5 min per topic |
+| `recall_quarantine` | `lesson_id`, `action` (flag, quarantine, release), `reason` (required), `idempotency_key` | Lesson `id`, new `status` (active, flagged, quarantined), `version` | Write-through; a quarantined lesson is excluded from `recall_query` results (an `admin` token may pass `include_quarantined: true`); a flagged lesson is still served, marked `flagged: true`; invalidates query caches. `flag` needs `write`; `quarantine` and `release` need `admin` |
 | `recall_store_health` | none | Per-DB: schema version, drift flags, learnings count, never-recalled count and rate, errors-table last-write timestamp, coverage gaps (queries with 0 results in the last 7 days, e.g. the empty "workday" recall), top failure classes by keyword | Computed on demand, cached 1 h; the health snapshot itself is versioned and stored |
 
 Resources: `lesson://<id>`. One namespace for every lesson kind (failure, gotcha, pattern, preference); the kind is a field, not a scheme, so a gotcha is `lesson://<id>` with `kind: gotcha`.
@@ -187,9 +190,11 @@ Grounded in: 500 gh calls across 12 Claude sessions; 314 gh calls with 142 extra
 | `issue_get` | `repo` (required, must be allowlisted), `number` (required), `include_comments` (default true, capped at the last 8, matching the runner brief shape), `since_version` (optional) | Structured issue: title, body, state, labels, assignees, linked PRs, comments, `version`, `content_hash`, `github_updated_at` | Cached in KV with a 60 s TTL; served stale-while-revalidate when GitHub is slow; invalidated immediately by the GitHub webhook (Section 7), with reconciliation covering missed webhooks (below) |
 | `issue_list` | `query` (structured filters: repo, state, labels, assignee, updated-since), `limit` (default 50) | Matching issues, summary fields only (no bodies), `total_count` | Cached 60 s per normalized query |
 | `issue_what_changed` | `repo`, `cursor` (optional; opaque scoped feed cursor, Section 3) | New, closed, updated, and commented issues since `since`, with per-issue field-level change summaries, plus `next_cursor` and the repo's `covered_through` high-water mark; replaces the poll loop plus seen-file | Reads the change feed; no upstream call when the feed covers the window |
+| `pr_get` | `repo` (allowlisted), `number`, `since_version` (optional) | Structured PR: title, body, state, base and head refs, head SHA, merge state, review decisions, check-run summary, changed files (paths plus additions and deletions), linked issues, `version`, `content_hash` | Same caching, webhook invalidation, and reconciliation as `issue_get`; snapshots persisted in D1 like issue snapshots |
+| `pr_list` | `repo`, `state` (optional), `head` or `base` (optional), `limit` (default 30) | PR summaries, no bodies | Cached 60 s per normalized query |
 | `issue_comment` | `repo`, `number`, `body`, `idempotency_key` (required) | Created comment id and URL | Write-through to GitHub; invalidates the issue cache. Structured write, replacing `gh api -f body=@file`, which the report records as writing a 14-byte literal body (Report Part 1, agentdb) |
 
-Resources: `issue://<repo>/<number>`, `pr://<repo>/<number>`.
+Resources: `issue://<repo>/<number>`, `pr://<repo>/<number>` (read handler is `pr_get`; `issue_what_changed` reports PR events in the same feed).
 
 **Webhook reconciliation.** Webhooks are an accelerator, not the source of completeness. The server keeps a coverage high-water mark per allowlisted repo (`covered_through`: the latest GitHub `updated_at` for which the feed is known complete). A periodic reconciliation fetch lists issues and PRs updated since `covered_through`, appends any change event the webhooks missed, and only then advances the mark. `issue_what_changed` answers from the feed only when the requested window ends at or before `covered_through`; otherwise it runs a reconciliation fetch first, or returns the result marked `coverage: partial` with `covered_through`. The reconciliation interval is a design parameter set in the build phase and recorded in the deploy config, not a measured number.
 
@@ -201,9 +206,13 @@ Grounded in: 91 single-line pointer prompts each naming a brief file twice; 4 le
 |---|---|---|---|
 | `brief_get` | `id` (required), `version` (optional), `include_runs` (default true, last 5 runs) | Parsed brief: goal, inputs, acceptance criteria, constraints, plus run history (each run: outcome, duration, worker, summary, lesson links) | Immutable by version; current-version pointer cached 60 s |
 | `brief_create` | `goal`, `inputs`, `acceptance`, `idempotency_key` (required), `constraints`, `source_ref` (optional: issue or task ref) | Created brief `id`, `version` | Write-through to D1; new brief starts at version 1 |
-| `brief_record_run` | `brief_id`, `idempotency_key`, `outcome` (done, failed, blocked, machine, preempted, retired), `summary`, `duration_s`, `lesson_ids` (optional) | Updated brief version, run record id | Write-through; invalidates the brief cache; appends to the change feed so Handoff sees it |
+| `brief_record_run` | `brief_id`, `brief_version` (required: the version the run executed against), `idempotency_key`, `outcome` (done, failed, blocked, machine, preempted, retired), `summary`, `duration_s`, `lesson_ids` (optional), `bench_session` (optional: benchmark session tag, Section 3.3) | Run record id `n` and its `run://<brief-id>/<n>` URI; the brief `version` is unchanged | Write-through to the run table; appends to the change feed so Handoff sees it; never versions the brief body and never invalidates the immutable brief-version cache (only the run-history slice of `brief_get`) |
+| `brief_revise` | `brief_id`, `base_version` (required; optimistic concurrency, mismatch returns `version_conflict`), `changes` (goal, inputs, acceptance, constraints), `change_note` (required), `idempotency_key` | New brief `version`, `content_hash` | Write-through to D1 plus R2 body; the only operation that creates a brief version; appends to the change feed |
+| `brief_list` | `state` (optional: open, done, retired), `source_ref` (optional), `limit` (default 50), `cursor` (optional) | Briefs with id, current version, goal summary, last run outcome, `next_cursor` | Cached 60 s |
 
 Resources: `brief://<id>`, `run://<brief-id>/<n>`.
+
+Revisions and runs are separate records (R4). A brief version changes only through `brief_revise`. A run is an append-only row in the run table, addressed as `run://<brief-id>/<n>`, pinned to the brief version it executed against, and announced on the change feed; recording a run never creates a brief version. `brief_get(since_version)` therefore diffs only the brief body, and run history is read through `include_runs` or `handoff_get_run_history`.
 
 ### 3.2 State side
 
@@ -216,6 +225,7 @@ Grounded in: 179 sqlite3 queries, 131 wait/listen calls, 311 sleep commands, 500
 | `fleet_get_flight` | `id` (required) | Flight state: status, started, updated, worker, task ref, progress, last event | Live read from the state store; cached 10 s; `fetched_at` always present so the agent knows the freshness |
 | `fleet_list_flights` | `state` (optional filter), `limit` (default 50) | Flights matching the filter, summary fields | Cached 10 s |
 | `fleet_get_job` | `id` (required) | Job state: status, attempts, last outcome, next scheduled run | Live read; cached 10 s |
+| `fleet_list_jobs` | `state` (optional filter), `limit` (default 50), `cursor` (optional) | Jobs matching the filter, summary fields, `next_cursor` | Cached 10 s |
 | `fleet_what_changed_since` | `cursor` (optional; opaque scoped feed cursor, Section 3) | New, closed, updated, and failed flights and jobs since the cursor, including issue state changes from the change feed, plus `next_cursor` | Reads the change feed; no polling |
 | `fleet_wait_for` | `condition` (structured: flight id plus target state, or job id plus target state, or change-feed pattern), or `wait_id` (resume an existing wait); `timeout_s` (bounded: the cap is set below the Codex client's measured tool-call timeout, measured in the Phase 1 spike, criterion 4) | Returns when the condition is met or the bounded call window ends: `met` (bool), `final_state`, `waited_s`, `wait_id`, and `next_cursor`. On `met: false` the caller re-calls with the same `wait_id`; the wait's state lives in the Durable Object, so it survives client disconnects, client timeouts, and deploys, and an event that lands between calls is not lost | Server-side wait via Durable Object; the agent makes one bounded call (or a short chain of resumed calls) instead of sleeping and re-querying. Verified against the Codex client before the build (Phase 1 spike, S5 and S6). This replaces the 311 sleep commands and the 37-invocation poll loop (Report Part 1, Claude) |
 | `fleet_preflight` | `account` (required), `needs` (list of required credentials and checkouts, e.g. claude-oauth, codex-oauth, github, wrangler, repo checkout path) | Per-credential status: `live`, `expired`, `missing`, or `unknown`, with `checked_at` and a non-sensitive detail string (never a token, never a secret). Overall `go` / `no_go` | One rule: credential liveness is probed live on every call and never served from cache, so there is no `fresh` parameter. A dead credential fails the preflight instead of killing an attempt mid-run |
@@ -230,6 +240,7 @@ Grounded in: 32 Antigravity lanes re-reporting verification; 327 Playwright laun
 |---|---|---|---|
 | `verify_check` | `file` (path or content hash), `checks` (list: json-parse, em-dash-scan, copy-slot-scan, md5, plus named check suites), `force` (default false) | Pass/fail per check, evidence (counts, first failing line, hashes), `file_hash`, `run_id` | Content-addressed: if the file hash and check list match a stored result, return the cached result with `cache_status: hit` and the original evidence; run only on a miss or `force: true` |
 | `verify_get` | `file_hash` (required), `checks` (optional filter) | Stored verification result, or `not_found` | Direct cache read |
+| `verify_list_checks` | none | Every named check and check suite `verify_check` accepts: name, version, description, input kinds | Static per deploy; cached until the next deploy |
 | `verify_deploy_status` | `deployment` (provider plus deployment id or URL) | `readyState`, build status, deploy URL, `checked_at`; catches a failed build before the verify step (the readyState lesson) | Cached 30 s; a failed build result is cached 5 min to stop re-probing |
 | `verify_live_check` | `url` (required), `expected_text` (required) | `found` (bool), HTTP status, response excerpt, `checked_at` | Cached 60 s per (url, expected_text) |
 | `verify_render` | `url` (required), `idempotency_key` (required), `viewport` (default 390x844 phone width, matching the fleet's phone-screen verification habit), `state` (optional: signed-in, locale, theme), `full_page` (default false) | `render_id`, screenshot (as an MCP image content part or an R2 URL, caller chooses), `content_hash` of the rendered page, `rendered_at` | Content-addressed: same URL plus viewport plus state plus content hash returns the cached render; a new render runs only when the content hash changed. Warm browser pool via Cloudflare Browser Rendering |
@@ -254,6 +265,37 @@ Grounded in: 7 Antigravity duplicate-task pairs; one documented 80-minute run sp
 Resources: `session://<id>`, `checkpoint://<session>/<n>`.
 
 Design note: checkpoints are written by the agent at natural boundaries (after each completed step, before any long wait, before any risky operation) and by the runner on worker death when a last state is recoverable. The server never fabricates a checkpoint. A session with no checkpoint resumes to its brief plus run history, which is still strictly better than today's fresh-issue-fetch plus full prompt rebuild.
+
+### 3.3 Control-plane operations (R4)
+
+Every operation the system needs beyond agent reads has exactly one surface. Surfaces: **public tool** (MCP tool in Appendix A, token-scoped), **resource read** (MCP resource handler), **admin endpoint** (HTTPS route under `/admin/*` on the same Worker, `admin` scope only, never listed as an MCP tool), **connector operation** (server-internal: webhook receiver, cron trigger, queue consumer, or an upstream connector the Worker runs itself), **CLI** (`fleetctl`, a thin client in this repo that calls admin endpoints with Aria's admin token from her own secret store). Every write on every surface takes an `idempotency_key` and appends to the change feed.
+
+| Operation | Surface | Name | Notes |
+|---|---|---|---|
+| Publish or update an exemplar or canonical doc | Public tool, plus CLI for bulk | `ref_publish`; `fleetctl ref publish <path>...` (loops over `POST /admin/ref/publish`) | The write path. Optimistic concurrency on `base_version`; source must be an allowlisted personal repo plus commit SHA |
+| Seed the corpus | CLI | `fleetctl ref seed --manifest corpus-seed.json` | Publishes every entry of a committed manifest (name or path, source repo, commit SHA, SHA-256); idempotent per entry; the manifest and resulting version hashes are frozen in `bench-prereg-v1` so the benchmark starts from a known corpus (closes Claude G7 preregistration ask) |
+| Retire an exemplar or doc | Admin endpoint | `POST /admin/ref/retire` | Tombstone version (Section 4.3); never deletes history |
+| Revise a brief | Public tool | `brief_revise` | Only operation that creates a brief version |
+| Record a run | Public tool | `brief_record_run` | Run row plus `run://` plus change feed; never versions the brief body (Section 3.1, Brief) |
+| List briefs | Public tool | `brief_list` | |
+| Flag a lesson | Public tool | `recall_quarantine(action: flag)` | `write` scope |
+| Quarantine or release a lesson | Public tool | `recall_quarantine(action: quarantine or release)` | `admin` scope |
+| Correct a lesson | Public tool | `recall_learn` with `supersedes: <lesson_id>` | Keeps the stable id, new `content_hash` and version (Section 4.3); prior text stays readable by version |
+| Revoke a lesson | Admin endpoint | `POST /admin/lessons/<id>/revoke` | Tombstone version with reason; excluded from all reads; agentdb sync marks it revoked upstream |
+| Ingest fleet events (flight and job transitions) | Connector operation | `POST /ingest/fleet` (runner-signed, `ingest` scope) | The runner pushes state transitions; idempotent on (source, event id); feeds `fleet_*` reads and the change feed |
+| Create or update session status | Public tool | `handoff_set_status(session, status: active, completed, abandoned, note)` | Agents mark their own session; `dead` is reserved for the worker-death operation |
+| Record worker death | Connector operation | `POST /ingest/fleet` event `worker_dead` (session, worker, last heartbeat, cause) | Runner-only; sets session `dead`, links the last checkpoint if one exists, never fabricates one (Section 3.2, Handoff) |
+| Tag a benchmark session | Public tool | `bench_tag_session(session, bench_run_id, arm, task_id, phase)` | Write-once per session (a second different tag returns `idempotency_conflict`); tags flow into every log line and `brief_record_run.bench_session`, so the archive (Section 11.4) joins server logs to runs |
+| Issue, rotate, revoke tokens | CLI over admin endpoint | `fleetctl token issue/rotate/revoke`; `POST /admin/tokens/*` | Plaintext shown once at issue; D1 stores the hash (Section 6.2) |
+| Manage the repo allowlist | CLI over admin endpoint | `fleetctl allowlist add/remove/list`; `POST /admin/allowlist/*` | Each change recorded with actor and reason; TBS repos refused (Section 6.4) |
+| Sync reconciliation (GitHub coverage, agentdb sync) | Connector operation, plus admin trigger | Cron trigger; `POST /admin/sync/run?target=github or agentdb` | Advances `covered_through` (Section 3.1) and the agentdb sync cursor (Section 4.4); manual trigger for recovery only |
+| GitHub webhook intake | Connector operation | `POST /webhooks/github` | Signature-verified; non-allowlisted repos dropped |
+| Upload or reference a file artifact | Public tool argument, plus admin endpoint | `verify_check.file` accepts a content hash or an `r2://` reference; `POST /admin/artifacts` (or a presigned R2 upload URL from it) for bytes over the MCP payload limit | Stored content-addressed in R2; returns the hash used everywhere else |
+| Cancel durable render work | Public tool | `verify_render_cancel(render_id, idempotency_key)` | Cancels a queued or running render in its Durable Object; returns `cancelled`, `already_complete`, or `not_found`; a cancelled render is never cached as a result |
+| Read PR state | Public tool, plus resource read | `pr_get`, `pr_list`; `pr://<repo>/<number>` | Section 3.1, Issue Context |
+| Store health | Public tool | `recall_store_health` | Section 3.1 |
+
+Scopes added to Section 6.2: `publish` (grant on top of `write` for `ref_publish`) and `ingest` (runner only, connector routes). Admin endpoints and `fleetctl` are not part of the agent-facing API and are excluded from the benchmark's with-arm tool schema (Section 8.6).
 
 ## 4. Data model
 
@@ -542,7 +584,7 @@ The token rule establishes improvement with a target-sized point estimate. It do
 | GitHub API rate limits | Heavy polling through the server exhausts the per-token hourly limit | The server is the fix, not the cause: caching plus the change feed cut upstream calls. The server tracks its remaining quota and reports it in `/health`; on quota exhaustion it serves stale cache with `cache_status: stale` instead of failing. |
 | Browser Rendering cost and latency | Renders are the most expensive tool; a runaway render loop costs real money | Content-hash dedup plus cache-first behavior; per-token render quotas; the audit log records every render with its caller, so a runaway caller is visible. |
 | Stored-content prompt injection | Lessons and exemplars are agent-written text served back into agent context; a poisoned lesson could steer future agents | Stored content is data with provenance (author, source, timestamp), never executed as instructions. The server never auto-writes lessons. A review path exists for lessons (flag and quarantine by id). |
-| Scope creep | 8 ideas in one server; the build sprawls | Phased rollout (Section 10), one area at a time, each with its replay benchmark before the next starts. The PRD's tool list is the v1 scope; anything not listed is out. |
+| Scope creep | 8 ideas in one server; the build sprawls | Phased rollout (Section 10), one area at a time, each with its replay benchmark before the next starts. The agent-facing API (the public tools and resource reads in Section 3 and Appendix A) is the v1 scope; any agent-facing tool or resource not listed is out. The rule bounds the agent-facing API only: the control-plane operations in Section 3.3 and implementation necessities (migrations, cron reconciliation, webhook receivers, internal queues, deploy and sweep scripts) are in scope without an Appendix A entry, provided none exposes a new agent-facing capability. |
 | Benchmark cost and time | 120 or more agent runs at 10 to 60 minutes each is real compute | Parallelize across runner workers; the compute cost is measured and reported as part of the result, so the cost of proving the saving is itself public. |
 | The server's own token cost | Tool schemas and MCP plumbing add context tokens, which could eat the savings | Schema overhead is measured separately (Section 8.1) and the with-arm tool set is preregistered (Section 8.6). The benchmark measures the net effect (with-server total tokens vs without), not gross savings. A server that costs more than it saves shows up as a null or negative result. |
 | Task selection bias | Benchmark tasks cherry-picked for server-friendly shapes | The task list and selection rule are preregistered; tasks are real runner jobs, chosen for representativeness across waste classes. |
@@ -640,15 +682,15 @@ Use continuous durable capture, local spooling, resumable uploads, checksum/comp
 
 ## Appendix A: Tool inventory
 
-33 tools, 14 resource types.
+45 public tools, 14 resource types. Control-plane operations that are not public tools (CLI, admin endpoint, connector operation) are listed in Section 3.3, not here.
 
-- Exemplar (5): `exemplar_get`, `exemplar_list`, `exemplar_what_changed`, `exemplar_get_doc`, `exemplar_list_docs`. Resources: `exemplar://`, `doc://`.
-- Recall (4): `recall_query`, `recall_learn`, `recall_list_lessons`, `recall_store_health`. Resources: `lesson://`.
-- Issue Context (4): `issue_get`, `issue_list`, `issue_what_changed`, `issue_comment`. Resources: `issue://`, `pr://`.
-- Brief (3): `brief_get`, `brief_create`, `brief_record_run`. Resources: `brief://`, `run://`.
-- Fleet Status (6): `fleet_get_flight`, `fleet_list_flights`, `fleet_get_job`, `fleet_what_changed_since`, `fleet_wait_for`, `fleet_preflight`. Resources: `flight://`, `job://`.
-- Verify, including Render (7): `verify_check`, `verify_get`, `verify_deploy_status`, `verify_live_check`, `verify_render`, `verify_get_render`, `verify_visual_diff`. Resources: `verification://`, `render://`, `screenshot://`.
-- Handoff (4): `handoff_save_checkpoint`, `handoff_resume`, `handoff_list_sessions`, `handoff_get_run_history`. Resources: `session://`, `checkpoint://`.
+- Exemplar (7): `exemplar_get`, `exemplar_list`, `exemplar_what_changed`, `exemplar_get_doc`, `exemplar_list_docs`, `doc_what_changed`, `ref_publish`. Resources: `exemplar://`, `doc://`.
+- Recall (5): `recall_query`, `recall_learn`, `recall_list_lessons`, `recall_quarantine`, `recall_store_health`. Resources: `lesson://`.
+- Issue Context (6): `issue_get`, `issue_list`, `issue_what_changed`, `issue_comment`, `pr_get`, `pr_list`. Resources: `issue://`, `pr://`.
+- Brief (5): `brief_get`, `brief_list`, `brief_create`, `brief_revise`, `brief_record_run`. Resources: `brief://`, `run://`.
+- Fleet Status (7): `fleet_get_flight`, `fleet_list_flights`, `fleet_get_job`, `fleet_list_jobs`, `fleet_what_changed_since`, `fleet_wait_for`, `fleet_preflight`. Resources: `flight://`, `job://`.
+- Verify, including Render (9): `verify_check`, `verify_get`, `verify_list_checks`, `verify_deploy_status`, `verify_live_check`, `verify_render`, `verify_get_render`, `verify_render_cancel`, `verify_visual_diff`. Resources: `verification://`, `render://`, `screenshot://`.
+- Handoff (6): `handoff_save_checkpoint`, `handoff_resume`, `handoff_list_sessions`, `handoff_get_run_history`, `handoff_set_status`, `bench_tag_session`. Resources: `session://`, `checkpoint://`.
 
 ## Appendix B: Number provenance
 
@@ -694,3 +736,15 @@ Closes **Claude G8** and **Codex ranked gap 3** (`docs/execution-plan.md` Sectio
 ### 2026-11-22: R5 benchmark statistics (issue #6)
 
 Closes **Codex top change 3** and **Claude G2, G5, G6, G20**: Sections 8.1, 8.4, 8.6 and 8.7 now specify one primary token endpoint, log-ratio estimand, BCa primary interval, t robustness check, explicit 20% semantics, Holm key secondaries, directional paired correctness non-inferiority and separate power planning (likely UNPROVEN at N 30-50). Also closes token double-counting, cold/warm cache separation, contamination and contention controls, ranked disjoint task sets, pre-freeze personal-project waste measurement, conservative pilot-SD power planning and frozen N, missing-data and failure handling, repeatability model, reliability/accuracy measurement contracts, and credential fault injection with finite-sample zero-event bounds. The task floor and all protocol numbers are design decisions. This revision runs no benchmark, freezes no preregistration and does not assert G0 or any later gate has passed.
+
+### 2026-11-22: R4 control-plane operations (execution plan Section 3.1, item R4; issue #5)
+
+Closes these review gaps: **Claude G7** (exemplar and doc write path missing; corpus seeding undefined) and the **Codex missing-capabilities list** (`docs/reviews/codex-review.md`, "Missing capabilities do not all need new public tools").
+
+- Every control-plane operation assigned one surface (public tool, resource read, admin endpoint, connector operation, CLI) in a single table (Section 3.3).
+- Write path: `ref_publish` plus `fleetctl ref seed` from a committed corpus manifest frozen in `bench-prereg-v1` (Sections 3.1, 3.3).
+- Brief revisions separated from run records: `brief_revise` is the only versioning write; `brief_record_run` appends to the run table, `run://`, and the change feed without versioning the brief body (Section 3.1, Brief).
+- Lessons: flag, quarantine, release (`recall_quarantine`), correct (`recall_learn` with `supersedes`), revoke (admin endpoint) (Sections 3.1, 3.3).
+- Fleet events, session status, worker death, tokens, allowlist, sync reconciliation, file artifacts, render cancellation specified (Section 3.3).
+- Tools added (33 to 45): `ref_publish`, `doc_what_changed`, `pr_get`, `pr_list`, `recall_quarantine`, `brief_list`, `brief_revise`, `fleet_list_jobs`, `verify_list_checks`, `verify_render_cancel`, `handoff_set_status`, `bench_tag_session` (Appendix A).
+- "Anything not listed is out" bounded to the agent-facing API; implementation necessities are not prohibited (Section 9.1).
