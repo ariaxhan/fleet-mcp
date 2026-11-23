@@ -10,7 +10,9 @@
 
 **Scope boundary:** This is a personal project with its own corpus. It does not touch TBS data, TBS repos, TBS issues, or the TBS MCP server's content. The TBS Teaching MCP server is a pattern reference only (hosted, typed tools, live data), enforced by an explicit repo allowlist in code (PRD Section 0 and Section 6.4). The benchmark tasks are drawn from personal-project work only.
 
-**How this skeleton grows:** each section is filled in as its experiment runs. A section moves from [PENDING] to written only when the underlying measurement exists and has passed independent verification (Section 6.6). Nothing is backfilled from memory. Amendments to the preregistered hypotheses in Section 6.2 are dated entries, never silent edits, mirroring the preregistration amendment rule (PRD Section 8.6).
+**How this skeleton grows:** each section is filled in as its experiment runs. A section moves from [PENDING] to written only when the underlying measurement exists and has passed independent verification (Section 6.6). Nothing is backfilled from memory. Amendments to the preregistered hypotheses in Section 5.2 are dated entries, never silent edits, mirroring the preregistration amendment rule (PRD Section 8.6).
+
+**Alignment with the revised PRD (v2), Nov 22, 2026:** Sections 5.1, 5.2, 5.5, 5.6, and 5.7 are aligned with the gate G0 revision items for PRD Section 8, specifically R5 (benchmark statistics) and R6 (single-model scope and the judge-panel resolution) as resolved in `../docs/execution-plan.md` Section 3.1. Assumption: where the committed `../PRD.md` Section 8 text still carries the pre-revision wording, the R5 and R6 resolutions govern, and PRD v2 Section 8 is written to match them. Citations of the form (Plan R5) point to those resolutions.
 
 ---
 
@@ -26,9 +28,9 @@ We evaluate the server with a preregistered controlled experiment: deterministic
 
 [RESULTS PENDING. The following sentences are filled in only after the confirmatory run and independent verification.]
 
-- Token use: [RESULTS PENDING. Mean paired token reduction, 95% CI, and effect size. Preregistered bar: H1, mean reduction of at least 20%, 95% CI lower bound above 0.]
-- Speed: [RESULTS PENDING. Mean paired wall-clock reduction, 95% CI, and effect size. Preregistered bar: H2, mean reduction of at least 15%, 95% CI lower bound above 0.]
-- Reliability: [RESULTS PENDING. Outcome correctness (non-inferiority vs control), error rates, re-attempt rates, preflight outcomes, sleep-loop counts. Preregistered bars: H4 through H7.]
+- Token use (primary endpoint): [RESULTS PENDING. Percent change in total tokens per task, back-transformed from the mean per-task log ratio, with its BCa bootstrap 95% CI. Preregistered bar: H1, point estimate a reduction of at least 20% AND the 95% CI excludes 0.]
+- Speed (key secondary, Holm-corrected): [RESULTS PENDING. Percent change in wall-clock time per task, same estimand. Preregistered bar: H2.]
+- Reliability: [RESULTS PENDING. Outcome correctness (key secondary, non-inferiority, preregistered as likely UNPROVEN at N 30-50), error rates, re-attempt rates, preflight outcomes, sleep-loop counts. Preregistered bars: H4 through H7.]
 - Cost: [RESULTS PENDING. Dollars per task in each arm, computed from session token counts and the model price at run time.]
 
 [CONCLUSION PENDING. One sentence stating what the results support, written after the results exist. If a hypothesis fails, the abstract says so.]
@@ -155,28 +157,40 @@ Auth (PRD Section 6): bearer tokens, per agent and per client, never shared, nev
 
 Per task, in both arms (PRD Section 8.1; the metric set extends the KERNEL controlled benchmark design in Report Part 3):
 
-- **Tokens:** input tokens, output tokens, and cache-read tokens, from the session record. Cache-read tokens are reported separately, never folded into a single token total: they are the cost driver in the baseline (23.5M cache-read vs about 215k output tokens across 9 recent Claude sessions; Report Part 1, recent Claude).
+- **Tokens (primary endpoint):** input tokens, output tokens, and cache-read tokens, from the Codex rollout record, always reported separately (Plan R5). The primary endpoint is total tokens per task (input plus output plus cache-read, with cache-read validated as not double counted inside input), paired. Cache-write tokens are recorded where applicable. Schema and tool-response overhead count inside the with-arm input total, and schema token overhead is also measured separately. Cache-read tokens dominate the baseline (1,807,762,048 of 1,836,891,941 cumulative input tokens, 98.4%, were cached input across 12 Codex sessions; cumulative per-response sums, not unique tokens; Report Part 1, Codex). Codex token capture for the pinned model is confirmed before the pilot (Plan R6).
 - **Wall-clock time:** task start to task end, plus tool time as a subset (tool time was 75% of wall time in the recent Claude sample; Report Part 1, recent Claude).
 - **Tool calls:** total, by type, and by class (state checks, re-fetches, re-reads, verification runs, renders, sleeps). Sleep commands are counted explicitly: the "with" arm should show zero sleep loops.
 - **Cache behavior (with arm only):** cache hits and misses per tool, hit rate, bytes served from cache vs computed fresh.
 - **Errors:** failed commands, wrong-file reads, reverted edits, verification failures after done claims.
 - **Outcome correctness:** did the task complete correctly, verified independently (Section 5.6). A faster wrong answer is a failure, not a saving.
 - **Adoption:** did the agent actually use the server tools (recall ran? checkpoint saved? preflight run?). The report's finding is that the instructed memory path is often skipped (recall in only 3 of 9 recent Claude sessions; Report Part 1), so adoption is measured alongside the outcome.
-- **Cost:** dollars per task, computed from the session token counts and the model price at run time. The baseline cannot supply dollars (runner.sqlite has no cost or token column; Codex rollouts carry no cost field; Report, Limitations), so the benchmark records cost itself from the start.
+- **Cost:** dollars per task, computed from the session token counts and the model price at run time, with model cost and allocated server cost reported separately (Plan R5). The baseline cannot supply dollars (runner.sqlite has no cost or token column; Codex rollouts carry no cost field; Report, Limitations), so the benchmark records cost itself from the start.
 
 ### 5.2 Preregistered hypotheses
 
-These hypotheses and their success criteria are preregistered before any "with" run (pilot included), in `benchmark/preregistration.md` plus a machine-readable `benchmark/preregistration.json` in the `fleet-mcp` repo, committed and tagged (`bench-prereg-v1`) with the SHA-256 hash recorded in the tag message and in the final report (PRD Sections 8.6 and 8.7). Each threshold below is a target, not a measured result. The experiment may fail any of them, and a failed threshold is reported as failed. No moving the goalposts after seeing the results.
+These hypotheses and their success criteria are preregistered before any "with" run (pilot included), in `benchmark/preregistration.md` plus a machine-readable `benchmark/preregistration.json` in the `fleet-mcp` repo, committed and tagged (`bench-prereg-v1`) with the SHA-256 hash recorded in the tag message and in the final report, plus a remote timestamped registration record (PRD Sections 8.6 and 8.7; Plan R5). Each threshold below is a target or a design decision, not a measured result. The experiment may fail any of them, and a failed threshold is reported as failed. No moving the goalposts after seeing the results.
 
-**Primary hypotheses (controlled agent experiment):**
+**Estimand (all ratio metrics, Plan R5).** For each task, the log ratio ln(with / without). The estimand is the mean of the per-task log ratios, back-transformed to a percent change. The primary interval is the BCa bootstrap 95% CI; the paired t-interval on the log ratios is the robustness check. A threshold of "at least X% reduction" means: the point estimate is a reduction of at least X% AND the 95% CI excludes 0. That establishes an improvement with a target-sized point estimate. It does NOT establish that the true reduction is at least X%; that stronger claim is made only if the interval's bound itself clears X%.
 
-- **H1 (tokens):** Agents working with Fleet MCP use fewer total tokens (input plus output plus cache-read) per task than agents working without it. Success criterion: mean paired reduction of at least 20%, with the 95% confidence interval lower bound above 0.
-- **H2 (wall-clock time):** Agents working with Fleet MCP complete tasks faster than agents working without it. Success criterion: mean paired reduction of at least 15%, with the 95% confidence interval lower bound above 0.
-- **H3 (state-check and re-fetch tool calls):** Agents working with Fleet MCP make fewer state-check and re-fetch tool calls per task than agents working without it. Success criterion: mean paired reduction of at least 50%.
-- **H4 (outcome correctness, non-inferiority):** Agents working with Fleet MCP complete tasks correctly at a rate no worse than agents working without it. Success criterion: the with-arm correctness rate within 5 percentage points of the control arm. A faster wrong answer fails.
-- **H5 (preflight):** No attempt is launched with a dead credential in the with arm. Success criterion: zero attempts launched with a dead credential in the with arm. (Baseline: 10 runner attempts died on OAuth or authentication failures in one week; Report Part 1, runner.)
-- **H6 (recall adoption):** Recall actually runs in the with arm. Success criterion: recall runs in at least 80% of with-arm sessions. (Baseline: recall ran in 3 of 9 recent Claude sessions; Report Part 1, recent sessions.)
-- **H7 (sleep loops):** No sleep loops remain in the with arm. Success criterion: zero sleep commands in with-arm sessions. (Baseline: 311 sleep commands across 12 Claude sessions; Report Part 1, Claude.)
+**Multiplicity (Plan R5).** One primary endpoint (H1). Two key secondaries (H2, H4), Holm-corrected. All other hypotheses (H3, H5, H6, H7) are exploratory and descriptive: reported in full, never used to rescue a failed primary.
+
+**Baselines (Plan R6).** The experiment runs on Codex only, so each hypothesis cites a Codex-sample baseline (12 Codex sessions in Report Part 1, Codex; 193 recent Codex commands in Report Part 1, recent sessions). Where the Codex sample did not measure a quantity, the baseline is labeled NOT MEASURED and is measured on the personal-project task pool before the preregistration freeze (Plan R5, Claude G20). Claude-session numbers elsewhere in this paper describe the fleet, not the baseline for these hypotheses.
+
+**Primary hypothesis:**
+
+- **H1 (total tokens, primary endpoint):** Codex working with Fleet MCP uses fewer total tokens per task than Codex working without it. Success criterion: point estimate a reduction of at least 20% (a design decision) AND the BCa 95% CI excludes 0. Codex baseline: at least 215,615 output tokens re-fed from 1,309 extra repeat executions (lower bound, 561 attributed) and 858 extra re-reads (42.8% of reads) across 12 Codex sessions (Report Part 1, Codex).
+
+**Key secondary hypotheses (Holm-corrected):**
+
+- **H2 (wall-clock time):** Codex working with Fleet MCP completes tasks faster. Success criterion: point estimate a reduction of at least 15% (a design decision) AND the BCa 95% CI excludes 0 after Holm correction. Codex baseline: 782 `wait`/`wait_agent` calls and 169 `vaults ctx` polls across 12 Codex sessions (Report Part 1, Codex); per-task wall-clock baseline NOT MEASURED, measured on the task pool.
+- **H4 (outcome correctness, non-inferiority):** Codex working with Fleet MCP completes tasks correctly at a rate no worse than without it. Directional margin: 5 percentage points (a design decision). Rule: the lower bound of the paired 95% interval for (with minus control) correctness, Holm-adjusted, lies above minus 5 percentage points. The with-minus-control interval is reported, never only whether two point estimates differ by less than the margin. Preregistered as likely UNPROVEN at N 30-50 unless its own power analysis supports it: a 5-point margin generally cannot be shown with 30-50 paired binary outcomes (Plan R5, Claude G6). A faster wrong answer fails. Codex baseline: NOT MEASURED in the Codex sample; runner-wide, 48 attempts failed verification after claiming done in 6.8 days (Report Part 1, runner).
+
+**Exploratory hypotheses (descriptive, no confirmatory claim):**
+
+- **H3 (state-check and re-fetch tool calls):** fewer per task in the with arm. Target: point estimate a reduction of at least 50%, same estimand. Codex baseline: 169 `vaults ctx` polls, 32 `git status --short`, 29 `vaults repo`, 314 gh calls with 142 extra repeated fetches across 12 Codex sessions (Report Part 1, Codex).
+- **H5 (preflight):** no attempt is launched with a dead credential in the with arm. Target: zero observed events, reported with a finite-sample interval, never as proof of a zero rate, and backed by fault-injection tests (expired, missing, unknown, and mid-run-expiring credentials; Plan R5). Baseline: 10 runner attempts died on OAuth or authentication failures in 6.8 days (Report Part 1, runner); a Codex-only split NOT MEASURED.
+- **H6 (recall adoption, Codex units):** recall runs in at least 80% of with-arm Codex sessions (a design decision). Codex baseline: recall in 6 of 193 recent Codex commands (Report Part 1, recent sessions); `agentdb recall` 3x as a top repeat among 217 agentdb calls across 12 Codex sessions (Report Part 1, Codex). Session-level Codex adoption rate NOT MEASURED, measured on the task pool.
+- **H7 (sleep and wait loops):** zero sleep commands in with-arm sessions, reported descriptively with a finite-sample interval. Codex baseline: sleep-command count NOT MEASURED in the Codex sample; the measured Codex polling behavior is 782 `wait`/`wait_agent` calls, `bin/codex-lane await` 14x for one lane, and `clock__curr_time` 141x (Report Part 1, Codex). The Codex sleep baseline is measured on the task pool before the freeze (Plan R6).
 
 **Replay targets (deterministic replays, Section 5.4):** each replay's good-result bar comes from Report Part 4 and is a target, not a measured result.
 
@@ -218,23 +232,37 @@ Replay results are exact counts, so they carry no confidence intervals, but they
 
 **Arms.** (A) With the server: the agent has the Fleet MCP tools plus today's baseline. (B) Without: the agent has today's baseline only (brief, files, CLI, bash agentdb). Same model, same brief, same starting state. Arm order randomized per task. The agent in each arm is a fresh agent; no agent runs both arms of the same task (PRD Section 8.4).
 
-**Single-model scope:** the experiment runs on one model only: Codex solo, the most recent version available at run time. [SCOPE NOTE. The PRD specifies "same model" without naming the model (PRD Section 8.4). The Codex-solo scope stated here comes from the paper commissioning brief of Nov 22, 2026, 16:47 PT and is recorded here as a decision to be frozen in the preregistration (`bench-prereg-v1`), with the exact Codex version recorded at freeze time. The single-model scope is a stated limitation: the results generalize to Codex on these task families, and any claim about other models requires a separate run.]
+**Single-model scope (Plan R6).** One model only: Codex solo, the most recent version at freeze time. The exact model ID is pinned and frozen in `bench-prereg-v1`, and every run records the CLI version, reasoning setting, limits, tool configuration, and prompts. Multi-model work is out of scope. The single-model scope is a stated limitation: the results generalize to Codex on these task families.
+
+**Cohort-stop rule (Plan R6).** If the provider changes the model under the pinned ID mid-study, the affected cohort stops and all its data is preserved. The study then either retains the pinned snapshot, or amends the protocol (dated amendment under a new tag) and restarts the affected paired cohort under the new version. Versions are never pooled into one confirmatory claim. If immutable model identity cannot be verified, the limitation is disclosed and unsupported model-controlled claims are withheld.
+
+**Cache condition (Plan R5).** The preregistered default is a cold reset of the KV, verification, and render stores before every run. Warm-cache reuse is a separate descriptive factor, never pooled into the primary. Every cache hit is recorded with the run id of the run that produced the cached entry.
+
+**Contamination controls (Plan R5).** Isolated worktrees, fixtures, deployments, checkpoints, and memory writes between arms; pilot runs do not teach the treatment corpus; the baseline agentdb state and the treatment corpus are snapshotted; scheduling is randomized so shared-worker contention cannot systematically favor an arm; provider and model changes are recorded.
+
+**Task pool (Plan R5).** A ranked pool of at least 60 personal-project tasks with disjoint pilot and confirmatory sets (10 pilot, up to 50 confirmatory), a fixed draw order, a recorded seed, stratified by waste class. The full task list, arm prompt delta, cache condition, server commit hash, and starting-state snapshot per task are frozen in the preregistration.
 
 **Sample size (PRD Section 8.4).** The KERNEL design (10 tasks x 2 arms) is the pilot, not the confirmatory sample. It is not enough, for three measured reasons: task-level variance is large and heterogeneous (extra repeat executions ranged from 21 in the tidiest Codex session to 392 in the messiest; re-read rates ranged from near zero to 55.4%; GitHub waste concentrated in 2 of 12 sessions); the observational precedent failed on sample size (the KERNEL split had a control group of n=1); and agent runs are nondeterministic, so a single run per task-arm confounds the server's effect with run-to-run noise.
 
 The design runs in three phases:
 
 - **Phase 1, pilot: 10 tasks x 2 arms = 20 runs.** Validates the harness (scoring script, token capture, outcome verification), estimates the paired-difference standard deviation for each primary metric, and catches design flaws before the confirmatory run. Pilot data is reported separately and is NOT pooled into the confirmatory result.
-- **Phase 2, confirmatory: sample size computed from the pilot variance, with a floor of 30 tasks x 2 arms = 60 runs.** The computation is a standard paired power analysis: 80% power at a two-sided alpha of 0.05 to detect the preregistered minimum effect (Section 5.2) given the pilot's paired-difference standard deviation. The floor of 30 tasks applies regardless of what the power computation says, because 30 paired observations is the minimum for a stable mean estimate and a meaningful confidence interval under the observed heterogeneity. If the power computation demands more than 30 tasks, the run expands to that number, up to a preregistered cap of 50 tasks x 2 arms = 100 runs. If the pilot variance is so large that even 50 tasks cannot power the preregistered effect, the result is reported as UNPROVEN for that metric with the required sample size stated, not run until something looks significant.
+- **Phase 2, confirmatory: sample size computed from the pilot variance, with a floor of 30 tasks x 2 arms = 60 runs.** The computation is a standard paired power analysis on the primary endpoint's log ratio: 80% power at a two-sided alpha of 0.05 to detect the preregistered minimum effect (Section 5.2), using an upper confidence limit of the pilot standard deviation (or a preregistered inflation rule), not the point estimate (Plan R5). The confirmatory N is frozen after the pilot and before any confirmatory outcome is observed; there is no stopping or expanding on observed significance. The floor of 30 tasks is a labeled design decision, not a statistical fact. If the power computation demands more than 30 tasks, the run expands to that number, up to a preregistered cap of 50 tasks x 2 arms = 100 runs. If the pilot variance is so large that even 50 tasks cannot power the preregistered effect, the result is reported as UNPROVEN for that metric with the required sample size stated, not run until something looks significant.
 - **Phase 3, repeatability substudy: 10 of the confirmatory tasks, each re-run twice more per arm = 40 additional runs.** This gives 3 observations per task-arm for those 10 tasks, which measures run-to-run variance directly and lets the analysis separate the server's effect from agent nondeterminism. The substudy tasks are chosen at random from the confirmatory set and named in the preregistration.
+
+**Repeatability model (Plan R5, decided in advance).** The primary analysis uses the first paired run per task only, so every confirmatory task contributes exactly one paired observation. The repeat runs are analyzed secondarily with a mixed-effects model on the log scale (arm as a fixed effect, task as a random effect), which reports run-to-run variance and checks that the primary estimate is not an artifact of a single nondeterministic draw. [DESIGN DECISION recorded here for the freeze; the preregistration may instead adopt the mixed-effects model as primary, by dated choice before the pilot.]
+
+**Missing data (Plan R5).** Aborted runs, timeouts, and harness failures are outcomes, not exclusions, unless they are harness faults defined in advance in the preregistration.
 
 **Minimum total: 120 agent runs** (20 pilot plus 60 confirmatory floor plus 40 repeatability). At the report's estimate of 10 to 60 minutes per run (Report Part 3), that is 20 to 120 hours of agent compute, parallelizable across the runner's workers. The actual compute cost is measured and reported as part of the result.
 
-**Analysis (PRD Section 8.4).** Paired differences per task (with minus without) for each metric. Report the mean paired difference, the 95% confidence interval (paired t-interval, plus a bootstrap interval as a robustness check), the effect size (Cohen's dz for paired data), and the full per-task table, not just the aggregate. A result is claimed only when the 95% confidence interval excludes zero in the claimed direction. Variance is reported, never hidden: the per-task differences, the standard deviation, and the repeatability substudy's run-to-run variance all appear in the final report.
+**Analysis (Plan R5).** Per task, the log ratio (with over without) for every ratio metric. Reported for each: the back-transformed mean log ratio as a percent change, the BCa bootstrap 95% CI (primary), the paired t-interval (robustness check), the effect size (Cohen's dz on the log ratios), and the full per-task table, not just the aggregate. H1 is the single primary endpoint; H2 and H4 are Holm-corrected key secondaries; everything else is exploratory. A confirmatory result is claimed only when its interval excludes zero in the claimed direction. Variance is reported, never hidden: the per-task differences, the standard deviation, and the repeatability substudy's run-to-run variance all appear in the final report.
 
 ### 5.6 Independent verification, traceability, and UNPROVEN labeling
 
-**Independent verification (PRD Section 8.8).** The numbers are re-checked by a party other than the one that produced them. A separate verifier (a different agent or operator from the benchmark runner; the exact assignment is an open question, PRD Section 9.2 question 6) re-runs the scoring script from the archived raw data and compares its output against the reported numbers, within a preregistered tolerance (exact match for counts; stated tolerance for derived statistics). Outcome correctness is scored by programmatic verifiers where possible (the llm-bench model) and by an independent judge panel where judgment is needed (the MFE model: a multi-family panel, with inter-judge agreement reported; MFE's panel agreement was 0.74 across n=339 cells, Report Part 2). A mismatch between the verifier's numbers and the reported numbers blocks publication until resolved.
+**Independent verification (PRD Section 8.8).** The numbers are re-checked by a party other than the one that produced them. A separate verifier (a different agent or operator from the benchmark runner, assigned before confirmatory execution, with read-only archive access, the frozen protocol, and scorer provenance, and no responsibility for delivering a positive verdict) re-runs the scoring script from the archived raw data and compares its output against the reported numbers, within a preregistered tolerance (exact match for counts; stated tolerance for derived statistics), and independently re-derives a random sample of raw metrics without the scoring script. A mismatch blocks the efficacy claim until resolved; it does not suppress an honest report of an instrument failure, and the instrument can return NOT CERTIFIED.
+
+**Judge-panel resolution (Plan R6).** The two PRD reviews disagreed on grading: one held that a different model family as verifier does not conflict with Codex solo; the other required programmatic checks plus a separate operator using the same pinned Codex model. This study adopts the stricter reading. Outcome correctness is scored by programmatic verifiers first (the llm-bench model: a file exists, a check passes, a URL serves expected text). Where judgment is needed, the judge is the same pinned Codex model run under a separate independent operator, with a frozen rubric, arm-blinded artifacts where feasible, and reported agreement against a preregistered agreement floor; below the floor, judged correctness is reported as UNPROVEN. The judge is a verifier, not a second task solver. Keeping one model family in the entire evidence chain keeps the single-model claim airtight. The multi-family judge panel (the MFE model) is deferred to later multi-model work and is not used here.
 
 **Traceability (PRD Section 8.8).** Every reported number is traceable to its raw data. Preserved and archived: the raw session transcripts for every benchmark run, the run logs, the raw measurement files, the scoring script, and the analysis. Small files live in the repo under `benchmark/data/`; large transcripts live in R2, with their content hashes and R2 keys recorded in the repo. The scoring script recomputes every reported number from the raw data with one command, so anyone can reproduce the result. The final report cites the source file for every number. See Section 8.
 
@@ -246,9 +274,9 @@ The design runs in three phases:
 
 ### 5.7 Preregistration
 
-Artifact: `benchmark/preregistration.md` in the `fleet-mcp` repo, plus a machine-readable `benchmark/preregistration.json` with the same content. It contains: the hypotheses in Section 5.2, the full task list with selection rule, the arm definitions and the control-arm rule, the metric definitions and how each is captured, the sample size rule (pilot, power computation, floor of 30, cap of 50), the success thresholds, the analysis plan, the exclusion rules (which runs are excluded and why, decided before seeing results), the repeatability substudy task selection, and the verification plan (PRD Section 8.6).
+Artifact: `benchmark/preregistration.md` in the `fleet-mcp` repo, plus a machine-readable `benchmark/preregistration.json` with the same content. It contains: the hypotheses in Section 5.2 with their resolved estimands and thresholds, the ranked task pool with selection rule and seed, the arm definitions and the control-arm rule, the exact system-prompt delta between arms, the cache condition per run, the model ID and CLI version, the server commit hash, the starting-state snapshot per task, the metric definitions and how each is captured, the sample size rule (pilot, power computation with the upper CL of the pilot SD, floor of 30, cap of 50), the success thresholds, the analysis plan (paired log ratio, BCa bootstrap primary, t-interval robustness check, Holm correction, repeatability model), the exclusion and missing-data rules (which runs are excluded and why, decided before seeing results), the repeatability substudy task selection, the verification plan and judge-agreement floor, and the stated tolerance for derived statistics (PRD Section 8.6; Plan R5, R6).
 
-Freezing: the preregistration is committed and tagged (`bench-prereg-v1`) with its SHA-256 hash recorded in the tag message and in the final report, BEFORE the first "with" run (pilot included). The tag is the proof that the criteria predated the results.
+Freezing: the preregistration is committed and tagged (`bench-prereg-v1`) with its SHA-256 hash recorded in the tag message and in the final report, BEFORE the first "with" run (pilot included), plus a remote timestamped registration record, since a local tag and a self-recorded hash establish artifact identity, not independently trustworthy chronology. The tag is the proof that the criteria predated the results.
 
 Amendments: if the preregistration must change, the change is a dated amendment entry appended to the artifact, stating what changed and why, committed under a new tag (`bench-prereg-v2`). The original stays in the repo. Any result affected by an amendment is flagged as such in the final report, with the amendment quoted.
 
@@ -284,7 +312,7 @@ Amendments: if the preregistration must change, the change is a dated amendment 
 | Input tokens per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Output tokens per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Cache-read tokens per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
-| Total tokens per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H1 bar: mean reduction at least 20%, 95% CI lower bound above 0 |
+| Total tokens per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H1 bar (primary): back-transformed mean log ratio a reduction of at least 20% AND BCa 95% CI excludes 0 |
 
 Baseline context (not a result): the report measured 23.5M cache-read tokens vs about 215k output tokens across 9 recent Claude sessions, and at least 215,615 output tokens re-fed from repeat executions across 12 Codex sessions (lower bound). Those are "without" measurements from the transcripts, not control-arm measurements from this experiment (Report Part 1, recent Claude and Codex).
 
@@ -296,7 +324,7 @@ Full per-task table (one row per task, both arms, all three token classes): [PEN
 
 | Metric | Without (control arm) | With (server arm) | Mean paired difference | 95% CI | Cohen's dz | Verdict vs H2 |
 |---|---|---|---|---|---|---|
-| Wall-clock time per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H2 bar: mean reduction at least 15%, 95% CI lower bound above 0 |
+| Wall-clock time per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H2 bar (key secondary, Holm): reduction of at least 15% AND 95% CI excludes 0 |
 | Tool time per task (subset of wall time) | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Wall time per task, by task family | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 
@@ -310,11 +338,11 @@ Full per-task wall-time table: [PENDING].
 
 | Metric | Without (control arm) | With (server arm) | Mean paired difference | 95% CI | Verdict |
 |---|---|---|---|---|---|
-| State-check and re-fetch calls per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H3 bar: mean reduction at least 50% |
+| State-check and re-fetch calls per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H3 target (exploratory): reduction of at least 50% |
 | Total tool calls per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Re-reads per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Verification runs per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
-| Sleep commands per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H7 bar: zero in the with arm |
+| Sleep commands per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H7 target (exploratory): zero in the with arm, with finite-sample interval |
 | Failed commands per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Wrong-file reads per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Reverted edits per task | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
@@ -330,10 +358,10 @@ Baseline context (not a result): 311 sleep commands, 179 sqlite3 queries, 131 wa
 
 | Metric | Without (control arm) | With (server arm) | Difference | 95% CI | Verdict |
 |---|---|---|---|---|---|
-| Outcome correctness rate | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H4 bar: with arm within 5 percentage points of control (non-inferior) |
+| Outcome correctness rate | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H4 bar (key secondary, Holm): paired 95% interval lower bound above minus 5 points; likely UNPROVEN at N 30-50 |
 | Re-attempt rate (tasks needing 2+ attempts) | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
-| Attempts launched with a dead credential | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H5 bar: zero in the with arm |
-| Recall adoption (sessions where recall ran) | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H6 bar: at least 80% of with-arm sessions |
+| Attempts launched with a dead credential | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H5 target (exploratory): zero observed, with finite-sample interval |
+| Recall adoption (sessions where recall ran) | [PENDING] | [PENDING] | [PENDING] | [PENDING] | H6 target (exploratory): at least 80% of with-arm Codex sessions |
 | Checkpoint saved (sessions where a checkpoint exists) | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Preflight run (sessions where preflight ran) | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
 | Worker deaths | [PENDING] | [PENDING] | [PENDING] | [PENDING] | [PENDING] |
@@ -341,7 +369,7 @@ Baseline context (not a result): 311 sleep commands, 179 sqlite3 queries, 131 wa
 
 Baseline context (not a result): 488 re-attempts (46% of 1,056 attempts), 195 tasks (34%) needing 2+ attempts, 77 worker deaths on 44 tasks, 27 four-hour timeouts (all failed), 10 attempts killed by OAuth/auth failures, 48 verification failures after done claims, all in 6.8 days of runner records; recall ran in 3 of 9 recent Claude sessions (Report Part 1, runner and recent sessions).
 
-Independent verification of outcome correctness: [PENDING]. Programmatic verifier results and, where judgment was needed, judge panel agreement (MFE model; MFE's panel agreement was 0.74 across n=339 cells, Report Part 2).
+Independent verification of outcome correctness: [PENDING]. Programmatic verifier results and, where judgment was needed, agreement between the separate-operator pinned-Codex judge and the preregistered agreement floor (Section 5.6).
 
 ### 6.6 Cost
 
@@ -376,7 +404,7 @@ Confirmatory sample size computed from the pilot variance (80% power, two-sided 
 | Counts match (exact) | [PENDING] |
 | Derived statistics match (within preregistered tolerance) | [PENDING] |
 | Outcome correctness: programmatic verifier results | [PENDING] |
-| Outcome correctness: judge panel agreement (where judgment was needed) | [PENDING] |
+| Outcome correctness: pinned-Codex judge agreement vs preregistered floor (where judgment was needed) | [PENDING] |
 | Mismatches found and resolved | [PENDING] |
 | Publication unblocked | [PENDING] |
 
@@ -451,3 +479,4 @@ All data behind this paper is preserved and reproducible. Nothing is reported wi
 ## Skeleton changelog
 
 - Nov 22, 2026: skeleton drafted (title, abstract skeleton, introduction, related work, system design, methods with preregistered hypotheses H1-H7 and replay targets R1-R7, empty results sections, discussion outline, data availability). No "with" result exists yet. Preregistration not yet frozen.
+- Nov 22, 2026: methods aligned with the PRD revision items R5 and R6 (issue #10): H1-H7 restated with the log-ratio estimand, Holm multiplicity, and Codex-sample baselines; judge-panel resolution recorded (programmatic verifiers first, then the same pinned Codex model under a separate operator); cache condition, cohort-stop rule, power rule, and repeatability model added. All results remain [PENDING].
