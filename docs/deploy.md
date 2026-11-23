@@ -47,8 +47,8 @@ Before a release containing contract migrations, supply the protected local file
 `backup_location`, `verifier`. The verifier must be independent of the migration
 producer. This receipt records exercised recovery and old-reader retirement,
 not permission to reconstruct missing evidence. No contract migration exists in
-the currently landed schema. The backup and restore implementation and its
-exercise remain pending under #27.
+the currently landed schema. `scripts/backup.mjs` (below) produces the
+`backup_sha256`, `backup_location` and `restore_pass` fields.
 
 Release receipts retain phase results in `artifacts/release-ENV-TIMESTAMP-PID.json`.
 Sweeps retain their raw observations in the release receipt, including failures.
@@ -184,3 +184,52 @@ Thresholds: stale after 180 s, offline after 900 s without a heartbeat (design d
 These commands are functional acceptance probes, not benchmark or pilot runs.
 See [platform status](spike/platform.md), [token accounting](spike/token-accounting.md)
 and [cost assessment](spike/cost.md). Independent G1 verdict remains #43.
+
+## Operations (#27)
+
+All limits and thresholds are design decisions in `src/ops.ts` (`LIMITS`, `THRESHOLDS`), not measured capacity.
+
+- Admission: one global Durable Object (`OPS_GUARD`, class `OpsGuard`) serializes per-principal
+  (120/min) and global (600/min) rate limits and per-tool concurrency (render 2, recall sync 1,
+  GitHub reconcile 1, wait 16, default 8). Rejection: 429 with `retry_after_s`. Eviction resets
+  windows and leases (fails open for at most one window; leases expire by deadline).
+- Payload bounds per tool (default 64 KiB, publish 1.5 MB, recall sync 4 MB) on the bytes read: 413.
+- Deadlines per tool (default 15 s, wait/sync/reconcile 25 s): 504 `deadline_exceeded`.
+- Upstream (GitHub): at most 2 retries with backoff under a global retry budget (20% of calls,
+  floor 5/min); circuit breaker opens after 5 consecutive failures for 60 s (503 `circuit_open`).
+- Correlation IDs: caller `x-correlation-id` (8 to 64 of `[A-Za-z0-9_.-]`) or a generated UUID,
+  echoed in the response header, the JSON `correlation_id`, audit rows and ops samples.
+- Metrics: `GET /internal/ops` (fixture probe credential, aggregate values only): connector lag,
+  webhook lag, feed coverage age, outbox backlog (server plus sidecar), stale-response age,
+  upstream rate-limit remaining, render queue time, retry amplification, verification reuse by
+  checker version, admission state and alerts. One-hour window, samples in D1 `ops_events`.
+- Alerts: the 15 minute cron logs each alert as `{"event":"fleet.alert",...}` to Workers
+  observability and writes `ops/metrics/latest.json` to R2. A missing required observation
+  alerts as `unknown`, never as zero. Event-driven signals without samples are listed under
+  `no_observation_in_window`. Samples older than 7 days are pruned.
+- The post-deploy sweep checks `/internal/ops` and correlation echo. The between-migrations sweep
+  skips them only when the live previous build does not advertise `ops` in `/version`.
+
+## Backup and restore
+
+Authoritative state: D1 and R2 blobs. KV is a disposable cache, rebuilt on read. R2 blob bodies are
+content-addressed from published source commits and can be republished with `scripts/publish.mjs`.
+
+```sh
+node scripts/backup.mjs staging     # or production
+```
+
+Counts every table remotely, exports D1, archives the SQL at
+`r2://fleet-mcp-ENV-blobs/ops/backups/STAMP-SHA.sql`, restores it into an isolated SQLite,
+checks `integrity_check` and that each restored count lies between the counts taken before and
+after export, and writes `artifacts/backup-ENV-STAMP.json`. Exercised on staging 2026-11-23:
+30 tables, integrity ok, zero mismatches (receipt archived next to the backup in R2).
+
+Restore a live database (destructive to current D1 state, owner decision required):
+
+1. Preferred, last 30 days: `npx wrangler d1 time-travel info fleet-mcp-ENV --env ENV` for a
+   bookmark, then `npx wrangler d1 time-travel restore fleet-mcp-ENV --env ENV --bookmark B`.
+2. From an export: download it with `npx wrangler r2 object get BUCKET/KEY --file F --remote`,
+   verify its SHA-256 against the receipt, create a fresh D1 database, `npx wrangler d1 execute
+   NEW --remote --file F`, rebind `database_id` in wrangler.toml, deploy, and sweep.
+3. After either: run the fixture sweep and `node scripts/backup.mjs ENV` again.

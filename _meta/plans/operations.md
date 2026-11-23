@@ -35,3 +35,9 @@ created: 2026-11-23
   this attempt's test output and that migration. No failing fixture was modified.
 - Live release not attempted: deploy requires a clean checkout; active foreign
   sidecar changes and handler ownership are present. No deployment was repeated.
+
+## 2026-11-23 attempt 2
+
+- #18 landed (aad30bd); handler free. Built `src/ops.ts` (admission DO, payload bounds, deadlines,
+  upstream retry budget and breaker, metrics, alert cron), migration 0011 `ops_events`,
+  `scripts/backup.mjs`, sweep ops checks. Staging restore drill passed (receipt in R2 ops/backups/).

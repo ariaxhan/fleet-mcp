@@ -2,6 +2,7 @@ import type { Env } from './handler';
 import type { Caller } from './auth';
 import { constantTimeEqual, hmacHex, sha256Hex, writeAudit } from './auth';
 import { CoreError, PERSONAL_SOURCE_REPOS, type Outcome } from './core';
+import { upstream, record } from './ops';
 
 // Spike design decisions: freshness 60 seconds, bounded reconciliation 20 pages.
 const REPO = 'ariaxhan/fleet-mcp';
@@ -20,8 +21,8 @@ async function github(env: Env, path: string): Promise<any> {
   const headers: Record<string, string> = { accept: 'application/vnd.github+json',
     'user-agent': 'fleet-mcp-spike', 'x-github-api-version': '2022-11-28' };
   if (env.GITHUB_TOKEN) headers.authorization = `Bearer ${env.GITHUB_TOKEN}`;
-  const r = await fetch(`https://api.github.com/repos/${REPO}/${path}`, {
-    headers, redirect: 'manual', signal: AbortSignal.timeout(10000) });
+  const r = await upstream(env, 'github', () => fetch(`https://api.github.com/repos/${REPO}/${path}`, {
+    headers, redirect: 'manual', signal: AbortSignal.timeout(10000) }));
   if (!r.ok) throw new CoreError(r.status === 404 ? 404 : 503, r.status === 404 ? 'not_found' : 'github_unavailable');
   return r.json();
 }
@@ -179,6 +180,8 @@ export async function githubWebhook(r: Request, env: Env): Promise<Response> {
   await writeAudit(env,{caller:connector,operation:'github_webhook',correlationId:crypto.randomUUID(),result:'started'},new Date());
   const number=data.issue?.number;
   if (!Number.isInteger(number) || number < 1) return Response.json({error:'invalid_input'},{status:400});
+  const updated=Date.parse(data.comment?.updated_at ?? data.issue?.updated_at);
+  if (Number.isFinite(updated)) await record(env,'webhook_lag','github',(Date.now()-updated)/1000);
   // Commit invalidation before contacting GitHub. Failed deliveries remain visibly stale.
   await env.DB.batch([
     env.DB.prepare('UPDATE issue_heads SET invalidated=1,invalidation_epoch=invalidation_epoch+1 WHERE tenant_id=? AND namespace_id=? AND repo=? AND number=?')

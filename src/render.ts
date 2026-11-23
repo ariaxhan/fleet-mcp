@@ -1,4 +1,5 @@
 import puppeteer, { type Browser } from '@cloudflare/puppeteer';
+import { record } from './ops';
 import type { Caller } from './auth';
 import { sha256Hex } from './auth';
 import { CoreError, type Outcome } from './core';
@@ -124,6 +125,7 @@ export class RenderHub {
         return;
       }
       job.state='running';job.started_at=new Date().toISOString();
+      await record(this.env,'render_queue','verify_render',(Date.parse(job.started_at)-Date.parse(job.queued_at))/1000);
       await this.state.storage.put('job:'+job.id,job);
       const totalEnd=Date.now()+this.timing.totalMs;
       this.activeDeadline=totalEnd;

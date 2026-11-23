@@ -6,6 +6,7 @@ export interface Env {
   RENDER_HUB: DurableObjectNamespace;
   FLEET_WAIT: DurableObjectNamespace;
   HANDOFF_COORDINATOR: DurableObjectNamespace;
+  OPS_GUARD?: DurableObjectNamespace;
   ENVIRONMENT: string;
   FIXTURE_NAMESPACE: string;
   BUILD_SHA: string;
@@ -28,6 +29,7 @@ import { fleetWait } from './wait';
 import { handleMcp, MCP_PROTOCOL } from './mcp';
 import { ingestVerification, verificationCheck } from './verification';
 import { renderCall, getRender } from './render';
+import { LIMITS, admit, withDeadline, correlationOf, record, metrics } from './ops';
 
 const STAGE = 'spike-core';
 const ROUTES: Record<string, { method: string; operation: string;
@@ -87,8 +89,8 @@ const CONNECTOR_ROUTES: Record<string, [string, string, ConnectorOp]> = {
   '/connector/reconcile': ['POST', 'connector_reconcile', reconcileConnector],
 };
 
-async function connectorIngest(request: Request, env: Env, operation: string, op: ConnectorOp): Promise<Response> {
-  const start = Date.now(), now = new Date(), correlationId = crypto.randomUUID();
+async function connectorIngest(request: Request, env: Env, operation: string, op: ConnectorOp, correlationId: string): Promise<Response> {
+  const start = Date.now(), now = new Date();
   const raw = new Uint8Array(await request.arrayBuffer());
   let machine;
   try { machine = await authenticateMachine(request, env, raw, now); } catch { return json({ error: 'policy_unavailable' }, 503); }
@@ -108,8 +110,8 @@ async function connectorIngest(request: Request, env: Env, operation: string, op
 }
 
 /** Authenticated core route: audit precedes dispatch, and audit failure denies the operation. */
-async function protectedRoute(request: Request, env: Env, url: URL, route: typeof ROUTES[string]): Promise<Response> {
-  const start = Date.now(), now = new Date(), correlationId = crypto.randomUUID();
+async function protectedRoute(request: Request, env: Env, url: URL, route: typeof ROUTES[string], correlationId: string): Promise<Response> {
+  const start = Date.now(), now = new Date();
   let caller: Caller | null;
   try { caller = await authenticate(request, env, now); } catch (e) {
     return json({ error: e instanceof PolicyUnavailable ? 'policy_unavailable' : 'internal_error' }, 503);
@@ -121,15 +123,32 @@ async function protectedRoute(request: Request, env: Env, url: URL, route: typeo
   }
   try { await writeAudit(env, { ...base, result: 'started' }, now); } catch { return json({ error: 'audit_unavailable' }, 503); }
   let status = 500, payload: Record<string, unknown> = { error: 'internal_error' }, out: Outcome | null = null;
+  const deadline = LIMITS.deadlineMs[route.operation] ?? LIMITS.defaultDeadlineMs;
+  let release = async () => {};
   try {
-    out = await route.run(env, caller, request, url, now);
+    release = await admit(env, caller.principalId, route.operation, deadline);
+    const bounded = await boundedBody(request, route.operation);
+    out = await withDeadline(deadline, () => route.run(env, caller, bounded, url, now));
     status = out.status ?? 200; payload = out.body;
   } catch (e) {
     if (e instanceof CoreError) { status = e.status; payload = { error: e.code, ...e.detail }; }
-  }
+  } finally { await release(); }
+  const meta = (payload.meta ?? payload) as Record<string, unknown>;
+  if (meta.cache_status === 'stale' && typeof meta.source_observed_at === 'string')
+    await record(env, 'stale_served', route.operation, (Date.now() - Date.parse(meta.source_observed_at)) / 1000, correlationId);
   await writeAudit(env, { ...base, result: status < 400 ? 'ok' : String(payload.error), targetId: out?.targetId,
     latencyMs: Date.now() - start, size: out?.size, contentDigest: out?.digest }, new Date()).catch(() => {});
   return json({ ...payload, correlation_id: correlationId }, status);
+}
+
+/** Payload bound per tool, enforced on the bytes actually read, not only the declared length. */
+async function boundedBody(request: Request, operation: string): Promise<Request> {
+  if (request.method === 'GET') return request;
+  const limit = LIMITS.payloadBytes[operation] ?? LIMITS.defaultPayloadBytes;
+  if (Number(request.headers.get('content-length') ?? 0) > limit) throw new CoreError(413, 'payload_too_large', { limit_bytes: limit });
+  const raw = await request.arrayBuffer();
+  if (raw.byteLength > limit) throw new CoreError(413, 'payload_too_large', { limit_bytes: limit });
+  return new Request(request.url, { method: request.method, headers: request.headers, body: raw, signal: request.signal });
 }
 
 const json = (value: unknown, status = 200) => Response.json(value, {
@@ -137,29 +156,44 @@ const json = (value: unknown, status = 200) => Response.json(value, {
 });
 
 export async function handle(request: Request, env: Env): Promise<Response> {
+  const correlationId = correlationOf(request);
+  const response = await route(request, env, correlationId);
+  const out = new Response(response.body, response);
+  out.headers.set('x-correlation-id', correlationId);
+  return out;
+}
+
+async function route(request: Request, env: Env, correlationId: string): Promise<Response> {
   const url = new URL(request.url), path = url.pathname;
   if(path === '/mcp') return handleMcp(request,env,handle);
   const signed = CONNECTOR_ROUTES[path];
-  if (signed) return request.method === signed[0] ? connectorIngest(request, env, signed[1], signed[2]) : json({ error: 'method_not_allowed' }, 405);
+  if (signed) return request.method === signed[0] ? connectorIngest(request, env, signed[1], signed[2], correlationId) : json({ error: 'method_not_allowed' }, 405);
   const renderMatch=/^\/v1\/render\/jobs\/([a-f0-9-]{36})(\/screenshot)?$/.exec(path);
   if(renderMatch) {
     if(request.method!=='GET') return json({error:'method_not_allowed'},405);
     try {
       const c=await authenticate(request,env,new Date());
       if(!c) return json({error:'unauthorized'},401);
-      await writeAudit(env,{caller:c,operation:'verify_render_read',correlationId:crypto.randomUUID(),result:'started'},new Date());
+      await writeAudit(env,{caller:c,operation:'verify_render_read',correlationId,result:'started'},new Date());
       return await getRender(env,c,renderMatch[1],!!renderMatch[2]);
     } catch(e) { return json({error:e instanceof CoreError?e.code:'policy_unavailable'},e instanceof CoreError?e.status:503); }
   }
   if(path === '/webhooks/github' && request.method === 'POST') return githubWebhook(request,env);
-  const route = ROUTES[path];
-  if (route) return request.method === route.method ? protectedRoute(request, env, url, route) : json({ error: 'method_not_allowed' }, 405);
+  const found = ROUTES[path];
+  if (found) return request.method === found.method ? protectedRoute(request, env, url, found, correlationId) : json({ error: 'method_not_allowed' }, 405);
   if (request.method !== 'GET') return json({ error: 'not_implemented' }, 501);
   if (path === '/health') return json({ status: 'ok', service: 'fleet-mcp', stage: STAGE });
   if (path === '/version') return json({
     commit: env.BUILD_SHA ?? 'development', build_time: env.BUILD_TIME ?? null,
-    environment: env.ENVIRONMENT, stage: STAGE, mcp_protocol: MCP_PROTOCOL,
+    environment: env.ENVIRONMENT, stage: STAGE, mcp_protocol: MCP_PROTOCOL, ops: true,
   });
+  // Operational metrics and alerts: same fixture probe credential, aggregate counts only, no corpus content.
+  if (path === '/internal/ops') {
+    if (!env.SWEEP_TOKEN || request.headers.get('authorization') !== `Bearer ${env.SWEEP_TOKEN}`)
+      return json({ error: 'unauthorized' }, 401);
+    try { return json({ environment: env.ENVIRONMENT, ...await metrics(env) }); }
+    catch { return json({ error: 'metrics_unavailable' }, 503); }
+  }
   // This credential authorizes only fixed fixture probes, never corpus access.
   if (path === '/internal/fixture') {
     if (!env.SWEEP_TOKEN || request.headers.get('authorization') !== `Bearer ${env.SWEEP_TOKEN}`)

@@ -3,6 +3,7 @@ import type { Caller } from './auth';
 import { sha256Hex } from './auth';
 import { CoreError, type Outcome } from './core';
 import { connectorState, type Machine } from './connector';
+import { record } from './ops';
 
 export const SUITE = 'fleet-mcp-typecheck';
 const HASH = /^[a-f0-9]{64}$/;
@@ -57,6 +58,8 @@ export async function verificationCheck(env: Env, c: Caller, input: any, now: Da
     LEFT JOIN connector_status s ON s.machine_id=v.machine_id WHERE v.tenant_id=? AND v.namespace_id=? AND v.identity_hash=?
     AND m.revoked_at IS NULL ORDER BY v.computed_at DESC, v.received_at DESC LIMIT 1`)
     .bind(c.tenantId, c.namespaceId, hash).first<any>();
+  const checker = `${SUITE}@${input.identity.suite_version}`;
+  await record(env, 'verification_check', checker, r ? 1 : 0);
   if (!r) return { body: { cache_status: 'miss', reason: 'identity_not_observed', identity_hash: hash } };
   const state = connectorState(r.last_heartbeat_at, now);
   const stale = state !== 'fresh' || now.getTime() - Date.parse(r.source_observed_at) > maxAge * 1000;

@@ -16,6 +16,10 @@ new_sqlite_classes = ["FleetWait", "HandoffCoordinator"]
 tag = "v2"
 new_sqlite_classes = ["RenderCoordinator"]
 
+[[migrations]]
+tag = "v3"
+new_sqlite_classes = ["OpsGuard"]
+
 [env.staging]
 name = "fleet-mcp-staging"
 routes = [{ pattern = "staging-mcp.ariaxhan.com", custom_domain = true }]
@@ -79,3 +83,11 @@ class_name = "RenderCoordinator"
 [[env.production.durable_objects.bindings]]
 name = "RENDER_HUB"
 class_name = "RenderCoordinator"
+
+[[env.staging.durable_objects.bindings]]
+name = "OPS_GUARD"
+class_name = "OpsGuard"
+
+[[env.production.durable_objects.bindings]]
+name = "OPS_GUARD"
+class_name = "OpsGuard"

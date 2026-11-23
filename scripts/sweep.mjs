@@ -1,7 +1,9 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-export async function sweep(base, expectedCommit, environment, token, coreToken) {
+// previousBuild: the between-migrations sweep targets the build already live, which may predate
+// operations routes (#27); it skips them only when that build does not advertise `ops`.
+export async function sweep(base, expectedCommit, environment, token, coreToken, { previousBuild = false } = {}) {
   const url = new URL(base);
   if (url.protocol !== 'https:' || url.username || url.password || url.pathname !== '/')
     throw new Error('Sweep requires an HTTPS deployment origin');
@@ -29,6 +31,19 @@ export async function sweep(base, expectedCommit, environment, token, coreToken)
   await check('fixture-bindings', '/internal/fixture', (r, b) => r.ok
     && b.namespace === `fixture-${environment}` && Object.keys(b.checks ?? {}).length === 6
     && Object.values(b.checks).every(v => v === true), { authorization: `Bearer ${token ?? ''}` });
+  let advertisesOps = true;
+  if (previousBuild) advertisesOps = await fetch(new URL('/version', url), { redirect: 'error', signal: AbortSignal.timeout(15000) })
+    .then(r => r.json()).then(b => b.ops === true).catch(() => true);
+  if (advertisesOps) {
+    await check('ops-unauthorized', '/internal/ops', r => r.status === 401);
+    await check('ops-metrics', '/internal/ops', (r, b) => r.ok && b.environment === environment && b.admission?.enforced === true
+      && ['connector_lag_s', 'webhook_lag_s', 'feed_coverage_age_s', 'outbox_backlog', 'stale_response_age_s',
+        'upstream_rate_limit_remaining_min', 'render_queue_time_s_max', 'retry_amplification'].every(k => k in (b.values ?? {}))
+      && Array.isArray(b.alerts) && typeof b.verification_reuse_by_checker === 'object' && b.limits?.globalPerMin > 0,
+      { authorization: `Bearer ${token ?? ''}` });
+    await check('correlation-id', '/health', r => r.headers.get('x-correlation-id') === 'sweep-correlation-01',
+      { 'x-correlation-id': 'sweep-correlation-01' });
+  }
   await check('core-unauthenticated', '/v1/docs/get?name=x', r => r.status === 401);
   if (coreToken) {
     const name = encodeURIComponent('ariaxhan/fleet-mcp/AGENTS.md');

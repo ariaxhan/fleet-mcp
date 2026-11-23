@@ -29,7 +29,8 @@ async function main() {
   const stamp = `${Date.now()}-${process.pid}`;
   const wrangler = (...args) => execFileSync(resolve('node_modules/.bin/wrangler'), args, { stdio: 'inherit' });
   async function checkedSweep(commit, phase) {
-    const receipt = await sweep(base, commit, environment, process.env.FLEET_SWEEP_TOKEN, process.env.FLEET_CORE_TOKEN);
+    const receipt = await sweep(base, commit, environment, process.env.FLEET_SWEEP_TOKEN, process.env.FLEET_CORE_TOKEN,
+      { previousBuild: phase === 'between-migrations' });
     record.phases.push({ phase, receipt });
     await writeFile(`artifacts/sweep-${environment}.json`, JSON.stringify(receipt, null, 2) + '\n');
     if (!receipt.pass) throw new Error(`${phase} failed; preserve receipt, do not repeat deployment to check readiness`);
