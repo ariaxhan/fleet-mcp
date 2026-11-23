@@ -7,7 +7,7 @@ One unified MCP server on Cloudflare serving the working state of an agent fleet
 G0 passed in [the owning chat sign-off](docs/gates/g0-signoff.md). The scaffold deploys infrastructure only. [Deployment commands and live sweep](docs/deploy.md). The remaining order is:
 
 1. **Phase 0, Revision.** Fix the PRD per both reviews (Studio connector spec, cache identity contract, auth model, control plane, benchmark statistics, single-model scope, deliverables section, remaining fixes sweep), then align the paper skeleton.
-2. **Phase 1, Spike.** A bounded architecture spike: core slice, minimal sidecar, Issue Context and Recall read paths, read-only Fleet Status with a bounded wait, platform proof. Eight proof criteria gate the full build.
+2. **Phase 1, Spike.** A bounded architecture spike: core slice, minimal sidecar, Issue Context and Recall read paths, read-only Fleet Status with a bounded wait, platform proof. Eight proof criteria gate the full build. [G1 verdict: NO-GO](docs/gates/g1-verdict.md), unsupported behaviors deferred pending spike evidence.
 3. **Phase 2, Build.** The full v1 server: Context plus State plus Render inside Verify, with the Studio sidecar and the control plane.
 4. **Phase 3, Benchmarks.** Deterministic replays, preregistration freeze, then a 3-phase agent experiment (pilot 10x2, confirmatory floor 30x2 with a 50x2 cap, repeatability substudy), then independent verification. Minimum 120 runs.
 5. **Phase 4, Deliverables.** The full report, the HTML page, the research paper, and the data archive audit.

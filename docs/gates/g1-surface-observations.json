@@ -1,0 +1,49 @@
+{
+  "observed_at": "2026-11-23T01:43:03.386173+00:00",
+  "reviewed_commit": "a3693207592bc57e26afbedc7ea6f856dec59afb",
+  "scope": "Personal-project Fleet MCP public scaffold endpoints only. No benchmark runs.",
+  "observations": [
+    {
+      "environment": "staging",
+      "url": "https://fleet-mcp-staging.ariaxhan.workers.dev/health",
+      "status": 403,
+      "content_type": "text/plain; charset=UTF-8",
+      "body": "error code: 1010\n"
+    },
+    {
+      "environment": "staging",
+      "url": "https://fleet-mcp-staging.ariaxhan.workers.dev/version",
+      "status": 403,
+      "content_type": "text/plain; charset=UTF-8",
+      "body": "error code: 1010\n"
+    },
+    {
+      "environment": "staging",
+      "url": "https://fleet-mcp-staging.ariaxhan.workers.dev/mcp",
+      "status": 403,
+      "content_type": "text/plain; charset=UTF-8",
+      "body": "error code: 1010\n"
+    },
+    {
+      "environment": "production",
+      "url": "https://fleet-mcp.ariaxhan.workers.dev/health",
+      "status": 403,
+      "content_type": "text/plain; charset=UTF-8",
+      "body": "error code: 1010\n"
+    },
+    {
+      "environment": "production",
+      "url": "https://fleet-mcp.ariaxhan.workers.dev/version",
+      "status": 403,
+      "content_type": "text/plain; charset=UTF-8",
+      "body": "error code: 1010\n"
+    },
+    {
+      "environment": "production",
+      "url": "https://fleet-mcp.ariaxhan.workers.dev/mcp",
+      "status": 403,
+      "content_type": "text/plain; charset=UTF-8",
+      "body": "error code: 1010\n"
+    }
+  ]
+}
