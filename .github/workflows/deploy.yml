@@ -35,7 +35,9 @@ jobs:
         if: always()
         with:
           name: staging-sweep
-          path: artifacts/sweep-staging.json
+          path: |
+            artifacts/sweep-staging.json
+            artifacts/release-staging-*.json
   production:
     if: github.event_name != 'pull_request'
     needs: staging
@@ -61,4 +63,6 @@ jobs:
         if: always()
         with:
           name: production-sweep
-          path: artifacts/sweep-production.json
+          path: |
+            artifacts/sweep-production.json
+            artifacts/release-production-*.json

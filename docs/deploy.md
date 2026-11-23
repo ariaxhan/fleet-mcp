@@ -23,9 +23,8 @@ npm run deploy:staging
 npm run sweep -- https://staging-mcp.ariaxhan.com "$(git rev-parse HEAD)" staging
 ```
 
-Deploy requires a clean checkout and embeds HEAD plus build time. It waits for
-that exact deployed SHA within a bounded readiness budget before the sweep.
-The budget is a design decision, not a measured propagation guarantee. Export
+Deploy requires a clean checkout and embeds HEAD plus build time. It performs one
+post-deploy sweep against that exact SHA, without readiness polling. Export
 CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID through the credential manager.
 FLEET_SWEEP_TOKEN must match Worker secret SWEEP_TOKEN. The probe credential
 permits only fixed fixture dependency reads, no corpus access or arbitrary input.
@@ -34,6 +33,36 @@ for production. Never put secret values in command arguments or committed files.
 The same fixture probe credential is stored as a GitHub Actions secret.
 
 ## Pipeline and promotion
+
+Release order (`scripts/deploy.mjs`): apply expand migrations, sweep the existing
+deployed build against the expanded schema, apply contract migrations, deploy,
+then sweep the new build in its fixture namespace. Each failed phase stops later
+effects. Existing applied migration files remain immutable. Contract files use
+`NNNN_contract_NAME.sql`; all other SQL files are expansions or compatible
+backfills. The intervening sweep proves compatibility only for its covered paths.
+
+Before a release containing contract migrations, supply the protected local file
+`artifacts/contract-approval-ENV.json`. Required fields: `commit`, `environment`,
+`old_readers_retired: true`, `restore_pass: true`, `backup_sha256`,
+`backup_location`, `verifier`. The verifier must be independent of the migration
+producer. This receipt records exercised recovery and old-reader retirement,
+not permission to reconstruct missing evidence. No contract migration exists in
+the currently landed schema. The backup and restore implementation and its
+exercise remain pending under #27.
+
+Release receipts retain phase results in `artifacts/release-ENV-TIMESTAMP-PID.json`.
+Sweeps retain their raw observations in the release receipt, including failures.
+A route propagation failure does not authorize repeating the deploy. On a later
+runner attempt, after the deployed SHA is available, verify without deploying:
+
+```sh
+node scripts/deploy.mjs staging --verify-only
+node scripts/deploy.mjs production --verify-only
+```
+
+These commands make one surface check per sweep route. They require the same
+clean checkout and fixture credential as release mode. A production release still
+requires staging to pass at the same SHA. CI enforces this dependency.
 
 CI runs on pushes and pull requests: clean npm install, dependency audit, unit and
 SQLite migration tests, typecheck, dry-run bundle and repeated local migration.
