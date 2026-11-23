@@ -1,0 +1,35 @@
+{
+  "purpose": "functional spike validation, not benchmark",
+  "origin": "https://fleet-mcp.ariaxhan.workers.dev",
+  "sha": "137cd0f6625f09687453769d0875b626736f8d7e",
+  "observed_at": "2026-11-23T02:12:54.584Z",
+  "checks": [
+    {
+      "name": "build",
+      "status": 200,
+      "elapsed_ms": 153.66387500000008,
+      "body": {
+        "commit": "137cd0f6625f09687453769d0875b626736f8d7e",
+        "build_time": "2026-11-23T02:12:48.890Z",
+        "environment": "production",
+        "stage": "spike-core",
+        "mcp_protocol": null
+      }
+    },
+    {
+      "name": "fleet_list_flights",
+      "status": 200,
+      "elapsed_ms": 167.75645800000007,
+      "body": {
+        "flights": [],
+        "has_more": false,
+        "meta": {
+          "source": "d1",
+          "cache_status": "bypass",
+          "served_at": "2026-11-23T02:12:54.747Z"
+        },
+        "correlation_id": "b8f8bb20-f72f-48ff-ac43-05731a777b97"
+      }
+    }
+  ]
+}

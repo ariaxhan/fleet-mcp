@@ -55,3 +55,11 @@ test('repo wait catches events between calls after restart',async()=>{
  h.event('done'); h.restart();
  assert.equal((await h.call(h.tokens.fleet,'/v1/fleet/wait',{wait_id:first.body.wait_id,timeout_s:0})).body.met,true);
 });
+
+test('resume binds policy and repository scope, invalid payload fails closed',async()=>{
+ const h=await fixture();
+ const first=await h.call(h.tokens.fleet,'/v1/fleet/wait',{condition:{repo:'ariaxhan/fleet-mcp'},timeout_s:0});
+ h.db.prepare("UPDATE tokens SET source_repos='[]' WHERE principal_id='fleet'").run();
+ assert.equal((await h.call(h.tokens.fleet,'/v1/fleet/wait',{wait_id:first.body.wait_id,timeout_s:0})).status,404);
+ assert.equal((await h.call(h.tokens.fleet,'/v1/fleet/wait',[])).status,400);
+});

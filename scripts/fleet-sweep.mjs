@@ -1,6 +1,5 @@
 import {execFileSync,spawn} from 'node:child_process';
-import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
-import {homedir} from 'node:os';
+import {mkdirSync,writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 const [environment,sha]=process.argv.slice(2);
 if(!['staging','production'].includes(environment)||!/^[a-f0-9]{40}$/.test(sha??'')) throw Error('environment SHA required');
@@ -18,8 +17,6 @@ async function call(name,path,body,signal) {
 }
 try {
  assert.equal((await call('build','/version')).commit,sha);
- const list=await call('fleet_list_flights','/v1/fleet/list'); assert.ok(list.flights.length);
- await call('fleet_get_flight','/v1/fleet/get?id='+encodeURIComponent(list.flights[0].id));
  const feed=await call('fleet_what_changed_since','/v1/fleet/changes');
  const registration=await call('register','/v1/fleet/wait',{condition:{repo:'ariaxhan/fleet-mcp'},timeout_s:0});
  assert.equal(registration.met,false);
@@ -33,6 +30,8 @@ try {
  const exit=await new Promise(resolve=>sidecar.on('exit',resolve));
  receipt.checks.push({name:'real_sidecar_collection',exit,output}); assert.equal(exit,0);
  const met=await pending;assert.equal(met.met,true,'real new fleet event required');assert.equal(met.wait_id,registration.wait_id);
+ const list=await call('fleet_list_flights','/v1/fleet/list'); assert.ok(list.flights.length);
+ await call('fleet_get_flight','/v1/fleet/get?id='+encodeURIComponent(list.flights[0].id));
  const resumed=await call('resume_after_event','/v1/fleet/wait',{wait_id:registration.wait_id,timeout_s:0});assert.equal(resumed.met,true);
  const delta=await call('fleet_delta','/v1/fleet/changes?cursor='+encodeURIComponent(feed.next_cursor));assert.ok(delta.events.some(e=>e.kind==='fleet_event'));
  receipt.pass=true;

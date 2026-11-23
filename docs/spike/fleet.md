@@ -45,3 +45,22 @@ No runner event is inserted or fabricated. A missing real new event fails the ca
 MCP transport negotiation and measured Codex tool timeout proof remain #15. This
 HTTP slice and its conservative cap do not establish that separate G1 criterion.
 Independent runner/owner surface verification remains required before issue closure.
+
+## This attempt's receipts
+
+Functional HTTP surface receipts, produced and inspected by this implementing lane:
+- [Staging pass](evidence/fleet-staging-1795399962135.json): disconnect, resumed ID,
+  signed real sidecar ingestion, server wake, reads and feed delta.
+- [Initial production failure](evidence/fleet-production-1795399974908.json): no
+  flights because the production sidecar was not enrolled. No state was reconstructed.
+- [Production pass after enrollment](evidence/fleet-production-1795400008875.json):
+  the same functional path, driven by the collector's real runner observations.
+- [Production bounded call](evidence/fleet-production-bounded.json): requested cap
+  returned `met: false` before the capture client's deadline. Exact timings and
+  configured timeout thresholds are in that raw receipt.
+
+These captures exercised deployed Worker commit `137cd0f6625f09687453769d0875b626736f8d7e`.
+The subsequent invalid-payload guard is locally regression-checked and deployed again.
+Subagent review was attempted but unavailable (collaboration thread-store error).
+Independent acceptance and actual Codex MCP timeout proof remain UNPROVEN here;
+the owning chat and #15 must supply those receipts. No G1 GO is asserted.

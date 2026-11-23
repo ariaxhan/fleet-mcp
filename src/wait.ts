@@ -10,6 +10,7 @@ type Saved = { scope: string; condition: Condition; from: number; created: numbe
 export const hubName = (c: {tenantId:string;namespaceId:string}) => JSON.stringify([c.tenantId,c.namespaceId]);
 export async function fleetWait(env: Env,c: Caller,input: any): Promise<Outcome> {
   requireFleet(c);
+  if(!input || typeof input!=='object' || Array.isArray(input)) throw new CoreError(400,'invalid_input');
   const timeout=input?.timeout_s??WAIT_CAP_S;
   if(!Number.isFinite(timeout)||timeout<0||timeout>WAIT_CAP_S) throw new CoreError(400,'invalid_timeout');
   if(input.wait_id && input.condition) throw new CoreError(400,'invalid_input');
