@@ -1,0 +1,24 @@
+{
+  "observed_at": "2026-11-23T17:36:50.198Z",
+  "classification": "actual-existing-connector-state-before-recovery",
+  "surfaces": [
+    {
+      "env": "staging",
+      "url": "https://staging-mcp.ariaxhan.com/v1/fleet/status",
+      "status": 403,
+      "body": {
+        "error": "forbidden",
+        "correlation_id": "c39ee0c4-0b93-4f59-9c7f-195c78623774"
+      }
+    },
+    {
+      "env": "production",
+      "url": "https://mcp.ariaxhan.com/v1/fleet/status",
+      "status": 403,
+      "body": {
+        "error": "forbidden",
+        "correlation_id": "983faa7a-c4b7-4f8b-b03f-a66425311eb9"
+      }
+    }
+  ]
+}
