@@ -1,0 +1,205 @@
+{
+  "task": "ariaxhan/fleet-mcp#13",
+  "purpose": "Functional spike acceptance only, not a benchmark arm or effect estimate",
+  "implementation_sha": "cfa116118c322e693508ad2b57e76c8916cb8b12",
+  "gates": {
+    "G0": "docs/gates/g0-signoff.md",
+    "core": "511dd8015361bb4f0750d7db9a231e2c119f308d",
+    "G1": "NO-GO remains; no full v1 claim",
+    "benchmark": "UNPROVEN, no treatment runs executed"
+  },
+  "sources": [
+    {
+      "environment": "staging",
+      "raw_path": "/Users/slowember/VaultsInternal/CodingVault/fleet-mcp/artifacts/read-paths-staging-1795399998149.json",
+      "sha256": "e47bdca90c4fce98af6a6cb533f8e4192446e091eb357293e7025c04ab17fbe1",
+      "archive": "r2://fleet-mcp-staging-blobs/fixture-staging/spike-13/read-paths-1795399998149.json",
+      "archive_readback_hash_verified": true,
+      "observed_at": "2026-11-23T02:13:13.451Z",
+      "deployed_sha": "137cd0f6625f09687453769d0875b626736f8d7e",
+      "pass_result": true,
+      "client_latency_source": "Node performance.now around HTTP request through response JSON parse; raw checks entries",
+      "checks": [
+        {
+          "name": "build",
+          "status": 200,
+          "latency_ms": 292.96579099999997,
+          "correlation_id": null
+        },
+        {
+          "name": "issue_get",
+          "status": 200,
+          "latency_ms": 865.53,
+          "correlation_id": "a0fa30d0-f997-429e-bf13-98de0aeac11c"
+        },
+        {
+          "name": "issue_unchanged",
+          "status": 200,
+          "latency_ms": 174.50925000000007,
+          "correlation_id": "0c08d6e2-3b42-4755-83b5-7042cb4ed64f"
+        },
+        {
+          "name": "webhook_signature_refused",
+          "status": 401,
+          "latency_ms": 129.77491699999996,
+          "correlation_id": null
+        },
+        {
+          "name": "signed_real_issue_revalidation",
+          "status": 200,
+          "latency_ms": 1080.935083,
+          "correlation_id": null
+        },
+        {
+          "name": "issue_after_invalidation",
+          "status": 200,
+          "latency_ms": 207.5637499999998,
+          "correlation_id": "bd90ff12-4fef-4483-8bbf-1fdc7a6302e6"
+        },
+        {
+          "name": "reconcile",
+          "status": 200,
+          "latency_ms": 994.5900420000003,
+          "correlation_id": "d5079b60-8fef-42f4-8946-f69c3b253e19"
+        },
+        {
+          "name": "issue_list",
+          "status": 200,
+          "latency_ms": 376.06516699999975,
+          "correlation_id": "f1713478-ae97-4f83-81cf-1deeebee1e59"
+        },
+        {
+          "name": "recall_query",
+          "status": 200,
+          "latency_ms": 292.6944999999996,
+          "correlation_id": "d756337e-ae7b-4428-ac05-73feeb0bfbad"
+        },
+        {
+          "name": "recall_health",
+          "status": 200,
+          "latency_ms": 281.5301250000002,
+          "correlation_id": "cbdcf3de-4eb5-44c9-b76f-d0775a081a42"
+        }
+      ],
+      "recall_latency_ms": 94,
+      "recall_latency_source": "raw receipt checks[name=recall_query].body.latency_source",
+      "health_source": "raw receipt checks[name=recall_health].body.stores"
+    },
+    {
+      "environment": "production",
+      "raw_path": "/Users/slowember/VaultsInternal/CodingVault/fleet-mcp/artifacts/read-paths-production-1795400004197.json",
+      "sha256": "50ae11a7fc53727e89f13874d1a78ef63fcafe6d65c9ce1675b869575eb3b754",
+      "archive": "r2://fleet-mcp-production-blobs/fixture-production/spike-13/read-paths-1795400004197.json",
+      "archive_readback_hash_verified": true,
+      "observed_at": "2026-11-23T02:13:19.139Z",
+      "deployed_sha": "137cd0f6625f09687453769d0875b626736f8d7e",
+      "pass_result": true,
+      "client_latency_source": "Node performance.now around HTTP request through response JSON parse; raw checks entries",
+      "checks": [
+        {
+          "name": "build",
+          "status": 200,
+          "latency_ms": 220.09187500000002,
+          "correlation_id": null
+        },
+        {
+          "name": "issue_get",
+          "status": 200,
+          "latency_ms": 799.2351249999999,
+          "correlation_id": "ac7c3d13-7801-404e-8a69-b1acdc49984f"
+        },
+        {
+          "name": "issue_unchanged",
+          "status": 200,
+          "latency_ms": 299.77779199999986,
+          "correlation_id": "5e5e02e5-d49d-45d3-a118-02cdb69c97ea"
+        },
+        {
+          "name": "webhook_signature_refused",
+          "status": 401,
+          "latency_ms": 79.74341699999991,
+          "correlation_id": null
+        },
+        {
+          "name": "signed_real_issue_revalidation",
+          "status": 200,
+          "latency_ms": 935.6086670000002,
+          "correlation_id": null
+        },
+        {
+          "name": "issue_after_invalidation",
+          "status": 200,
+          "latency_ms": 197.75895899999978,
+          "correlation_id": "0ddb0eef-2bc8-42f4-bf8f-ffd43dd45726"
+        },
+        {
+          "name": "reconcile",
+          "status": 200,
+          "latency_ms": 1131.4280830000002,
+          "correlation_id": "835fc98a-78a2-4c5a-8881-472bbe4532f7"
+        },
+        {
+          "name": "issue_list",
+          "status": 200,
+          "latency_ms": 513.3026249999998,
+          "correlation_id": "f440f8cf-cc1d-4307-96b9-5b872614cfa8"
+        },
+        {
+          "name": "recall_query",
+          "status": 200,
+          "latency_ms": 417.14158399999997,
+          "correlation_id": "8bf92d5e-9a75-4964-82a6-54244540896a"
+        },
+        {
+          "name": "recall_health",
+          "status": 200,
+          "latency_ms": 462.1814169999998,
+          "correlation_id": "477ab0cb-9db2-4b37-9709-1ce5ee5b2958"
+        }
+      ],
+      "recall_latency_ms": 104,
+      "recall_latency_source": "raw receipt checks[name=recall_query].body.latency_source",
+      "health_source": "raw receipt checks[name=recall_health].body.stores"
+    }
+  ],
+  "independent_review": {
+    "verdict": "APPROVE scoped fixes",
+    "reviewer": "/root/live_review (independent context)",
+    "evidence": "Reviewer used deployed staging directly and reviewed source plus concurrent regressions. No benchmark verification claimed.",
+    "findings_closed": [
+      "Delayed issue observation rollback",
+      "Concurrent Recall sync rollback",
+      "Monotonic epoch for repeated invalidation"
+    ],
+    "deployed_sha": "137cd0f6625f09687453769d0875b626736f8d7e",
+    "live_correlations": {
+      "issue": "6f925a20-f0be-4ac1-a417-6a3e813d9189",
+      "reconcile": "6fa1a13a-d128-4ac6-afb9-2fddd487fa10",
+      "recall": "f6c40e91-f4c5-41b1-a907-766734622630",
+      "health": "9ccbf8e7-a238-4bd3-af16-2c5ad7f23b29"
+    },
+    "limitations": "Concurrency verified by source review and interleaved regression tests, not an adversarial live race."
+  },
+  "webhook_registration_source": "gh api repos/ariaxhan/fleet-mcp/hooks, last_response after pings",
+  "webhook_registrations": [
+    {
+      "id": 715559999,
+      "environment": "staging",
+      "last_http_status": 200
+    },
+    {
+      "id": 715560002,
+      "environment": "production",
+      "last_http_status": 200
+    }
+  ],
+  "retained_failure": "artifacts/read-paths-staging.json, initial internal_error capture retained; diagnostic tail operator-local",
+  "screenshot": "Not applicable: authenticated backend JSON routes, no rendered page.",
+  "validation_commands": [
+    "npm test",
+    "npm run typecheck",
+    "npm run build",
+    "scripts/sync-recall.py",
+    "scripts/read-paths-sweep.mjs"
+  ]
+}

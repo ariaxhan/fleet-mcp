@@ -80,3 +80,15 @@ or membership survives. The guard rows are removed in the successful batch.
 Repeated invalidations also advance a monotonic epoch (migration 0006), even
 when already invalidated, so an in-flight observation cannot clear a newer event.
 The regression includes repeated invalidation while the upstream read is pending.
+
+## Acceptance receipt
+
+[Machine-readable receipt](read-paths-receipt.json) links the final staging and
+production raw HTTP captures, latency sources, checksums and verified R2 copies.
+The independent reviewer used staging directly, exercised signed webhook intake
+and reconciliation, and approved the scoped concurrency fixes. Both configured
+GitHub webhooks reported successful delivery after the live fixes. This is
+functional spike evidence only. Benchmark effect and full v1 remain UNPROVEN.
+
+Operator credentials are stored in keychain items fleet-mcp-read-path-token-ENV
+and fleet-mcp-github-webhook-ENV, never in the repo or receipt.
