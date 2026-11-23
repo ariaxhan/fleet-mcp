@@ -10,6 +10,49 @@ export interface Env {
   BUILD_SHA: string;
   BUILD_TIME: string;
   SWEEP_TOKEN?: string;
+  TOKEN_HMAC_KEY?: string;
+}
+import { authenticate, writeAudit, PolicyUnavailable, type Caller } from './auth';
+import { publishDoc, getDoc, changes, CoreError, type Outcome } from './core';
+
+const STAGE = 'spike-core';
+const ROUTES: Record<string, { method: string; operation: string;
+  run: (env: Env, c: Caller, r: Request, u: URL, now: Date) => Promise<Outcome> }> = {
+  '/v1/docs/get': { method: 'GET', operation: 'exemplar_get_doc', run: (env, c, _r, u, now) => getDoc(env, c, {
+    name: u.searchParams.get('name'), version: u.searchParams.get('version'), since_version: u.searchParams.get('since_version'),
+    max_age_s: u.searchParams.get('max_age_s'), allow_stale: u.searchParams.get('allow_stale'), consistency: u.searchParams.get('consistency'),
+  }, now) },
+  '/v1/docs/publish': { method: 'POST', operation: 'ref_publish', run: async (env, c, r, _u, now) => {
+    let input; try { input = await r.json(); } catch { throw new CoreError(400, 'invalid_input'); }
+    return publishDoc(env, c, input as never, now);
+  } },
+  '/v1/changes': { method: 'GET', operation: 'doc_what_changed_since', run: (env, c, _r, u, now) =>
+    changes(env, c, u.searchParams.get('cursor'), now) },
+};
+
+/** Authenticated core route: audit precedes dispatch, and audit failure denies the operation. */
+async function protectedRoute(request: Request, env: Env, url: URL, route: typeof ROUTES[string]): Promise<Response> {
+  const start = Date.now(), now = new Date(), correlationId = crypto.randomUUID();
+  let caller: Caller | null;
+  try { caller = await authenticate(request, env, now); } catch (e) {
+    return json({ error: e instanceof PolicyUnavailable ? 'policy_unavailable' : 'internal_error' }, 503);
+  }
+  const base = { caller, operation: route.operation, correlationId };
+  if (!caller) {
+    await writeAudit(env, { ...base, result: 'unauthenticated', latencyMs: Date.now() - start }, now).catch(() => {});
+    return json({ error: 'unauthorized' }, 401);
+  }
+  try { await writeAudit(env, { ...base, result: 'started' }, now); } catch { return json({ error: 'audit_unavailable' }, 503); }
+  let status = 500, payload: Record<string, unknown> = { error: 'internal_error' }, out: Outcome | null = null;
+  try {
+    out = await route.run(env, caller, request, url, now);
+    status = out.status ?? 200; payload = out.body;
+  } catch (e) {
+    if (e instanceof CoreError) { status = e.status; payload = { error: e.code, ...e.detail }; }
+  }
+  await writeAudit(env, { ...base, result: status < 400 ? 'ok' : String(payload.error), targetId: out?.targetId,
+    latencyMs: Date.now() - start, size: out?.size, contentDigest: out?.digest }, new Date()).catch(() => {});
+  return json({ ...payload, correlation_id: correlationId }, status);
 }
 
 const json = (value: unknown, status = 200) => Response.json(value, {
@@ -17,12 +60,14 @@ const json = (value: unknown, status = 200) => Response.json(value, {
 });
 
 export async function handle(request: Request, env: Env): Promise<Response> {
-  const path = new URL(request.url).pathname;
+  const url = new URL(request.url), path = url.pathname;
+  const route = ROUTES[path];
+  if (route) return request.method === route.method ? protectedRoute(request, env, url, route) : json({ error: 'method_not_allowed' }, 405);
   if (request.method !== 'GET') return json({ error: 'not_implemented' }, 501);
-  if (path === '/health') return json({ status: 'ok', service: 'fleet-mcp', stage: 'scaffold' });
+  if (path === '/health') return json({ status: 'ok', service: 'fleet-mcp', stage: STAGE });
   if (path === '/version') return json({
     commit: env.BUILD_SHA ?? 'development', build_time: env.BUILD_TIME ?? null,
-    environment: env.ENVIRONMENT, stage: 'scaffold', mcp_protocol: null,
+    environment: env.ENVIRONMENT, stage: STAGE, mcp_protocol: null,
   });
   // This credential authorizes only fixed fixture probes, never corpus access.
   if (path === '/internal/fixture') {
@@ -45,7 +90,7 @@ export async function handle(request: Request, env: Env): Promise<Response> {
       return json({ error: 'fixture_dependency_failed' }, 503);
     }
   }
-  // No corpus ingestion, MCP transport or tools are enabled by this scaffold.
+  // MCP transport and all other corpus routes stay disabled in the core spike.
   return json({ error: 'not_found' }, 404);
 }
 

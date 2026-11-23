@@ -5,7 +5,7 @@ const env = { ENVIRONMENT: 'staging', FIXTURE_NAMESPACE: 'fixture-staging', BUIL
 test('public liveness exposes no dependency details', async () => {
   const response = await handle(new Request('https://fixture/health'), env);
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { status: 'ok', service: 'fleet-mcp', stage: 'scaffold' });
+  assert.deepEqual(await response.json(), { status: 'ok', service: 'fleet-mcp', stage: 'spike-core' });
 });
 test('version identifies scaffold without claiming a working protocol', async () => {
   const response = await handle(new Request('https://fixture/version'), env);

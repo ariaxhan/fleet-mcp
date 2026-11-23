@@ -76,7 +76,28 @@ records pass/fail and latency in artifacts/sweep-ENV.json. Failures still produc
 a receipt and a failing exit status. Expected SHA and environment are mandatory;
 HTTPS and redirect rejection prevent accidental credential forwarding.
 
-Browser execution, MCP negotiation, real-data reads, fixture write/idempotency
+## Core slice (spike S1, issue #11)
+
+Migration 0002 adds tokens, blobs, resources, versions, change_events, outbox,
+idempotency and audit. Routes (all require a caller token, default deny):
+
+- `GET /v1/docs/get?name=REPO/PATH[&version=N][&since_version=N][&max_age_s=S][&allow_stale=true][&consistency=cached|validated|strong]`
+  (`context:read`): body plus `meta` (content_hash, version, cache_status,
+  served_at, source_observed_at, last_validated_at, computed_at, source).
+- `POST /v1/docs/publish` (`context:publish`): content-addressed body to R2, then
+  one D1 batch for version, pointer, change event, outbox and idempotency record.
+- `GET /v1/changes[?cursor=C]` (`context:read`): bootstrap summary or events after
+  an opaque cursor bound to tenant, namespace, principal, policy revision and filter.
+
+Worker secret TOKEN_HMAC_KEY (keychain item fleet-mcp-token-hmac-ENV) verifies
+caller tokens; without it protected routes fail closed with 503. Issue a token:
+`FLEET_TOKEN_HMAC_KEY=... node scripts/issue-token.mjs ENV PRINCIPAL CAPS REPOS`.
+Publish real files at HEAD: `FLEET_PUBLISH_TOKEN=... node scripts/publish.mjs ORIGIN DIR OWNER/REPO PATH...`.
+The sweep adds core read, strong read, freshness_unmet and change feed checks
+when FLEET_CORE_TOKEN is set. Source repos are limited by PERSONAL_SOURCE_REPOS
+in src/core.ts. Not yet built: MCP transport, diffs, single-flight leases, fencing.
+
+Browser execution, MCP negotiation, fixture write/idempotency
 checks, auth matrix and runtime tools belong to the spike/build issues. Binding
 presence is not Browser execution proof. No G1 or benchmark claim follows from
 this infrastructure sweep. Custom domains await the owner's domain decision;
