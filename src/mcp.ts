@@ -1,8 +1,8 @@
 import type { Env } from './handler';
 import { authenticate, type Caller } from './auth';
 
-// Stateless Streamable HTTP spike. Reconnect resumes application wait_id, not an MCP session.
-// JSON replies need no SSE replay store. GET and DELETE are explicitly unsupported.
+// Bounded Streamable HTTP spike. Durable sessions isolate concurrent client request IDs.
+// Reconnect resumes application wait_id; SSE event replay remains unsupported.
 export const MCP_PROTOCOL = '2025-06-18';
 type Dispatch = (request: Request, env: Env) => Promise<Response>;
 type Props = Record<string, { type: string; description?: string; properties?: unknown; enum?: string[] }>;
@@ -28,7 +28,10 @@ const object = (x: unknown): x is Record<string, any> => !!x && typeof x === 'ob
 const reply = (value: unknown, status = 200) => Response.json(value,{status,headers:{'cache-control':'no-store'}});
 const error = (id: unknown, code: number, message: string) => ({jsonrpc:'2.0',id,error:{code,message}});
 const result = (id: unknown, value: unknown) => ({jsonrpc:'2.0',id,result:value});
-const key = (c: Caller, id: unknown) => JSON.stringify([c.tokenId,c.tenantId,c.namespaceId,typeof id,id]);
+const key = (session: string, id: unknown) => JSON.stringify([session,typeof id,id]);
+const sessionScope = (c: Caller) => JSON.stringify([c.tokenId,c.principalId,c.tenantId,c.namespaceId,c.policyRevision,c.capabilities,c.sourceRepos]);
+// Session TTL is a design decision, not a measured client limit.
+export const MCP_SESSION_TTL_MS=1800000;
 function validArgs(t: typeof MCP_TOOLS[number], args: unknown): args is Record<string, unknown> {
   if(!object(args) || t.inputSchema.required.some(k=>!(k in args))) return false;
   return Object.entries(args).every(([k,v])=> {
@@ -55,9 +58,23 @@ export async function handleMcp(request: Request, env: Env, dispatch: Dispatch):
   try { caller=await authenticate(request,env,new Date()); }
   catch { return reply({error:'policy_unavailable'},503); }
   if(!caller) return reply({error:'unauthorized'},401);
-  // This spike has no persistent transport sessions. A stale session must reinitialize.
-  if(request.headers.has('mcp-session-id')) return reply({error:'session_not_found'},404);
-  if(request.method!=='POST') return new Response(null,{status:405,headers:{allow:'POST'}});
+  let session=request.headers.get('mcp-session-id');
+  if(session) {
+    try {
+      const saved=await env.DB.prepare('SELECT owner_scope, expires_at FROM mcp_sessions WHERE session_id = ?').bind(session)
+        .first<{owner_scope:string;expires_at:number}>();
+      if(!saved||saved.owner_scope!==sessionScope(caller)||saved.expires_at<=Date.now()) return reply({error:'session_not_found'},404);
+    } catch { return reply({error:'session_unavailable'},503); }
+  }
+  if(request.method==='DELETE') {
+    if(!session) return reply({error:'session_required'},400);
+    await env.DB.batch([
+      env.DB.prepare('DELETE FROM mcp_sessions WHERE session_id = ?').bind(session),
+      env.DB.prepare('DELETE FROM mcp_requests WHERE session_id = ?').bind(session),
+    ]);
+    return new Response(null,{status:200});
+  }
+  if(request.method!=='POST') return new Response(null,{status:405,headers:{allow:'POST, DELETE'}});
   const accept=request.headers.get('accept')??'';
   if(!accept.includes('application/json') || !accept.includes('text/event-stream')) return reply({error:'not_acceptable'},406);
   if(!request.headers.get('content-type')?.includes('application/json')) return reply({error:'unsupported_media_type'},415);
@@ -69,18 +86,30 @@ export async function handleMcp(request: Request, env: Env, dispatch: Dispatch):
   if(!object(msg)||msg.jsonrpc!=='2.0'||typeof msg.method!=='string'||
     ('id' in msg && typeof msg.id!=='string' && typeof msg.id!=='number') ||
     (msg.params!==undefined&&!object(msg.params))) return reply(error(null,-32600,'Invalid Request'),400);
+  if(msg.method==='initialize' && 'id' in msg) {
+    if(session) return reply(error(msg.id,-32600,'Session already initialized'),400);
+    session=crypto.randomUUID();
+    try {
+      await env.DB.prepare('DELETE FROM mcp_sessions WHERE expires_at <= ?').bind(Date.now()).run();
+      await env.DB.prepare('INSERT INTO mcp_sessions (session_id, owner_scope, expires_at) VALUES (?, ?, ?)')
+        .bind(session,sessionScope(caller),Date.now()+MCP_SESSION_TTL_MS).run();
+    } catch { return reply({error:'session_unavailable'},503); }
+    const response=reply(result(msg.id,{protocolVersion:MCP_PROTOCOL,
+      capabilities:{tools:{listChanged:false},resources:{subscribe:false,listChanged:false}},
+      serverInfo:{name:'fleet-mcp-spike',version:'0.1.0'},
+      instructions:'Bounded personal-project spike. Session-bound request IDs; reconnect fleet_wait_for using durable wait_id. Disconnect releases the current observation, not its durable wait registration.'}));
+    response.headers.set('mcp-session-id',session);
+    return response;
+  }
+  if(!session) return reply({error:'session_required'},400);
   if(!('id' in msg)) {
     if(msg.method==='notifications/cancelled') {
-      try { await env.DB.prepare('UPDATE mcp_requests SET cancelled = 1 WHERE request_key = ?').bind(key(caller,msg.params?.requestId)).run(); }
+      try { await env.DB.prepare('UPDATE mcp_requests SET cancelled = 1 WHERE request_key = ?').bind(key(session,msg.params?.requestId)).run(); }
       catch { return reply({error:'cancellation_unavailable'},503); }
     }
     return new Response(null,{status:202});
   }
   const id=msg.id,params=msg.params??{},allowed=MCP_TOOLS.filter(t=>caller!.capabilities.includes(t.capability));
-  if(msg.method==='initialize') return reply(result(id,{protocolVersion:MCP_PROTOCOL,
-    capabilities:{tools:{listChanged:false},resources:{subscribe:false,listChanged:false}},
-    serverInfo:{name:'fleet-mcp-spike',version:'0.1.0'},
-    instructions:'Bounded personal-project spike. Stateless transport; reconnect fleet_wait_for using wait_id. Cancellation aborts the current call; saved wait_id remains resumable.'}));
   if(msg.method==='ping') return reply(result(id,{}));
   if(msg.method==='tools/list') return reply(result(id,{tools:allowed.map(({name,description,inputSchema,annotations})=>({name,description,inputSchema,annotations}))}));
   if(msg.method==='resources/list') return reply(result(id,{resources:[]}));
@@ -98,23 +127,26 @@ export async function handleMcp(request: Request, env: Env, dispatch: Dispatch):
   if(msg.method!=='tools/call') return reply(error(id,-32601,'Method not found'));
   const t=allowed.find(t=>t.name===params.name),args=params.arguments??{};
   if(!t||!validArgs(t,args)) return reply(error(id,-32602,'Invalid tool or arguments'));
-  const k=key(caller,id),generation=crypto.randomUUID();
+  const k=key(session,id),generation=crypto.randomUUID();
   // Design decisions: active-call TTL and polling interval, not measured client limits.
   const ttlMs=120000,pollMs=100;
   try {
     await env.DB.prepare('DELETE FROM mcp_requests WHERE expires_at < ?').bind(Date.now()).run();
-    await env.DB.prepare('INSERT INTO mcp_requests (request_key, generation, cancelled, expires_at) VALUES (?, ?, 0, ?)')
-      .bind(k,generation,Date.now()+ttlMs).run();
+    await env.DB.prepare('INSERT INTO mcp_requests (request_key, generation, cancelled, expires_at, session_id) VALUES (?, ?, 0, ?, ?)')
+      .bind(k,generation,Date.now()+ttlMs,session).run();
   } catch { return reply(error(id,-32000,'Request registration unavailable or duplicate active ID')); }
   const controller=new AbortController();
+  const release=()=>controller.abort();
+  request.signal.addEventListener('abort',release,{once:true});
   const execute=async()=> {
     let timer:ReturnType<typeof setTimeout>|undefined,finished=false;
     const cancelled=new Promise<never>((_,reject)=> {
       controller.signal.addEventListener('abort',()=>reject(new Error('cancelled')),{once:true});
+      if(request.signal.aborted) controller.abort();
       const check=async()=> {
         try {
-          const row=await env.DB.prepare('SELECT cancelled FROM mcp_requests WHERE request_key = ? AND generation = ?')
-            .bind(k,generation).first<{cancelled:number}>();
+          const row=await env.DB.prepare('SELECT r.cancelled FROM mcp_requests r JOIN mcp_sessions s ON s.session_id = r.session_id WHERE r.request_key = ? AND r.generation = ? AND s.expires_at > ?')
+            .bind(k,generation,Date.now()).first<{cancelled:number}>();
           if(!row || row.cancelled || Date.now()>=deadline) controller.abort();
         } catch { controller.abort(); }
         if(!finished&&!controller.signal.aborted) timer=setTimeout(check,pollMs);
@@ -130,6 +162,7 @@ export async function handleMcp(request: Request, env: Env, dispatch: Dispatch):
       return error(id,-32000,controller.signal.aborted?'Request cancelled or transport deadline reached':'Tool execution failed');
     } finally {
       finished=true;if(timer) clearTimeout(timer);
+      request.signal.removeEventListener('abort',release);
       await env.DB.prepare('DELETE FROM mcp_requests WHERE request_key = ? AND generation = ?').bind(k,generation).run();
     }
   };
@@ -142,6 +175,9 @@ export async function handleMcp(request: Request, env: Env, dispatch: Dispatch):
       void execute().then(value=> {
         try { emit(value);stream.close(); } catch { /* Disconnect does not cancel durable application waits. */ }
       }).catch(()=> { try { stream.error(new Error('Transport failed')); } catch {} });
+    },cancel() {
+      // Release only this bounded observation. The durable wait_id survives disconnect.
+      controller.abort();
     }});
     return new Response(stream,{headers:{'content-type':'text/event-stream','cache-control':'no-store'}});
   }
