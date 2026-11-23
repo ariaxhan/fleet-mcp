@@ -88,6 +88,7 @@ export async function issueGet(env: Env, c: Caller, p: URLSearchParams, now: Dat
   if (expired || f.force) {
     try { row = await observe(env, c, number); status = 'bypass'; }
     catch (e) {
+      console.error('issue_observation_failed',e instanceof Error ? e.message : 'unknown');
       if (!row || (e instanceof CoreError && e.status === 404)) throw e;
       if (!f.stale) throw new CoreError(409,'freshness_unmet',{source_observed_at:row.validated_at});
       status = 'stale';

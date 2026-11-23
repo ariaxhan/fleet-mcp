@@ -35,6 +35,6 @@ report = dict(schema_version=migrations[-1] if migrations else 'unversioned',
 payload = dict(source_db='ariaxhan/fleet-mcp/_meta/agentdb/agent.db',source_repo='ariaxhan/fleet-mcp',
                observed_at=datetime.now(timezone.utc).isoformat(),lessons=lessons,report=report)
 request = Request(origin+'/admin/sync/recall',data=json.dumps(payload).encode(),
-                  headers={'Authorization':'Bearer '+os.environ['FLEET_READ_PATH_TOKEN'],'Content-Type':'application/json'})
+                  headers={'Authorization':'Bearer '+os.environ['FLEET_READ_PATH_TOKEN'],'Content-Type':'application/json','User-Agent':'fleet-mcp-recall-sync/0.1'})
 with urlopen(request, timeout=60) as response:
     print(response.read().decode())
