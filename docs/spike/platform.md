@@ -1,6 +1,6 @@
 # Platform spike status (#15)
 
-Date: 2026-11-23. **NOT COMPLETE. No G1 GO or efficacy result.**
+Date: 2026-11-23. **#15 close-out complete under the owner-accepted narrowed contract. No G1 GO or efficacy result.**
 
 The old model/access blockers are resolved. The owner supplied `gpt-6.1-sol`,
 low effort, and canonical custom domains. [Actual custom-domain responses](evidence/platform-custom-domains.json)
@@ -13,7 +13,7 @@ preregistration freeze or efficacy publication occurred.
 
 | Issue acceptance item | Disposition and actual evidence |
 |---|---|
-| Codex MCP contract | PARTIAL. Actual Codex negotiation, calls, expected tool error, resource read, progress, sessions and fresh-process reconnect observed. [Client summary](evidence/codex-contract-summary.json), [owning client run](evidence/codex-contract-initial-1795456348649251000.json), [resource/error captures](token-accounting.md). Cancellation is not green: see below. |
+| Codex MCP contract | OBSERVED at the [owner-accepted narrowed scope](../gates/g1-cancellation-disposition.md). Actual Codex negotiation, calls, expected tool error, resource read, progress, sessions and fresh-process reconnect observed. [Client summary](evidence/codex-contract-summary.json), [owning client run](evidence/codex-contract-initial-1795456348649251000.json), [resource/error captures](token-accounting.md). Explicit remote MCP cancellation remains UNPROVEN: see below. |
 | Wait across disconnect, deployment and timeout | OBSERVED. [Registration/disconnect before deployment](evidence/wait-across-deploy.json) at the earlier revision, then [owning Codex resume](evidence/codex-contract-reconnect-1795456351256745000.json) after deployment returns the identical wait_id. Actual client timeout and immediate fresh-process resume are archived in the client summary. Earlier real event-driven wake receipts remain in [fleet.md](fleet.md). |
 | Browser lifecycle and queued completion | OBSERVED on real staging and production Browser Rendering. [Staging receipt](evidence/render-staging-1795455981015.json), [production receipt](evidence/render-production-1795456318306.json). Concurrent submissions complete serially after initiating requests end, reuse a browser session, create distinct empty-cookie contexts and close them. Retained PNG hashes match remote bytes; the owning lane opened the actual PNG. Total-deadline repair followed independent review; regression tests are producer checks only. |
 | Named suite through sidecar | OBSERVED. Fixed `fleet-mcp-typecheck` executed locally by the registered sidecar, signed uploads and actual serving results in [controlled production capture](evidence/sidecar-verification-production-controlled.json). |
@@ -22,7 +22,7 @@ preregistration freeze or efficacy publication occurred.
 | Staging and production fixture sweeps | OBSERVED. [Staging](evidence/platform-sweep-staging.json), [production](evidence/platform-sweep-production.json), [Actions receipt](evidence/platform-ci.json) identify the deployed source revision and green fixture checks. Manual deployment collided with CI creating the same namespace; [failure retained](evidence/platform-manual-deploy-collision.log.json), CI completed deployment without recreating or deleting state. |
 | Measured workload costing/budget | Defined planning workload costed from scoped actual component telemetry, including provider browser duration, with explicit missing-meter reserves. [Cost assessment](cost.md) links raw usage, exact arithmetic, sources and stated budget. This is a projection, not a pilot result, invoice or spending limit. |
 
-## Cancellation: the unresolved platform claim
+## Cancellation: accepted scope and preserved negative observation
 
 The actual client accepts `turn/interrupt`, ends its turn and enforces its tool
 call deadline. The captured RMCP trace does not show an outgoing MCP
@@ -41,19 +41,30 @@ collisions were repaired with token/policy-bound opaque sessions; actual immedia
 fresh-process reconnect after a timed-out call now succeeds. These are separate
 observations and must remain separate.
 
-Execution-plan Section 3.2 says a failed proof requires a design revision or an
-explicit scope narrowing. The owning Unified MCP Server chat must decide whether
-the supported contract can be client interruption plus bounded server observation,
-with explicit wire cancellation remaining UNPROVEN, or whether an upstream Codex
-change is required. This lane cannot turn a negative observation into a green
-criterion. The existing G1 NO-GO is unchanged; #43 owns re-review.
+The [owning-chat disposition](../gates/g1-cancellation-disposition.md), recorded
+on 2026-11-23 in commit b497e3c, accepts client interruption, bounded server
+observation, explicit HTTP-endpoint cancellation and resumable waits. Explicit
+Codex CancelledNotification remains UNPROVEN. There is no upstream wait.
+The previous attempt correctly held for this decision; that hold is resolved.
+G1 GO/NO-GO remains exclusively the re-review in #43. Runner verification and
+issue closure remain outside this close-out change.
 
-Owner-side disposition was requested through Muse inbox ask
-`20261123T175658Z_e11d08` on 2026-11-23, after landing the concrete evidence.
-It requests the cancellation-contract and scope-incident disposition, not more
-runner work or permission to claim G1. The old model/access replies were
-acknowledged only after independent verification of their resolved surfaces.
-Do not duplicate this pending ask or repeat landed probes merely to poll it.
+## Close-out verification (2026-11-23)
+
+[Fresh read-only surface capture](evidence/platform-closeout-live.json) records
+successful staging and production health, version and authenticated fleet-status
+reads. Both version responses identify b497e3c, the owner-disposition revision.
+Offline connectors retain original observation times; probes report unknown with
+connector_offline and stale freshness. No historical proof effects were repeated.
+The existing deployment, render, client, cache and costing receipts above remain
+the primary evidence for those behaviors. No missing artifact was reconstructed.
+
+`npm test`, `npm run typecheck` and `npm run build` passed this close-out attempt;
+[raw producer check output](evidence/platform-closeout-checks.log) is retained.
+These checks do not replace independent live verification or the #43 verdict.
+The installed CLI still reports the version recorded in
+[token accounting](token-accounting.md). No new model calibration, benchmark,
+pilot, preregistration freeze or full build was run.
 
 ## Scope incident
 
