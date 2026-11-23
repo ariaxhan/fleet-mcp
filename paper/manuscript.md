@@ -91,9 +91,11 @@ No batch entry is claimed. The next entry must be written during an actual batch
 
 2026-11-22: Created a neutral pre-collection manuscript from the skeleton's topic structure. Applied execution-plan statistical resolutions, removed unsupported retrospective claims and mixed-scope historical measurements, and separated planned sample sizes from results. This is an editorial amendment, not a preregistration amendment or G0 sign-off.
 
+2026-11-23 (UTC): Rechecked the submission after the earlier draft landed. The [pilot readiness record](../docs/pilot-status.md) reports NOT RUN; the [confirmatory readiness record](../docs/confirmatory-status.md) reports NOT RUN. The separate verifier's [receipt](../benchmark/verification/receipt.md) records **NOT CERTIFIED**, a prerequisite failure rather than a measured null effect. These are readiness and verification records, not experimental observations or batch notes. The receipt does not authorize filling result panels. The remote tag lookup still supplies no `bench-prereg-v1`. No experiment was executed by this continuation.
+
 ## 6. Results
 
-**UNPROVEN.** No verified scoring output is available to populate results. No effect estimate, confidence interval, observed N, cost, replay count, pilot variance, power calculation result, or verification verdict is reported.
+**UNPROVEN.** No verified scoring output is available to populate results. No effect estimate, confidence interval, observed N, cost, replay count, pilot variance, or power calculation result is reported. The available verification verdict is **NOT CERTIFIED**, as documented in the [prerequisite-failure receipt](../benchmark/verification/receipt.md), not a completed statistical verification.
 
 Required result panels are: net token use; elapsed time; binary and graded correctness; reliability and errors with distinct denominators; model and server costs; calls and adoption; deterministic replays; pilot and amendments; confirmatory effects; repeatability variance; archive reconciliation; and independent verification. Each panel must include control, treatment, absolute difference, relative change where defined, interval, observed N, and evidence links as applicable. Undefined and missing values must be explicit. Exact deterministic counts need provenance rather than inferential intervals.
 
