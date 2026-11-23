@@ -5,7 +5,9 @@ import { RenderHub, RENDER_LIMIT } from '../src/render';
 import { setup } from './harness';
 import { authenticate } from '../src/auth';
 
-async function fixture(fail=false) {
+async function fixture(fail=false,hang?:string) {
+  const never=()=>new Promise<any>(()=>{});
+  const timing=hang?{totalMs:60,cleanupMs:20}:undefined;
   const {env,db,tokens}=await setup();
   db.prepare("UPDATE tokens SET capabilities='[\"verify:render\"]' WHERE principal_id='publisher'").run();
   const caller=(await authenticate(new Request('https://fixture',{headers:{authorization:`Bearer ${tokens.publisher}`}}),env,new Date()))!;
@@ -15,19 +17,22 @@ async function fixture(fail=false) {
     setAlarm:async(n:number)=>{alarm=n;},transaction:async(fn:any)=>fn(storage)};
   let finish:()=>void=()=>{};
   const ready=new Promise<void>(r=>{finish=r;});
-  const browser:any={connected:true,sessionId:()=> 'synthetic-session',version:async()=> 'synthetic-browser',close:async()=>{browser.connected=false;},
+  if(hang==='r2') env.BLOBS.put=never;
+  let browserCloses=0;
+  const browser:any={connected:true,sessionId:()=> 'synthetic-session',version:async()=> 'synthetic-browser',close:async()=>{browserCloses++;browser.connected=false;if(hang==='browser-close') await never();},
     createBrowserContext:async()=>{
+      if(hang==='context') return never();
       active++;maxActive=Math.max(active,maxActive);let cookies:any[]=[];
       return {id:crypto.randomUUID(),cookies:async()=>cookies,setCookie:async(c:any)=>{cookies.push(c);},
-        close:async()=>{active--;closed++;},newPage:async()=>({setViewport:async()=>{},setContent:async()=>{},
-          waitForFunction:async()=>{await ready;if(fail) throw new Error('fixture timeout');},screenshot:async()=>new Uint8Array([137,80,78,71])})};
+        close:async()=>{if(hang==='cleanup') await never();active--;closed++;},newPage:async()=>({setViewport:async()=>{},setContent:async()=>{},
+          waitForFunction:async()=>{await ready;if(fail) throw new Error('fixture timeout');},screenshot:async()=>['screenshot','browser-close'].includes(hang??'')?never():new Uint8Array([137,80,78,71])})};
     }};
-  const hub=new RenderHub({storage} as DurableObjectState,env,async()=>{launches++;return browser as Browser;});
+  const hub=new RenderHub({storage} as DurableObjectState,env,async()=>{launches++;if(hang==='launch') return never();return browser as Browser;},timing);
   const call=async(path:string,input?:unknown)=>{
     const r=await hub.fetch(new Request('https://render'+path,{method:'POST',body:JSON.stringify({caller,input})}));
     return {status:r.status,body:await r.json() as any};
   };
-  return {hub,call,data,db,finish,counts:()=>({launches,active,maxActive,closed,alarm})};
+  return {hub,call,data,db,finish,browserCloses:()=>browserCloses,counts:()=>({launches,active,maxActive,closed,alarm})};
 }
 
 test('durable queued jobs complete after enqueue response, reuse browser, isolate and close contexts',async()=>{
@@ -71,3 +76,24 @@ test('render failure closes context and an interrupted run is recorded as data l
   await f.hub.alarm();
   assert.equal(f.data.get('job:'+job.id).error,'interrupted_data_loss');
 });
+
+for(const phase of ['launch','context','screenshot','r2','cleanup','browser-close']) {
+  test(`total deadline bounds ${phase} and releases queue ownership`,{timeout:1000},async()=>{
+    const f=await fixture(false,phase);
+    const a=await f.call('/enqueue',{idempotency_key:'deadline-first'});
+    f.finish();
+    const alarm=f.hub.alarm();
+    await f.hub.alarm();
+    await alarm;
+    const first=(await f.call('/jobs/'+a.body.render_id)).body;
+    assert.equal(first.state,'failed');
+    assert.ok(['render_deadline_exceeded','context_cleanup_failed','render_failed'].includes(first.error));
+    assert.ok(first.completed_at);
+    if(phase==='cleanup') assert.equal(first.context_closed,false);
+    if(['context','screenshot','r2','cleanup','browser-close'].includes(phase)) assert.equal(f.browserCloses(),1);
+    if(phase==='browser-close') assert.equal(first.error,'render_deadline_exceeded');
+    const b=await f.call('/enqueue',{idempotency_key:'deadline-second'});
+    await f.hub.alarm();
+    assert.equal((await f.call('/jobs/'+b.body.render_id)).body.state,'failed');
+  });
+}

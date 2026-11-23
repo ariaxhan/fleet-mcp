@@ -6,6 +6,20 @@ import type { Env } from './handler';
 
 // Bounded spike design decisions, not measured capacity or timeout claims.
 export const RENDER_LIMIT = 8, RENDER_IDLE_MS = 60_000, RENDER_TIMEOUT_MS = 30_000;
+const CLEANUP_RESERVE_MS = 5_000; // Design decision within the total deadline.
+class RenderDeadline extends Error {}
+function until<T>(end: number, action: ()=>Promise<T>, late?: (value:T)=>void): Promise<T> {
+  if(Date.now()>=end) return Promise.reject(new RenderDeadline());
+  return new Promise((resolve,reject)=>{
+    let expired=false;
+    const timer=setTimeout(()=>{expired=true;reject(new RenderDeadline());},Math.max(0,end-Date.now()));
+    Promise.resolve().then(()=>{if(Date.now()>=end) throw new RenderDeadline();return action();}).then(value=>{
+      clearTimeout(timer);if(expired) {late?.(value);return;} resolve(value);
+    },error=>{clearTimeout(timer);if(!expired) reject(error);});
+  });
+}
+// Late resource acquisition is abandoned safely. A close never blocks queue progress.
+function abandon(resource: {close():Promise<void>}) {void Promise.resolve().then(()=>resource.close()).catch(()=>{});}
 type Input = { idempotency_key: string; delay_ms: number; marker: string };
 type Job = { id: string; caller: Caller; input: Input; state: 'queued'|'running'|'complete'|'failed'|'cancelled';
   queued_at: string; started_at?: string; completed_at?: string; error?: string;
@@ -43,8 +57,10 @@ export async function getRender(env: RenderEnv,c: Caller,id: string,screenshot=f
 export class RenderHub {
   private browser?: Browser;
   private busy=false;
+  private activeDeadline=0;
   constructor(private state: DurableObjectState,private env: Env,
-    private launch: ()=>Promise<Browser> = ()=>puppeteer.launch(env.BROWSER,{keep_alive:RENDER_IDLE_MS})) {}
+    private launch: ()=>Promise<Browser> = ()=>puppeteer.launch(env.BROWSER,{keep_alive:RENDER_IDLE_MS}),
+    private timing={totalMs:RENDER_TIMEOUT_MS,cleanupMs:CLEANUP_RESERVE_MS}) {}
   private async authorized(c: Caller) {
     permitted(c);
     const row=await this.env.DB.prepare(`SELECT t.*, n.policy_revision FROM tokens t JOIN namespaces n
@@ -93,7 +109,7 @@ export class RenderHub {
     } catch(e) { return Response.json({error:e instanceof CoreError?e.code:'internal_error'},{status:e instanceof CoreError?e.status:500}); }
   }
   async alarm() {
-    if(this.busy) return;
+    if(this.busy) {await this.state.storage.setAlarm(Math.max(Date.now()+1,this.activeDeadline+1));return;}
     this.busy=true;
     try {
       const jobs=await this.state.storage.list<Job>({prefix:'job:'});
@@ -102,38 +118,60 @@ export class RenderHub {
         job.state='failed';job.error='interrupted_data_loss';await this.state.storage.put('job:'+job.id,job);
       }
       const job=[...jobs.values()].filter(j=>j.state==='queued').sort((a,b)=>a.queued_at.localeCompare(b.queued_at)||a.id.localeCompare(b.id))[0];
-      if(!job) { if(this.browser) {await this.browser.close();this.browser=undefined;} return; }
+      if(!job) {
+        const browser=this.browser;this.browser=undefined;
+        if(browser) try {await until(Date.now()+this.timing.cleanupMs,()=>browser.close());} catch {}
+        return;
+      }
       job.state='running';job.started_at=new Date().toISOString();
       await this.state.storage.put('job:'+job.id,job);
-      // Watchdog alarm survives object/process loss during execution.
-      await this.state.storage.setAlarm(Date.now()+RENDER_TIMEOUT_MS+5000);
+      const totalEnd=Date.now()+this.timing.totalMs;
+      this.activeDeadline=totalEnd;
+      const workEnd=totalEnd-this.timing.cleanupMs;
+      const step=<T>(fn:()=>Promise<T>,late?:(value:T)=>void)=>until(workEnd,fn,late);
+      // Watchdog survives process loss. An overlapping alarm re-arms this deadline.
+      await this.state.storage.setAlarm(totalEnd+1);
       let context: Awaited<ReturnType<Browser['createBrowserContext']>>|undefined;
+      let discard=false;
       try {
-        await this.authorized(job.caller);
+        await step(()=>this.authorized(job.caller));
         job.reused=!!this.browser?.connected;
-        if(!this.browser?.connected) this.browser=await this.launch();
-        job.session_id=this.browser.sessionId();job.browser_version=await this.browser.version();
-        context=await this.browser.createBrowserContext();job.context_id=context.id;
-        job.initial_cookie_count=(await context.cookies()).length;
+        if(!this.browser?.connected) this.browser=await step(this.launch,abandon);
+        const browser=this.browser;
+        job.session_id=browser.sessionId();job.browser_version=await step(()=>browser.version());
+        context=await step(()=>browser.createBrowserContext(),abandon);job.context_id=context.id;
+        const isolated=context;
+        job.initial_cookie_count=(await step(()=>isolated.cookies())).length;
         if(job.initial_cookie_count!==0) throw new Error('context_not_isolated');
-        await context.setCookie({name:'fleet-fixture',value:job.id,domain:'fixture.invalid'});
-        const page=await context.newPage();
-        await page.setViewport({width:640,height:480,deviceScaleFactor:1});
-        await page.setContent(`<!doctype html><title>Fleet MCP spike</title><h1>${job.input.marker}</h1><div id="status">waiting</div>
-          <script>setTimeout(()=>document.querySelector('#status').textContent='ready',${job.input.delay_ms})</script>`,{timeout:RENDER_TIMEOUT_MS,waitUntil:'load'});
-        await page.waitForFunction("document.querySelector('#status').textContent === 'ready'",{timeout:RENDER_TIMEOUT_MS});
-        await this.authorized(job.caller);
-        const bytes=await page.screenshot({type:'png',fullPage:false});
-        job.screenshot_hash=await sha256Hex(new Uint8Array(bytes));job.screenshot_bytes=bytes.length;
-        await this.authorized(job.caller);
-        await this.env.BLOBS.put(`render-spike/${name(job.caller)}/${job.id}.png`,bytes);
+        await step(()=>isolated.setCookie({name:'fleet-fixture',value:job.id,domain:'fixture.invalid'}));
+        const page=await step(()=>isolated.newPage(),abandon);
+        await step(()=>page.setViewport({width:640,height:480,deviceScaleFactor:1}));
+        await step(()=>page.setContent(`<!doctype html><title>Fleet MCP spike</title><h1>${job.input.marker}</h1><div id="status">waiting</div>
+          <script>setTimeout(()=>document.querySelector('#status').textContent='ready',${job.input.delay_ms})</script>`,{timeout:Math.max(1,workEnd-Date.now()),waitUntil:'load'}));
+        await step(()=>page.waitForFunction("document.querySelector('#status').textContent === 'ready'",{timeout:Math.max(1,workEnd-Date.now())}));
+        await step(()=>this.authorized(job.caller));
+        const bytes=await step(()=>page.screenshot({type:'png',fullPage:false}));
+        job.screenshot_hash=await step(()=>sha256Hex(new Uint8Array(bytes)));job.screenshot_bytes=bytes.length;
+        await step(()=>this.authorized(job.caller));
+        await step(()=>this.env.BLOBS.put(`render-spike/${name(job.caller)}/${job.id}.png`,bytes));
         job.state='complete';
-      } catch(e) {job.state=e instanceof CoreError?'cancelled':'failed';job.error=e instanceof CoreError?e.code:'render_failed';}
-      finally {
-        if(context) try {await context.close();job.context_closed=true;}
-        catch {job.context_closed=false;job.state='failed';job.error='context_cleanup_failed';if(this.browser) {try {await this.browser.close();} catch {}this.browser=undefined;}}
+      } catch(e) {
+        discard=e instanceof RenderDeadline;
+        job.state=e instanceof CoreError?'cancelled':'failed';
+        job.error=e instanceof CoreError?e.code:e instanceof RenderDeadline?'render_deadline_exceeded':'render_failed';
+      } finally {
+        if(context) try {await until(totalEnd,()=>context!.close());job.context_closed=true;}
+        catch {job.context_closed=false;job.state='failed';job.error='context_cleanup_failed';discard=true;}
+        if(discard) {
+          const browser=this.browser;this.browser=undefined;
+          if(browser) {
+            const closing=browser.close();void closing.catch(()=>{});
+            try {await until(totalEnd,()=>closing);} catch {}
+          }
+        }
       }
-      try {await this.authorized(job.caller);} catch {job.state='cancelled';job.error='forbidden';}
+      if(job.state==='complete') try {await until(totalEnd,()=>this.authorized(job.caller));}
+      catch(e) {job.state=e instanceof RenderDeadline?'failed':'cancelled';job.error=e instanceof RenderDeadline?'render_deadline_exceeded':'forbidden';}
       job.completed_at=new Date().toISOString();await this.state.storage.put('job:'+job.id,job);
       const pending=await this.state.storage.list<Job>({prefix:'job:'});
       await this.state.storage.setAlarm(Date.now()+([...pending.values()].some(j=>j.state==='queued')?1:RENDER_IDLE_MS));
