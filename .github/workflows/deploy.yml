@@ -1,0 +1,64 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: fleet-mcp-deploy
+  cancel-in-progress: false
+jobs:
+  staging:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      FLEET_SWEEP_TOKEN: ${{ secrets.FLEET_SWEEP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test && npm run typecheck && npm run build
+      - run: npm run deploy:staging
+      - run: npm run sweep -- https://fleet-mcp-staging.ariaxhan.workers.dev ${{ github.sha }} staging
+      - name: Archive sweep receipt
+        if: always()
+        run: npx wrangler r2 object put fleet-mcp-staging-blobs/fixture-staging/sweeps/${{ github.run_id }}-${{ github.run_attempt }}.json --file artifacts/sweep-staging.json --remote
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: staging-sweep
+          path: artifacts/sweep-staging.json
+  production:
+    if: github.event_name != 'pull_request'
+    needs: staging
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      FLEET_SWEEP_TOKEN: ${{ secrets.FLEET_SWEEP_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run deploy:production
+      - run: npm run sweep -- https://fleet-mcp.ariaxhan.workers.dev ${{ github.sha }} production
+      - name: Archive sweep receipt
+        if: always()
+        run: npx wrangler r2 object put fleet-mcp-production-blobs/fixture-production/sweeps/${{ github.run_id }}-${{ github.run_attempt }}.json --file artifacts/sweep-production.json --remote
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-sweep
+          path: artifacts/sweep-production.json

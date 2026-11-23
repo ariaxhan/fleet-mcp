@@ -2,9 +2,9 @@
 
 One unified MCP server on Cloudflare serving the working state of an agent fleet: the context agents re-read (exemplars, lessons, issue context, briefs) and the live state they poll for (flights, jobs, verification, renders, handoffs). Built as a personal project with its own corpus, with a preregistered benchmark measuring its effect on token use, speed, accuracy, and reliability.
 
-## Status: revision first
+## Status: G0 passed, scaffold for the spike
 
-The PRD (v1, `PRD.md`) was reviewed independently by Codex and Claude on Nov 22, 2026. Both reviews agree: the direction is sound, but the PRD is not yet an implementation-ready contract. So the order is:
+G0 passed in [the owning chat sign-off](docs/gates/g0-signoff.md). The scaffold deploys infrastructure only. [Deployment commands and live sweep](docs/deploy.md). The remaining order is:
 
 1. **Phase 0, Revision.** Fix the PRD per both reviews (Studio connector spec, cache identity contract, auth model, control plane, benchmark statistics, single-model scope, deliverables section, remaining fixes sweep), then align the paper skeleton.
 2. **Phase 1, Spike.** A bounded architecture spike: core slice, minimal sidecar, Issue Context and Recall read paths, read-only Fleet Status with a bounded wait, platform proof. Eight proof criteria gate the full build.
@@ -43,7 +43,7 @@ This is a personal project with its own corpus. It does not touch TBS data, TBS 
 
 ## Docs
 
-- `PRD.md`: the PRD v1 (pre-revision; Phase 0 produces v2).
+- `PRD.md`: the revised PRD v2 contract.
 - `docs/execution-plan.md`: the execution plan (phases, gates, the 41-issue list, runner integration).
 - `_meta/chronicles/2026/fleet-mcp-2026-11-22-001.md`: the decision chronicle (revise before building).
 - `docs/baseline/report.md` plus `docs/baseline/analysis/`: the baseline report and the transcript analysis behind it.

@@ -1,0 +1,81 @@
+# Scaffold deployment
+
+G0 is GO: [owner sign-off](gates/g0-signoff.md), committed at eab8f3c.
+The earlier #1 attempt correctly stopped before that sign-off. This scaffold is
+infrastructure for the spike, not a G1 verdict or an implemented MCP server.
+No benchmark is run, preregistered or published by these commands.
+
+## Fresh checkout
+
+Prerequisites: Node 22 or newer, npm, Python 3, Git, and an authorized Cloudflare
+API token for this account's Workers, D1, KV, R2 and Browser Rendering bindings.
+Use the canonical checkout on main. Bindings in wrangler.toml are the provisioned
+personal-project staging and production resources. No other corpus is connected.
+
+```sh
+npm ci
+npm test
+npm run typecheck
+npm run build
+npm run migrate:local
+npm run migrate:local
+npm run deploy:staging
+npm run sweep -- https://fleet-mcp-staging.ariaxhan.workers.dev "$(git rev-parse HEAD)" staging
+```
+
+Deploy requires a clean checkout and embeds HEAD plus build time. Export
+CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID through the credential manager.
+FLEET_SWEEP_TOKEN must match Worker secret SWEEP_TOKEN. The probe credential
+permits only fixed fixture dependency reads, no corpus access or arbitrary input.
+Set it with `npx wrangler secret put SWEEP_TOKEN --env staging` and separately
+for production. Never put secret values in command arguments or committed files.
+The same fixture probe credential is stored as a GitHub Actions secret.
+
+## Pipeline and promotion
+
+CI runs on pushes and pull requests: clean npm install, dependency audit, unit and
+SQLite migration tests, typecheck, dry-run bundle and repeated local migration.
+Deploy runs its own test gates before staging. Same-repository pull requests deploy
+to staging only. Main pushes and manual dispatch deploy staging, require its live
+sweep to pass, then deploy production and sweep again. Deploy concurrency is
+serialized. Fork pull requests never receive deployment credentials.
+GitHub environments staging and production provide the environment control points.
+
+GitHub secrets: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, FLEET_SWEEP_TOKEN.
+The workflow archives every generated sweep receipt as an Actions artifact and
+in the matching R2 bucket at fixture-ENV/sweeps/RUN-ATTEMPT.json. Workflow records
+link to both. A failed sweep fails the release, including when receipt upload fails.
+
+For a deliberate manual production release, first sweep staging at the same SHA,
+then `npm run deploy:production`, then:
+
+```sh
+npm run sweep -- https://fleet-mcp.ariaxhan.workers.dev "$(git rev-parse HEAD)" production
+npx wrangler r2 object put fleet-mcp-production-blobs/fixture-production/sweeps/manual-SHA.json --file artifacts/sweep-production.json --remote
+```
+
+Archive staging receipts likewise to fleet-mcp-staging-blobs under fixture-staging.
+Use a unique release identifier instead of manual-SHA for each manual invocation.
+Rollback Worker code with `npx wrangler rollback --env staging` (or production),
+then sweep against the rolled-back SHA. D1 is forward-only: follow migrations/README.md.
+
+## Surfaces and limits
+
+- Staging: https://fleet-mcp-staging.ariaxhan.workers.dev/health
+- Production: https://fleet-mcp.ariaxhan.workers.dev/health
+- `/version`: exact deployed commit, build time, environment, scaffold stage.
+- `/health`: public liveness only. No dependency details or credentials.
+- `/internal/fixture`: credential-protected fixed fixture namespace checks for
+  migrated D1, KV, R2 and both Durable Object classes, plus Browser binding presence.
+- All other GET routes return 404; mutations return 501. No corpus input accepted.
+
+Sweep reads deployed HTTP responses only, never local source files. Each check
+records pass/fail and latency in artifacts/sweep-ENV.json. Failures still produce
+a receipt and a failing exit status. Expected SHA and environment are mandatory;
+HTTPS and redirect rejection prevent accidental credential forwarding.
+
+Browser execution, MCP negotiation, real-data reads, fixture write/idempotency
+checks, auth matrix and runtime tools belong to the spike/build issues. Binding
+presence is not Browser execution proof. No G1 or benchmark claim follows from
+this infrastructure sweep. Custom domains await the owner's domain decision;
+workers.dev origins are the scaffold deployment default.

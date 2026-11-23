@@ -1,0 +1,28 @@
+{
+  "name": "fleet-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "wrangler dev --env staging",
+    "test": "tsx --test tests/*.test.ts && python3 tests/migrations.py",
+    "typecheck": "tsc --noEmit",
+    "build": "wrangler deploy --env staging --dry-run --outdir dist",
+    "deploy:staging": "node scripts/deploy.mjs staging",
+    "deploy:production": "node scripts/deploy.mjs production",
+    "migrate:local": "wrangler d1 migrations apply fleet-mcp-staging --env staging --local",
+    "migrate:staging": "wrangler d1 migrations apply fleet-mcp-staging --env staging --remote",
+    "migrate:production": "wrangler d1 migrations apply fleet-mcp-production --env production --remote",
+    "sweep": "node scripts/sweep.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "latest",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "~5.9.3",
+    "wrangler": "4.166.0"
+  }
+}

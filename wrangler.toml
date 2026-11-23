@@ -1,0 +1,62 @@
+name = "fleet-mcp"
+main = "src/index.ts"
+compatibility_date = "2026-11-22"
+workers_dev = true
+preview_urls = false
+
+[observability]
+enabled = true
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["FleetWait", "HandoffCoordinator"]
+
+[env.staging]
+name = "fleet-mcp-staging"
+[env.staging.vars]
+ENVIRONMENT = "staging"
+FIXTURE_NAMESPACE = "fixture-staging"
+[env.staging.browser]
+binding = "BROWSER"
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "fleet-mcp-staging"
+database_id = "9816fd64-4ae0-4321-86ea-f3741fd1c9fd"
+migrations_dir = "migrations"
+[[env.staging.kv_namespaces]]
+binding = "CACHE"
+id = "24e11b4cb55e4477a115ed96c41af6a8"
+[[env.staging.r2_buckets]]
+binding = "BLOBS"
+bucket_name = "fleet-mcp-staging-blobs"
+[[env.staging.durable_objects.bindings]]
+name = "FLEET_WAIT"
+class_name = "FleetWait"
+[[env.staging.durable_objects.bindings]]
+name = "HANDOFF_COORDINATOR"
+class_name = "HandoffCoordinator"
+
+[env.production]
+name = "fleet-mcp"
+[env.production.vars]
+ENVIRONMENT = "production"
+FIXTURE_NAMESPACE = "fixture-production"
+[env.production.browser]
+binding = "BROWSER"
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "fleet-mcp-production"
+database_id = "9e789e32-274b-47a3-a478-b188f0d11549"
+migrations_dir = "migrations"
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "05893600c15340c183e8f79ea3fd71dd"
+[[env.production.r2_buckets]]
+binding = "BLOBS"
+bucket_name = "fleet-mcp-production-blobs"
+[[env.production.durable_objects.bindings]]
+name = "FLEET_WAIT"
+class_name = "FleetWait"
+[[env.production.durable_objects.bindings]]
+name = "HANDOFF_COORDINATOR"
+class_name = "HandoffCoordinator"
