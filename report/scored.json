@@ -1,0 +1,23 @@
+{
+  "schema": "fleet-mcp/scored/v1",
+  "note": "Single source of scored numbers for the paper (paper/), the full report (report/report.md), and the HTML page (docs/report/index.html). Only the scoring script writes measured values here, and only from archived raw data. PENDING means no verified measurement exists yet.",
+  "phase": "Phase 0 (revision). Gate G0 not yet passed. No build, no experiment, no 'with' run has happened.",
+  "updated": "2026-11-22",
+  "preregistration": {"tag": "bench-prereg-v1", "sha256": "PENDING", "frozen": false, "remote_record": "PENDING"},
+  "verification": {"status": "PENDING", "verifier": "PENDING", "receipt": "PENDING"},
+  "outcomes": [
+    {"id": "H1", "metric": "Total tokens per task (primary endpoint, paired)", "bar": "Point estimate at least 20% reduction AND 95% CI excludes 0", "control": "PENDING", "treatment": "PENDING", "abs_diff": "PENDING", "pct_change": "PENDING", "ci95": "PENDING", "n": "PENDING", "status": "PENDING"},
+    {"id": "H2", "metric": "Wall-clock time per task (key secondary, Holm)", "bar": "Point estimate at least 15% reduction AND 95% CI excludes 0", "control": "PENDING", "treatment": "PENDING", "abs_diff": "PENDING", "pct_change": "PENDING", "ci95": "PENDING", "n": "PENDING", "status": "PENDING"},
+    {"id": "H3", "metric": "State-check and re-fetch tool calls per task (exploratory)", "bar": "At least 50% reduction", "control": "PENDING", "treatment": "PENDING", "abs_diff": "PENDING", "pct_change": "PENDING", "ci95": "PENDING", "n": "PENDING", "status": "PENDING"},
+    {"id": "H4", "metric": "Outcome correctness (key secondary, non-inferiority)", "bar": "With minus control within 5 percentage points; preregistered as likely UNPROVEN at N 30 to 50", "control": "PENDING", "treatment": "PENDING", "abs_diff": "PENDING", "pct_change": "PENDING", "ci95": "PENDING", "n": "PENDING", "status": "UNPROVEN (expected): a 5 point margin cannot be shown with 30 to 50 paired binary outcomes; proving it needs a powered sample computed from the pilot"},
+    {"id": "H5", "metric": "Attempts launched with a dead credential (with arm)", "bar": "Zero, reported with a finite-sample interval", "control": "PENDING", "treatment": "PENDING", "abs_diff": "PENDING", "pct_change": "PENDING", "ci95": "PENDING", "n": "PENDING", "status": "PENDING"},
+    {"id": "H6", "metric": "Recall adoption (with arm sessions)", "bar": "At least 80% of with-arm sessions", "control": "PENDING", "treatment": "PENDING", "abs_diff": "PENDING", "pct_change": "PENDING", "ci95": "PENDING", "n": "PENDING", "status": "PENDING"},
+    {"id": "H7", "metric": "Sleep commands (with arm sessions)", "bar": "Zero", "control": "PENDING", "treatment": "PENDING", "abs_diff": "PENDING", "pct_change": "PENDING", "ci95": "PENDING", "n": "PENDING", "status": "PENDING"}
+  ],
+  "costs": [
+    {"item": "Model cost per task (dollars, from tokens and model price at run time)", "control": "PENDING", "treatment": "PENDING", "ci95": "PENDING"},
+    {"item": "Benchmark compute cost, all runs", "control": "PENDING", "treatment": "PENDING", "ci95": "PENDING"},
+    {"item": "Server operating cost during the experiment (Worker, D1, KV, R2, Durable Objects, Browser Rendering)", "control": "n/a", "treatment": "PENDING", "ci95": "PENDING"}
+  ],
+  "runs": {"pilot": {"planned": 20, "done": 0}, "confirmatory": {"planned": "60 to 100", "done": 0}, "repeatability": {"planned": 40, "done": 0}}
+}
