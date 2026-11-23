@@ -5,23 +5,24 @@ import { authenticate, type Caller } from './auth';
 // JSON replies need no SSE replay store. GET and DELETE are explicitly unsupported.
 export const MCP_PROTOCOL = '2025-06-18';
 type Dispatch = (request: Request, env: Env) => Promise<Response>;
-type Props = Record<string, { type: string; description?: string }>;
+type Props = Record<string, { type: string; description?: string; properties?: unknown; enum?: string[] }>;
 const string = { type: 'string' }, number = { type: 'number' }, boolean = { type: 'boolean' };
 const tool = (name: string, path: string, capability: string, properties: Props, required: string[] = [], post = false) =>
   ({ name, path, capability, post, description: `Personal-project ${name}. Uses the protected HTTP route and its authorization, freshness and audit rules.`,
+    annotations: {readOnlyHint:true,destructiveHint:false,idempotentHint:true,openWorldHint:false},
     inputSchema: { type: 'object', properties, required, additionalProperties: false } });
 const freshness = { max_age_s: number, allow_stale: boolean, consistency: string };
 export const MCP_TOOLS = [
   tool('exemplar_get_doc','/v1/docs/get','context:read',{name:string,version:number,since_version:number,...freshness},['name']),
   tool('doc_what_changed','/v1/changes','context:read',{cursor:string}),
-  tool('issue_get','/v1/issues/get','context:read',{repo:string,number:number,include_comments:boolean,since_version:number,...freshness},['repo','number']),
-  tool('issue_list','/v1/issues/list','context:read',{repo:string,state:string,...freshness},['repo']),
-  tool('recall_query','/v1/recall/query','context:read',{query:string,kinds:string,limit:number,...freshness},['query']),
-  tool('recall_store_health','/v1/recall/health','context:read',{...freshness}),
+  tool('issue_get','/v1/issues/get','issue:read',{repo:string,number:number,include_comments:boolean,since_version:number,...freshness},['repo','number']),
+  tool('issue_list','/v1/issues/list','issue:read',{repo:string,state:string,...freshness},['repo']),
+  tool('recall_query','/v1/recall/query','recall:read',{query:string,kinds:string,limit:number,...freshness},['query']),
+  tool('recall_store_health','/v1/recall/health','recall:read',{...freshness}),
   tool('fleet_get_flight','/v1/fleet/get','fleet:read',{id:string},['id']),
   tool('fleet_list_flights','/v1/fleet/list','fleet:read',{state:string,limit:number}),
   tool('fleet_what_changed_since','/v1/fleet/changes','fleet:read',{cursor:string}),
-  tool('fleet_wait_for','/v1/fleet/wait','fleet:read',{wait_id:string,timeout_s:number,condition:{type:'object'}},[],true),
+  tool('fleet_wait_for','/v1/fleet/wait','fleet:read',{wait_id:string,timeout_s:number,condition:{type:'object',properties:{repo:string,flight_id:string,state:{type:'string',enum:['started','done','failed','blocker','stalled','preempted','retired','ended']}}}},[],true),
 ];
 const object = (x: unknown): x is Record<string, any> => !!x && typeof x === 'object' && !Array.isArray(x);
 const reply = (value: unknown, status = 200) => Response.json(value,{status,headers:{'cache-control':'no-store'}});
@@ -81,7 +82,7 @@ export async function handleMcp(request: Request, env: Env, dispatch: Dispatch):
     serverInfo:{name:'fleet-mcp-spike',version:'0.1.0'},
     instructions:'Bounded personal-project spike. Stateless transport; reconnect fleet_wait_for using wait_id. Cancellation aborts the current call; saved wait_id remains resumable.'}));
   if(msg.method==='ping') return reply(result(id,{}));
-  if(msg.method==='tools/list') return reply(result(id,{tools:allowed.map(({name,description,inputSchema})=>({name,description,inputSchema}))}));
+  if(msg.method==='tools/list') return reply(result(id,{tools:allowed.map(({name,description,inputSchema,annotations})=>({name,description,inputSchema,annotations}))}));
   if(msg.method==='resources/list') return reply(result(id,{resources:[]}));
   if(msg.method==='resources/templates/list') return reply(result(id,{resourceTemplates:caller.capabilities.includes('context:read')?
     [{uriTemplate:'doc://{name}',name:'Canonical personal-project document',mimeType:'application/json'}]:[]}));

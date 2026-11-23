@@ -36,7 +36,8 @@ test('MCP rejects foreign origins, credentials, session IDs and exposes capabili
   assert.equal((await handleMcp(req({},'GET'),env,handle)).status,405);
   assert.equal((await handleMcp(req({'mcp-protocol-version':'unsupported'}),env,handle)).status,400);
   const listed=await (await handleMcp(req({}),env,handle)).json() as any;
-  assert.ok(listed.result.tools.every((t:any)=>!t.name.startsWith('fleet_')));
+  assert.deepEqual(listed.result.tools.map((t:any)=>t.name),['exemplar_get_doc','doc_what_changed']);
+   assert.ok(listed.result.tools.every((t:any)=>t.annotations.readOnlyHint===true));
 });
 test('initialized notification accepted, D1 cancellation aborts active dispatch',async()=> {
   const {env,tokens}=await setup();
