@@ -113,7 +113,7 @@ Before finalization, link the expected-run ledger, append-only index, checksum r
 
 ## 9. Cross-deliverable consistency and conclusion
 
-Effects on tokens, time, correctness, reliability, and costs remain **UNPROVEN**. `report/report.md` and `docs/report/index.html` must use the same verified scoring output and evidence-map claim IDs when their owning tasks create them. They were absent at this draft's source revision, so cross-surface consistency is not certified. No result page was published by this task.
+Effects on tokens, time, correctness, reliability, and costs remain **UNPROVEN**. Concurrent tasks added `report/report.md`, `report/scored.json`, and `docs/report/index.html` after initial inspection. Their result fields remain PENDING or UNPROVEN. The shared scored JSON is a scaffold, not verified scoring output, and its placeholder run counts are not archive-derived measurements. The paper, report, and HTML must use the same verified scoring output and evidence-map claim IDs when measurements exist. Current labels agree that efficacy is UNPROVEN; quantitative consistency is not yet certifiable. No result page was published by this task.
 
 Final claims require G3 and independent verification. Until then, this manuscript is a methods draft and evidence contract. Completing its scaffold does not complete deliverable 7 or gate G4.
 
