@@ -13,6 +13,8 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync, realpathSync, statS
 import { homedir } from 'node:os';
 import { join, sep, dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
+import { signRequest } from './sign.mjs';
+export { signRequest };
 
 export const VERSION = '0.2.0';
 const HERE = dirname(new URL(import.meta.url).pathname);
@@ -148,12 +150,6 @@ export function hashFile(root, repo, rel, repos) {
     head_commit: execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(), observed_at: new Date().toISOString() };
 }
 
-export function signRequest(privateKey, machineId, method, path, body) {
-  const ts = String(Date.now()), nonce = randomBytes(18).toString('base64url');
-  const msg = `${method}\n${path}\n${createHash('sha256').update(body).digest('hex')}\n${ts}\n${nonce}`;
-  return { 'x-fleet-machine': machineId, 'x-fleet-timestamp': ts, 'x-fleet-nonce': nonce,
-    'x-fleet-signature': sign(null, Buffer.from(msg), privateKey).toString('base64url'), 'content-type': 'application/json' };
-}
 
 const loadKey = (env, cfg) => createPrivateKey({ key: Buffer.from(execFileSync('security', ['find-generic-password', '-s', keychainService(env), '-a', cfg.machine_id, '-w'],
   { encoding: 'utf8' }).trim(), 'base64'), format: 'der', type: 'pkcs8' });

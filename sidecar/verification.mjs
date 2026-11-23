@@ -5,7 +5,7 @@ import { createHash, createPrivateKey, randomUUID } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync, existsSync, realpathSync, lstatSync, readlinkSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { homedir, platform, arch, release } from 'node:os';
-import { signRequest } from './fleet-sidecar.mjs';
+import { signRequest } from './sign.mjs';
 const ROOT = realpathSync(join(dirname(new URL(import.meta.url).pathname), '..'));
 const hash = value => createHash('sha256').update(value).digest('hex');
 const git = (...args) => execFileSync('git', ['-C', ROOT, ...args]);

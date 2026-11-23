@@ -1,0 +1,1155 @@
+{
+  "purpose": "functional sidecar validation, not benchmark",
+  "origin": "https://fleet-mcp-staging.ariaxhan.workers.dev",
+  "sha": "ef31800e611724150e52c541adc10c776c155dbf",
+  "observed_at": "2026-11-23T18:24:37.812Z",
+  "checks": [
+    {
+      "name": "build",
+      "status": 200,
+      "body": {
+        "commit": "ef31800e611724150e52c541adc10c776c155dbf",
+        "build_time": "2026-11-23T18:23:45.722Z",
+        "environment": "staging",
+        "stage": "spike-core",
+        "mcp_protocol": "2025-06-18"
+      }
+    },
+    {
+      "name": "status_before_run",
+      "status": 200,
+      "body": {
+        "connectors": [
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "sidecar_version": "0.1.0-spike",
+            "last_seq": 209,
+            "outbox_depth": 0,
+            "dropped_for_boundary": 82,
+            "last_heartbeat_at": "2026-11-23T17:43:14.616Z",
+            "connector_status": "offline",
+            "last_successful_observation_at": {},
+            "last_reconciled_at": "2026-11-23T18:24:24.732Z",
+            "reconcile_missing": 0
+          }
+        ],
+        "checkouts": [],
+        "checkpoints": [],
+        "probes": [
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "probe": "github",
+            "status": "unknown",
+            "reason_code": "connector_offline",
+            "freshness": "stale",
+            "source_observed_at": "2026-11-23T17:43:14.502Z",
+            "connector_status": "offline"
+          }
+        ],
+        "events": [
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1221",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 189,
+            "source_observed_at": "2026-11-23T17:35:46.457Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1221",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 188,
+            "source_observed_at": "2026-11-23T17:35:05.474Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1220",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 187,
+            "source_observed_at": "2026-11-23T17:35:01.832Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1220",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 186,
+            "source_observed_at": "2026-11-23T17:34:36.090Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1219",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 185,
+            "source_observed_at": "2026-11-23T17:34:56.578Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1219",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 184,
+            "source_observed_at": "2026-11-23T17:34:21.729Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#18",
+            "attempt_id": "1218",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 183,
+            "source_observed_at": "2026-11-23T17:34:18.272Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#18",
+            "attempt_id": "1218",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 182,
+            "source_observed_at": "2026-11-23T17:34:04.975Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#26",
+            "attempt_id": "1217",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 181,
+            "source_observed_at": "2026-11-23T17:34:32.157Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#26",
+            "attempt_id": "1217",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 180,
+            "source_observed_at": "2026-11-23T17:33:54.173Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#43",
+            "attempt_id": "1216",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 179,
+            "source_observed_at": "2026-11-23T17:34:15.363Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#43",
+            "attempt_id": "1216",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 178,
+            "source_observed_at": "2026-11-23T17:33:53.651Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1215",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 177,
+            "source_observed_at": "2026-11-23T17:32:55.167Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1156",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 162,
+            "source_observed_at": "2026-11-23T02:37:56.060Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1156",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 161,
+            "source_observed_at": "2026-11-23T02:37:35.458Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1155",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 160,
+            "source_observed_at": "2026-11-23T02:33:09.857Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1155",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 159,
+            "source_observed_at": "2026-11-23T02:32:29.016Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1154",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 158,
+            "source_observed_at": "2026-11-23T02:30:03.771Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1154",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 157,
+            "source_observed_at": "2026-11-23T02:29:32.998Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1153",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 156,
+            "source_observed_at": "2026-11-23T02:28:12.669Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1153",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 155,
+            "source_observed_at": "2026-11-23T02:27:21.744Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1151",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 154,
+            "source_observed_at": "2026-11-23T02:22:54.160Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#17",
+            "attempt_id": "1151",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 153,
+            "source_observed_at": "2026-11-23T02:22:33.470Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1149",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 152,
+            "source_observed_at": "2026-11-23T02:29:26.506Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1149",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 151,
+            "source_observed_at": "2026-11-23T02:22:15.847Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "offline",
+            "freshness": "stale"
+          }
+        ],
+        "meta": {
+          "served_at": "2026-11-23T18:24:38.161Z",
+          "source": "d1",
+          "stale_after_s": 180,
+          "offline_after_s": 900
+        },
+        "correlation_id": "403061f6-baf8-40a1-a951-c1819f601522"
+      }
+    },
+    {
+      "name": "enqueue_probe",
+      "status": 202,
+      "body": {
+        "job_id": "20921217-ab2f-46e4-a023-7b7594313125",
+        "status": "queued",
+        "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+        "correlation_id": "369047e1-f5b4-47a9-8c43-7f1c0f7fc258"
+      }
+    },
+    {
+      "name": "enqueue_checkout_state",
+      "status": 202,
+      "body": {
+        "job_id": "d1963a09-c675-4d2f-b03a-b53ad8c670e9",
+        "status": "queued",
+        "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+        "correlation_id": "c89c630f-88c5-4cf5-a032-7609653d7f6b"
+      }
+    },
+    {
+      "name": "enqueue_file_upload",
+      "status": 202,
+      "body": {
+        "job_id": "f74a2ce9-239a-4806-86b5-446889d38257",
+        "status": "queued",
+        "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+        "correlation_id": "1b39ad3a-7b06-4cd4-8d9e-11a4e9259268"
+      }
+    },
+    {
+      "name": "enqueue_suite_run",
+      "status": 202,
+      "body": {
+        "job_id": "da5fe2ed-937e-4959-8a44-e86fa8697a52",
+        "status": "queued",
+        "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+        "correlation_id": "a277460f-9425-4cbf-b012-c54a293872cd"
+      }
+    },
+    {
+      "name": "enqueue_unknown_suite",
+      "status": 202,
+      "body": {
+        "job_id": "fff44087-3855-4a86-8b00-6705fa014d42",
+        "status": "queued",
+        "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+        "correlation_id": "49345ee2-9112-413a-9cfe-38e4c99b968d"
+      }
+    },
+    {
+      "name": "recall_learn",
+      "status": 202,
+      "body": {
+        "writeback_id": "be46ff6b-c2e3-49b6-b498-d76820b93aff",
+        "writeback_status": "pending",
+        "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+        "correlation_id": "86fb1618-3cba-407b-b0ed-f1270f72cbdf"
+      }
+    },
+    {
+      "name": "excluded_repo_refused",
+      "status": 403,
+      "body": {
+        "error": "source_not_allowlisted",
+        "correlation_id": "4a167f16-6ab5-4665-a2e5-f26a449a1a14"
+      }
+    },
+    {
+      "name": "job_probe",
+      "status": 200,
+      "body": {
+        "job": {
+          "job_id": "20921217-ab2f-46e4-a023-7b7594313125",
+          "kind": "probe",
+          "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+          "params": {
+            "probe": "codex-oauth"
+          },
+          "status": "done",
+          "attempts": 1,
+          "max_attempts": 3,
+          "reason_code": "ok",
+          "result": {
+            "probe": "codex-oauth",
+            "reason_code": "ok"
+          },
+          "source_observed_at": "2026-11-23T18:24:44.524Z",
+          "created_at": "2026-11-23T18:24:38.768Z",
+          "updated_at": "2026-11-23T18:24:54.765Z",
+          "expires_at": "2026-11-23T19:24:38.768Z"
+        },
+        "meta": {
+          "served_at": "2026-11-23T18:24:57.768Z",
+          "source": "d1"
+        },
+        "correlation_id": "8a0e5066-5cab-4193-9d32-9be49d4593d5"
+      }
+    },
+    {
+      "name": "job_checkout_state",
+      "status": 200,
+      "body": {
+        "job": {
+          "job_id": "d1963a09-c675-4d2f-b03a-b53ad8c670e9",
+          "kind": "checkout_state",
+          "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+          "params": {
+            "repo": "ariaxhan/fleet-mcp"
+          },
+          "status": "done",
+          "attempts": 1,
+          "max_attempts": 3,
+          "reason_code": "ok",
+          "result": {
+            "repo": "ariaxhan/fleet-mcp",
+            "reported_via": "ingest_fleet"
+          },
+          "source_observed_at": "2026-11-23T18:24:45.065Z",
+          "created_at": "2026-11-23T18:24:39.321Z",
+          "updated_at": "2026-11-23T18:24:55.240Z",
+          "expires_at": "2026-11-23T19:24:39.321Z"
+        },
+        "meta": {
+          "served_at": "2026-11-23T18:24:58.258Z",
+          "source": "d1"
+        },
+        "correlation_id": "64df5b7b-b0ff-4dc6-a6a6-8621861f23de"
+      }
+    },
+    {
+      "name": "job_file_upload",
+      "status": 200,
+      "body": {
+        "job": {
+          "job_id": "f74a2ce9-239a-4806-86b5-446889d38257",
+          "kind": "file_upload",
+          "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+          "params": {
+            "repo": "ariaxhan/fleet-mcp",
+            "path": "AGENTS.md"
+          },
+          "status": "done",
+          "attempts": 1,
+          "max_attempts": 3,
+          "reason_code": "ok",
+          "result": {
+            "repo": "ariaxhan/fleet-mcp",
+            "path": "AGENTS.md",
+            "content_hash": "01e7611be4143bf233f47117cdc6c4a35292bdad726f2dc588395a6957b5b73b",
+            "size": 3457,
+            "head_commit": "ef31800e611724150e52c541adc10c776c155dbf",
+            "artifact_key": "personal/personal-docs/files/01e7611be4143bf233f47117cdc6c4a35292bdad726f2dc588395a6957b5b73b"
+          },
+          "source_observed_at": "2026-11-23T18:24:45.609Z",
+          "created_at": "2026-11-23T18:24:39.537Z",
+          "updated_at": "2026-11-23T18:24:55.692Z",
+          "expires_at": "2026-11-23T19:24:39.537Z"
+        },
+        "meta": {
+          "served_at": "2026-11-23T18:24:58.673Z",
+          "source": "d1"
+        },
+        "bytes_base64": "<4612 base64 chars, verified against content_hash>",
+        "correlation_id": "29ddcacf-4ab1-4bff-8ffb-d407dd08fb43"
+      }
+    },
+    {
+      "name": "job_suite_run",
+      "status": 200,
+      "body": {
+        "job": {
+          "job_id": "da5fe2ed-937e-4959-8a44-e86fa8697a52",
+          "kind": "suite_run",
+          "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+          "params": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "fleet-mcp-typecheck"
+          },
+          "status": "done",
+          "attempts": 1,
+          "max_attempts": 3,
+          "reason_code": "ok",
+          "result": {
+            "suite": "fleet-mcp-typecheck",
+            "run_id": "98fe3919-5fc3-449f-a2c7-ae9f255494e2",
+            "passed": true
+          },
+          "source_observed_at": "2026-11-23T18:24:47.201Z",
+          "created_at": "2026-11-23T18:24:39.998Z",
+          "updated_at": "2026-11-23T18:24:56.360Z",
+          "expires_at": "2026-11-23T19:24:39.998Z"
+        },
+        "meta": {
+          "served_at": "2026-11-23T18:24:59.184Z",
+          "source": "d1"
+        },
+        "correlation_id": "ea5684f6-39a5-4326-b70e-96d005b1871e"
+      }
+    },
+    {
+      "name": "job_unknown_suite",
+      "status": 200,
+      "body": {
+        "job": {
+          "job_id": "fff44087-3855-4a86-8b00-6705fa014d42",
+          "kind": "suite_run",
+          "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+          "params": {
+            "repo": "ariaxhan/fleet-mcp",
+            "suite": "not-registered"
+          },
+          "status": "unsupported",
+          "attempts": 1,
+          "max_attempts": 3,
+          "reason_code": "unknown_suite",
+          "result": null,
+          "source_observed_at": null,
+          "created_at": "2026-11-23T18:24:40.229Z",
+          "updated_at": "2026-11-23T18:24:56.812Z",
+          "expires_at": "2026-11-23T19:24:40.229Z"
+        },
+        "meta": {
+          "served_at": "2026-11-23T18:24:59.617Z",
+          "source": "d1"
+        },
+        "correlation_id": "f4dfd7a3-d29c-46a4-8bc1-da03b6207f59"
+      }
+    },
+    {
+      "name": "job_lesson_writeback",
+      "status": 200,
+      "body": {
+        "job": {
+          "job_id": "be46ff6b-c2e3-49b6-b498-d76820b93aff",
+          "kind": "lesson_writeback",
+          "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+          "params": {
+            "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+            "kind": "pattern",
+            "what": "fleet-mcp sidecar lesson write-back: recall_learn queues a lesson_writeback job; the sidecar writes it with agentdb learn in the owning checkout",
+            "why": "D1 stays authoritative until writeback_status is done (PRD 2.6.2); verified by scripts/sidecar-sweep.mjs"
+          },
+          "status": "done",
+          "writeback_status": "done",
+          "attempts": 1,
+          "max_attempts": 3,
+          "reason_code": "ok",
+          "result": {
+            "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+            "written": true
+          },
+          "source_observed_at": "2026-11-23T18:24:48.223Z",
+          "created_at": "2026-11-23T18:24:40.736Z",
+          "updated_at": "2026-11-23T18:24:57.256Z",
+          "expires_at": "2026-11-30T18:24:40.736Z"
+        },
+        "meta": {
+          "served_at": "2026-11-23T18:25:00.072Z",
+          "source": "d1"
+        },
+        "correlation_id": "da451315-a7ae-4e74-a0c9-f6a1608a404c"
+      }
+    },
+    {
+      "name": "status_after_run",
+      "status": 200,
+      "body": {
+        "connectors": [
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "sidecar_version": "0.2.0",
+            "last_seq": 247,
+            "outbox_depth": 0,
+            "dropped_for_boundary": 82,
+            "last_heartbeat_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "last_successful_observation_at": {
+              "fleet_event": "2026-11-23T18:22:27.548Z",
+              "probe": "2026-11-23T18:24:44.524Z",
+              "file_hash": "2026-11-23T18:24:42.853Z",
+              "checkout_state": "2026-11-23T18:24:45.065Z"
+            },
+            "last_reconciled_at": "2026-11-23T18:24:41.422Z",
+            "reconcile_missing": 0
+          }
+        ],
+        "checkouts": [
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "checkout_id": "fleet-mcp",
+            "repo": "ariaxhan/fleet-mcp",
+            "head_commit": "ef31800e611724150e52c541adc10c776c155dbf",
+            "branch": "main",
+            "dirty": true,
+            "tree_hash": "51df9eeb0f62e149da30dac70b2133a6fafb0a5532ea9051ee5bd90a7437513a",
+            "source_observed_at": "2026-11-23T18:24:45.065Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          }
+        ],
+        "checkpoints": [],
+        "probes": [
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "probe": "claude-oauth",
+            "status": "missing",
+            "reason_code": "credential_missing",
+            "freshness": "fresh",
+            "source_observed_at": "2026-11-23T18:24:42.789Z",
+            "connector_status": "fresh"
+          },
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "probe": "codex-oauth",
+            "status": "live",
+            "reason_code": "ok",
+            "freshness": "fresh",
+            "source_observed_at": "2026-11-23T18:24:44.524Z",
+            "connector_status": "fresh"
+          },
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "probe": "github",
+            "status": "live",
+            "reason_code": "ok",
+            "freshness": "fresh",
+            "source_observed_at": "2026-11-23T18:24:42.251Z",
+            "connector_status": "fresh"
+          },
+          {
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "probe": "wrangler",
+            "status": "live",
+            "reason_code": "ok",
+            "freshness": "fresh",
+            "source_observed_at": "2026-11-23T18:24:42.777Z",
+            "connector_status": "fresh"
+          }
+        ],
+        "events": [
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1239",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 237,
+            "source_observed_at": "2026-11-23T18:17:22.937Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1239",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 236,
+            "source_observed_at": "2026-11-23T18:16:41.995Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1238",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 235,
+            "source_observed_at": "2026-11-23T18:16:37.985Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1238",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 234,
+            "source_observed_at": "2026-11-23T18:16:17.330Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1237",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 233,
+            "source_observed_at": "2026-11-23T18:22:27.548Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1237",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 232,
+            "source_observed_at": "2026-11-23T18:16:16.565Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#18",
+            "attempt_id": "1236",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 231,
+            "source_observed_at": "2026-11-23T18:16:15.691Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1235",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 230,
+            "source_observed_at": "2026-11-23T18:12:57.189Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1235",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 229,
+            "source_observed_at": "2026-11-23T18:12:16.328Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1234",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 228,
+            "source_observed_at": "2026-11-23T18:12:12.659Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1234",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 227,
+            "source_observed_at": "2026-11-23T18:11:58.969Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1233",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 226,
+            "source_observed_at": "2026-11-23T18:12:09.428Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1233",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 225,
+            "source_observed_at": "2026-11-23T18:11:34.748Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#18",
+            "attempt_id": "1232",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 224,
+            "source_observed_at": "2026-11-23T18:11:28.685Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#18",
+            "attempt_id": "1232",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 223,
+            "source_observed_at": "2026-11-23T18:11:18.165Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#26",
+            "attempt_id": "1231",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 222,
+            "source_observed_at": "2026-11-23T18:11:55.441Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#26",
+            "attempt_id": "1231",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 221,
+            "source_observed_at": "2026-11-23T18:11:17.409Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#43",
+            "attempt_id": "1230",
+            "event_kind": "done",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 220,
+            "source_observed_at": "2026-11-23T18:15:22.828Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#43",
+            "attempt_id": "1230",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 219,
+            "source_observed_at": "2026-11-23T18:11:16.692Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1229",
+            "event_kind": "done",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 218,
+            "source_observed_at": "2026-11-23T18:11:09.320Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1229",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 217,
+            "source_observed_at": "2026-11-23T18:09:38.271Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1228",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 216,
+            "source_observed_at": "2026-11-23T18:06:22.893Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1228",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 215,
+            "source_observed_at": "2026-11-23T18:06:02.052Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1215",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 210,
+            "source_observed_at": "2026-11-23T18:00:56.513Z",
+            "received_at": "2026-11-23T18:24:48.770Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1221",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 189,
+            "source_observed_at": "2026-11-23T17:35:46.457Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#19",
+            "attempt_id": "1221",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 188,
+            "source_observed_at": "2026-11-23T17:35:05.474Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1220",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 187,
+            "source_observed_at": "2026-11-23T17:35:01.832Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#23",
+            "attempt_id": "1220",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 186,
+            "source_observed_at": "2026-11-23T17:34:36.090Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1219",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 185,
+            "source_observed_at": "2026-11-23T17:34:56.578Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#27",
+            "attempt_id": "1219",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 184,
+            "source_observed_at": "2026-11-23T17:34:21.729Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#18",
+            "attempt_id": "1218",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 183,
+            "source_observed_at": "2026-11-23T17:34:18.272Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#18",
+            "attempt_id": "1218",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 182,
+            "source_observed_at": "2026-11-23T17:34:04.975Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#26",
+            "attempt_id": "1217",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 181,
+            "source_observed_at": "2026-11-23T17:34:32.157Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#26",
+            "attempt_id": "1217",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 180,
+            "source_observed_at": "2026-11-23T17:33:54.173Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#43",
+            "attempt_id": "1216",
+            "event_kind": "blocker",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 179,
+            "source_observed_at": "2026-11-23T17:34:15.363Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#43",
+            "attempt_id": "1216",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 178,
+            "source_observed_at": "2026-11-23T17:33:53.651Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          },
+          {
+            "task_id": "ariaxhan/fleet-mcp#15",
+            "attempt_id": "1215",
+            "event_kind": "started",
+            "machine_id": "m_18e9418a1b9a9771ff1efa6f32b76da6",
+            "seq": 177,
+            "source_observed_at": "2026-11-23T17:32:55.167Z",
+            "received_at": "2026-11-23T17:38:22.746Z",
+            "connector_status": "fresh",
+            "freshness": "fresh"
+          }
+        ],
+        "meta": {
+          "served_at": "2026-11-23T18:25:00.481Z",
+          "source": "d1",
+          "stale_after_s": 180,
+          "offline_after_s": 900
+        },
+        "correlation_id": "f44e6370-9b05-4270-9f11-e0ca4abfc0bf"
+      }
+    }
+  ],
+  "sidecar_stdout": [
+    {
+      "pushed": 38,
+      "accepted": 38,
+      "duplicate": 0,
+      "dropped_for_boundary": 0,
+      "rejected": 0,
+      "received_at": "2026-11-23T18:24:48.770Z",
+      "correlation_id": "ceb126de-474c-4a77-bd72-89e06bf8e560"
+    },
+    {
+      "job_id": "85a31f76-3b3e-41f3-8310-875729607252",
+      "status": "unsupported",
+      "duplicate": false,
+      "correlation_id": "2cdb893d-fa41-4ba6-b9ba-c3889bcc65c3"
+    },
+    {
+      "job_id": "57efc6bd-9381-4dcf-aeb9-fc12fe0d8634",
+      "status": "done",
+      "duplicate": false,
+      "correlation_id": "da67dc4b-5868-4cb3-9495-eb7cb77210cf"
+    },
+    {
+      "job_id": "20921217-ab2f-46e4-a023-7b7594313125",
+      "status": "done",
+      "duplicate": false,
+      "correlation_id": "7bb09f5d-c584-483c-9009-cd0ec3eff069"
+    },
+    {
+      "job_id": "d1963a09-c675-4d2f-b03a-b53ad8c670e9",
+      "status": "done",
+      "duplicate": false,
+      "correlation_id": "52596e2c-d529-4609-b16e-0f16fa294cc9"
+    },
+    {
+      "job_id": "f74a2ce9-239a-4806-86b5-446889d38257",
+      "status": "done",
+      "duplicate": false,
+      "correlation_id": "42326a2c-c2c2-41fa-8eea-eb01b031b5c7"
+    },
+    {
+      "job_id": "da5fe2ed-937e-4959-8a44-e86fa8697a52",
+      "status": "done",
+      "duplicate": false,
+      "correlation_id": "7e2eb9f3-3593-48e8-a9a4-688d2d001af7"
+    },
+    {
+      "job_id": "fff44087-3855-4a86-8b00-6705fa014d42",
+      "status": "unsupported",
+      "duplicate": false,
+      "correlation_id": "141ab3cb-7181-4aa2-858e-f41b95bf03e6"
+    },
+    {
+      "job_id": "be46ff6b-c2e3-49b6-b498-d76820b93aff",
+      "status": "done",
+      "duplicate": false,
+      "correlation_id": "cd607eef-38d8-4c75-baee-7032784f7abd"
+    }
+  ],
+  "pass": true
+}
