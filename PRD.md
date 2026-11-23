@@ -103,7 +103,7 @@ Both sides are built on one core, not two stacks. The core owns:
 - **Content-addressed store.** Every stored object is keyed by the SHA-256 hash of its canonical bytes, plus a human-readable name and a monotonic version number. A fetch by name resolves to the current version; a fetch by hash or version is exact and immutable.
 - **Version registry.** Every resource has a version history (version number, content hash, created timestamp, author, change note). Nothing is overwritten in place; a new version is appended.
 - **Change feed.** Every write appends an event (resource, version, timestamp, change kind) to a single ordered log. All `what_changed` and `what_changed_since` tools read this log. This is what replaces the hand-rolled seen-file dedup from the report (Report Part 1, Claude: the gh poll loop's `/tmp/claude-501/epic-seen.txt`).
-- **Cache layer.** One cache with per-class TTLs and explicit invalidation (Section 7). Every response carries `cache_status` (`hit`, `miss`, `stale`, `bypass`), `content_hash`, `version`, and `fetched_at`, so the agent and the benchmark can tell a cached answer from a fresh one.
+- **Cache layer.** One cache layer governed by the cache identity and safety contract (Section 7.5): complete computation identities, caller-enforced freshness, durable snapshots in D1 or R2, transactional events with an outbox, and idempotent, fenced writes. Every response carries `cache_status` (`hit`, `miss`, `stale`, `bypass`), `content_hash`, `version`, and the four distinct timestamps of Section 7.5.3, so the agent and the benchmark can tell a cached answer from a fresh one.
 - **Delta engine.** For versioned text resources, the server computes a diff between any two versions and returns the diff, not the whole object, when the caller already holds a version. This is the mechanism that turns the 27.3% repeat prompt bytes into a small delta (Report Part 1, Antigravity).
 - **Auth and audit.** One token check and one audit log for every call (Section 6).
 
@@ -112,7 +112,7 @@ Both sides are built on one core, not two stacks. The core owns:
 **Render lives on the State side as a tool group inside Verify, not as a separate server or a separate side.** Reasons:
 
 1. The baseline report already places `render(url, viewport, state)` inside Verify's tool list (Report Part 4, Idea 3), and Render's own tools (`render`, `get_screenshot`, `diff_screenshots`) duplicate Verify's (`render`, `visual_diff`). One render implementation serves both.
-2. A render is a verification artifact: it is keyed by URL plus viewport plus content hash, cached, diffed against the previous render, and consumed by the same cold-read and deploy-gate agents that consume verification results. It shares Verify's content-addressed cache, its invalidation rules (re-render only when the content hash changed), and its evidence shape.
+2. A render is a verification artifact: it is identified by the Render identity of Section 7.5.7 (URL, viewport, state profile, renderer and browser version, readiness rule, normalization version), stored with its evidence, diffed against the previous render, and consumed by the same cold-read and deploy-gate agents that consume verification results. It shares Verify's storage, freshness contract, and evidence shape. Under the supported model (always-observe, Section 7.5.7) every `verify_render` call observes the live page; the cache deduplicates identical screenshots, it never skips the observation.
 3. A separate Render server would duplicate the cache, the versioning, and the browser pool for no functional gain.
 
 Render keeps its own tool names (`verify_render`, `verify_get_render`, `verify_visual_diff`) and its own resource namespace (`render://`), so it can be split into its own Worker later without renaming anything the agents call. The split trigger is defined in Section 5.3 on three metrics the daily audit summary already computes; its numeric thresholds are set from Phase 3 measurements and recorded as a dated amendment, never invented in this PRD. When the trigger fires, Render splits out behind the same tool names.
@@ -124,7 +124,7 @@ The sides are not silos. The composition paths are first-class behaviors, not em
 - **Handoff resume pulls from Exemplar plus Recall plus Issue Context plus Brief.** `handoff_resume` returns the checkpoint, then attaches: the brief version pinned at checkpoint time (Brief), a diff of the brief if it changed since (Brief, delta engine), lessons recorded since the checkpoint (Recall), and the issue delta since the checkpoint (Issue Context, change feed). This is the direct fix for the 488 runner re-attempts, each of which today pays a fresh `gh issue view` plus a full prompt rebuild (Report Part 1, runner).
 - **Brief record_run feeds Handoff and Recall.** When a run is recorded on a brief, the run history becomes visible to `handoff_get_run_history`, and a failed run with a recorded lesson is offered to Recall as a `learn` candidate (the agent confirms; the server never writes a lesson on its own).
 - **Fleet Status preflight gates Verify and Handoff.** Before a verify run launches a deploy check or a resumed worker starts, `fleet_preflight` confirms each credential the run needs is live. A dead credential fails the preflight instead of killing an attempt mid-run (Report Part 1, runner: 10 attempts died on OAuth/auth failures in one week; Report Part 4, Idea 2).
-- **Verify results are Handoff state.** A verification result is stored with its file hash, so a resumed agent reuses the prior attempt's green checks instead of re-running the battery (Report Part 1, Codex: gate 18x plus locale 15x for one lesson, no result caching visible).
+- **Verify results are Handoff state.** A verification result is stored with its complete computation identity (Section 7.5.1), so a resumed agent reuses the prior attempt's green checks only when that identity still matches its current workspace (same tree or dependency hashes, lockfile, check-suite version, and environment); any mismatch is a miss and the checks re-run (Report Part 1, Codex: gate 18x plus locale 15x for one lesson, no result caching visible).
 - **Issue Context feeds Fleet Status.** `fleet_what_changed_since` includes issue state changes from the change feed, so a supervision loop makes one call instead of polling `gh issue list` twice per iteration (Report Part 1, Claude: the 853-character poll loop).
 
 ### 2.5 Component map
@@ -132,14 +132,14 @@ The sides are not silos. The composition paths are first-class behaviors, not em
 - **One Cloudflare Worker** serving the MCP endpoint (Streamable HTTP) plus health and version routes. One codebase, one deploy, one domain. Internal modules per area (exemplar, recall, issue, brief, fleet, verify, handoff) share the core in Section 2.2.
 - **Durable Objects** for the two genuinely stateful behaviors: `fleet_wait_for` subscriptions (server-side wait, one object per waited condition) and Handoff checkpoint coordination (one object per session, serializing checkpoint writes).
 - **D1** for structured records: version registry, change feed, briefs, run history, checkpoints index, verification records, issue cache index, lessons index, audit log.
-- **KV** for the hot cache: cached issue bodies, cached verification results, cached state snapshots, with per-class TTLs.
+- **KV** for disposable copies only: immutable bodies keyed by content hash or (resource, version), plus disposable copies of D1 or R2 records. KV never holds a mutable pointer or the only copy of anything (Section 7.5.4).
 - **R2** for blobs: exemplar and doc bodies, lesson attachments, render PNGs, benchmark raw-data archive (Section 8.8).
 - **Cloudflare Browser Rendering** for `verify_render`: a warm browser pool behind the render tool, so agents stop launching Chromium themselves (Report Part 1, Claude: 327 Playwright launches, 286 in one session).
 - **Upstream APIs, server-side only:** GitHub API (issues, PRs), Vercel and Cloudflare deployment APIs (deploy status), and the agentdb store (Recall reads the live store; see Section 4.4 for the sync design). Upstream credentials live in Workers secrets, never in the repo and never in prompts (Section 6).
 
 ## 3. Tools and resources
 
-Naming: flat MCP tool names, `<area>_<verb>`, matching the MCP tool-name rule (letters, digits, underscore, hyphen only; no dots). Every tool response is a JSON object with a `meta` block: `content_hash`, `version`, `cache_status`, `fetched_at`, and `source` (which upstream or store served it). Every tool that takes a `since_version` or `cursor` parameter returns a delta when the caller already holds a version, and the full object only when it does not.
+Naming: flat MCP tool names, `<area>_<verb>`, matching the MCP tool-name rule (letters, digits, underscore, hyphen only; no dots). Every tool response is a JSON object with a `meta` block: `content_hash`, `version`, `cache_status`, the four timestamps of Section 7.5.3 (`served_at`, `source_observed_at`, `last_validated_at`, `computed_at`), and `source` (which upstream or store served it). Every tool that takes a `since_version` or `cursor` parameter returns a delta when the caller already holds a version, and the full object only when it does not.
 
 **Delta cursor semantics (one rule everywhere).** The change-feed sequence number (Section 4.3) is the canonical cursor. Cross-resource change tools (`issue_what_changed`, `fleet_what_changed_since`) take an opaque, scoped `cursor` (it encodes the sequence number plus the caller's scope, so a cursor minted under one token or repo filter is rejected under another) and always return `next_cursor`. A call with no cursor returns the current state summary plus `next_cursor` (bootstrap); timestamps are never accepted as cursors. Single-resource diffs (`exemplar_what_changed`, `brief_get`, `issue_get`) take a resource `since_version`, the resource's own monotonic version. A cursor older than the retained feed window (Section 4.6) returns `cursor_expired` with a fresh `next_cursor`, never a silently partial delta.
 
@@ -187,7 +187,7 @@ Grounded in: 500 gh calls across 12 Claude sessions; 314 gh calls with 142 extra
 
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
-| `issue_get` | `repo` (required, must be allowlisted), `number` (required), `include_comments` (default true, capped at the last 8, matching the runner brief shape), `since_version` (optional) | Structured issue: title, body, state, labels, assignees, linked PRs, comments, `version`, `content_hash`, `github_updated_at` | Cached in KV with a 60 s TTL; served stale-while-revalidate when GitHub is slow; invalidated immediately by the GitHub webhook (Section 7), with reconciliation covering missed webhooks (below) |
+| `issue_get` | `repo` (required, must be allowlisted), `number` (required), `include_comments` (default true, capped at the last 8, matching the runner brief shape), `since_version` (optional) | Structured issue: title, body, state, labels, assignees, linked PRs, comments, `version`, `content_hash`, `github_updated_at` | Every observed version persisted in D1 (Section 7.5.4); KV holds disposable copies keyed by version; 60 s default freshness, overridable per call with `max_age_s`, `allow_stale`, `consistency` (Section 7.5.3); stale served only when the caller allows it; a GitHub webhook commits a new D1 version immediately, and KV copies follow via the outbox (Section 7.5.5), with reconciliation covering missed webhooks (below) |
 | `issue_list` | `query` (structured filters: repo, state, labels, assignee, updated-since), `limit` (default 50) | Matching issues, summary fields only (no bodies), `total_count` | Cached 60 s per normalized query |
 | `issue_what_changed` | `repo`, `cursor` (optional; opaque scoped feed cursor, Section 3) | New, closed, updated, and commented issues since `since`, with per-issue field-level change summaries, plus `next_cursor` and the repo's `covered_through` high-water mark; replaces the poll loop plus seen-file | Reads the change feed; no upstream call when the feed covers the window |
 | `pr_get` | `repo` (allowlisted), `number`, `since_version` (optional) | Structured PR: title, body, state, base and head refs, head SHA, merge state, review decisions, check-run summary, changed files (paths plus additions and deletions), linked issues, `version`, `content_hash` | Same caching, webhook invalidation, and reconciliation as `issue_get`; snapshots persisted in D1 like issue snapshots |
@@ -222,7 +222,7 @@ Grounded in: 179 sqlite3 queries, 131 wait/listen calls, 311 sleep commands, 500
 
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
-| `fleet_get_flight` | `id` (required) | Flight state: status, started, updated, worker, task ref, progress, last event | Live read from the state store; cached 10 s; `fetched_at` always present so the agent knows the freshness |
+| `fleet_get_flight` | `id` (required) | Flight state: status, started, updated, worker, task ref, progress, last event | Live read from the state store; cached 10 s by default, overridable with `max_age_s` / `consistency` (Section 7.5.3); `source_observed_at` always present so the agent knows the freshness |
 | `fleet_list_flights` | `state` (optional filter), `limit` (default 50) | Flights matching the filter, summary fields | Cached 10 s |
 | `fleet_get_job` | `id` (required) | Job state: status, attempts, last outcome, next scheduled run | Live read; cached 10 s |
 | `fleet_list_jobs` | `state` (optional filter), `limit` (default 50), `cursor` (optional) | Jobs matching the filter, summary fields, `next_cursor` | Cached 10 s |
@@ -238,18 +238,18 @@ Grounded in: 32 Antigravity lanes re-reporting verification; 327 Playwright laun
 
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
-| `verify_check` | `file` (path or content hash), `checks` (list: json-parse, em-dash-scan, copy-slot-scan, md5, plus named check suites), `force` (default false) | Pass/fail per check, evidence (counts, first failing line, hashes), `file_hash`, `run_id` | Content-addressed: if the file hash and check list match a stored result, return the cached result with `cache_status: hit` and the original evidence; run only on a miss or `force: true` |
-| `verify_get` | `file_hash` (required), `checks` (optional filter) | Stored verification result, or `not_found` | Direct cache read |
+| `verify_check` | `file` (path or content hash) or `bytes`, `checks` (list: json-parse, em-dash-scan, copy-slot-scan, md5, plus named check suites), `force` (default false), `max_age_s`, `allow_stale`, `consistency` (Section 7.5.3) | Pass/fail per check, evidence (counts, first failing line, hashes), the full computation identity, `run_id`, the four timestamps | Server-runnable pure byte checks only (Section 7.5.2): key is the complete computation identity (input bytes hash plus check name and version plus runtime identity). Workspace checks are never run here; their results are read from Studio-pushed records whose identity must match the caller's current tree, lockfile, suite version, and environment. A hit returns `cache_status: hit` with the original evidence; `force: true` creates a distinct new record and never overwrites the old one |
+| `verify_get` | `identity` (the full computation identity, or its hash), `checks` (optional filter) | Stored verification result whose identity matches exactly, or `not_found`; never a result keyed by a subset of the identity (for example, file hash alone) | Direct read of the D1 record, KV copy optional |
 | `verify_list_checks` | none | Every named check and check suite `verify_check` accepts: name, version, description, input kinds | Static per deploy; cached until the next deploy |
 | `verify_deploy_status` | `deployment` (provider plus deployment id or URL) | `readyState`, build status, deploy URL, `checked_at`; catches a failed build before the verify step (the readyState lesson) | Cached 30 s; a failed build result is cached 5 min to stop re-probing |
 | `verify_live_check` | `url` (required), `expected_text` (required) | `found` (bool), HTTP status, response excerpt, `checked_at` | Cached 60 s per (url, expected_text) |
-| `verify_render` | `url` (required), `idempotency_key` (required), `viewport` (default 390x844 phone width, matching the fleet's phone-screen verification habit), `state` (optional: signed-in, locale, theme), `full_page` (default false) | `render_id`, screenshot (as an MCP image content part or an R2 URL, caller chooses), `content_hash` of the rendered page, `rendered_at` | Content-addressed: same URL plus viewport plus state plus content hash returns the cached render; a new render runs only when the content hash changed. Warm browser pool via Cloudflare Browser Rendering |
+| `verify_render` | `url` (required), `idempotency_key` (required), `viewport` (default 390x844 phone width, matching the fleet's phone-screen verification habit), `state` (optional: signed-in, locale, theme), `full_page` (default false) | `render_id`, screenshot (as an MCP image content part or an R2 URL, caller chooses), `render_identity`, normalized `screenshot_hash`, `rendered_at` | Always-observe (Section 7.5.7): every call renders the live page under the full Render identity; if the normalized screenshot hash matches the latest stored render for that identity, the response reuses the stored PNG and `render_id` with `cache_status: hit` and a fresh `last_validated_at`, otherwise it stores a new render. Warm browser pool via Cloudflare Browser Rendering |
 | `verify_get_render` | `render_id` (required) | Cached render (screenshot plus metadata), or `not_found` | Direct cache read |
 | `verify_visual_diff` | `render_id` (required), `previous_id` (required) | `changed` (bool), diff percentage, diff image (optional), changed regions | Diff computed on demand, cached per (render_id, previous_id) |
 
-Resources: `verification://<file_hash>`, `render://<id>`, `screenshot://<url-hash>`.
+Resources: `verification://<identity_hash>`, `render://<id>`, `screenshot://<url-hash>`.
 
-Design note: `verify_check` never trusts its own cache blindly. A cached result carries the file hash it was computed against; the caller passes the current hash, and a mismatch is a miss. The 48 runner verification failures after done claims (Report Part 1, runner) are the failure mode this design targets: verification runs against the actual current bytes, or the cache says so explicitly.
+Design note: `verify_check` never trusts its own cache blindly. A cached result carries its complete computation identity (Section 7.5.1); the caller supplies its current identity components, and any mismatch, including a missing component, is a miss. The 48 runner verification failures after done claims (Report Part 1, runner) are the failure mode this design targets: verification runs against the actual current workspace, or the cache says so explicitly.
 
 #### Handoff: session continuity across restarts and worker deaths
 
@@ -278,16 +278,16 @@ Every operation the system needs beyond agent reads has exactly one surface. Sur
 | Revise a brief | Public tool | `brief_revise` | Only operation that creates a brief version |
 | Record a run | Public tool | `brief_record_run` | Run row plus `run://` plus change feed; never versions the brief body (Section 3.1, Brief) |
 | List briefs | Public tool | `brief_list` | |
-| Flag a lesson | Public tool | `recall_quarantine(action: flag)` | `write` scope |
-| Quarantine or release a lesson | Public tool | `recall_quarantine(action: quarantine or release)` | `admin` scope |
-| Correct a lesson | Public tool | `recall_learn` with `supersedes: <lesson_id>` | Keeps the stable id, new `content_hash` and version (Section 4.3); prior text stays readable by version |
+| Flag a lesson | Public tool | `recall_quarantine(action: flag)` | `recall:flag` scope (Section 6.2) |
+| Quarantine or release a lesson | Public tool | `recall_quarantine(action: quarantine or release)` | `recall:moderate` plus `admin` (Section 6.2) |
+| Correct a lesson | Public tool | `recall_learn` with `supersedes: <lesson_id>` | Keeps the stable id, new `content_hash` and version (Section 4.3); prior text stays readable by version only when moderation policy permits (Section 6.5) |
 | Revoke a lesson | Admin endpoint | `POST /admin/lessons/<id>/revoke` | Tombstone version with reason; excluded from all reads; agentdb sync marks it revoked upstream |
-| Ingest fleet events (flight and job transitions) | Connector operation | `POST /ingest/fleet` (runner-signed, `ingest` scope) | The runner pushes state transitions; idempotent on (source, event id); feeds `fleet_*` reads and the change feed |
+| Ingest fleet events (flight and job transitions) | Connector operation | `POST /ingest/fleet` (runner-signed, `connector:fleet` scope) | The runner pushes state transitions; idempotent on (source, event id); feeds `fleet_*` reads and the change feed |
 | Create or update session status | Public tool | `handoff_set_status(session, status: active, completed, abandoned, note)` | Agents mark their own session; `dead` is reserved for the worker-death operation |
 | Record worker death | Connector operation | `POST /ingest/fleet` event `worker_dead` (session, worker, last heartbeat, cause) | Runner-only; sets session `dead`, links the last checkpoint if one exists, never fabricates one (Section 3.2, Handoff) |
 | Tag a benchmark session | Public tool | `bench_tag_session(session, bench_run_id, arm, task_id, phase)` | Write-once per session (a second different tag returns `idempotency_conflict`); tags flow into every log line and `brief_record_run.bench_session`, so the archive (Section 11.4) joins server logs to runs |
-| Issue, rotate, revoke tokens | CLI over admin endpoint | `fleetctl token issue/rotate/revoke`; `POST /admin/tokens/*` | Plaintext shown once at issue; D1 stores the hash (Section 6.2) |
-| Manage the repo allowlist | CLI over admin endpoint | `fleetctl allowlist add/remove/list`; `POST /admin/allowlist/*` | Each change recorded with actor and reason; TBS repos refused (Section 6.4) |
+| Issue, rotate, revoke tokens | CLI over admin endpoint | `fleetctl token issue/rotate/revoke`; `POST /admin/tokens/*` | Plaintext shown once at issue; D1 stores the verifier (Section 6.3) |
+| Manage resource allowlists | CLI over admin endpoint | `fleetctl allowlist add/remove/list`; `POST /admin/allowlist/*` | Each change recorded with actor and reason; TBS repos refused (Section 6.4) |
 | Sync reconciliation (GitHub coverage, agentdb sync) | Connector operation, plus admin trigger | Cron trigger; `POST /admin/sync/run?target=github or agentdb` | Advances `covered_through` (Section 3.1) and the agentdb sync cursor (Section 4.4); manual trigger for recovery only |
 | GitHub webhook intake | Connector operation | `POST /webhooks/github` | Signature-verified; non-allowlisted repos dropped |
 | Upload or reference a file artifact | Public tool argument, plus admin endpoint | `verify_check.file` accepts a content hash or an `r2://` reference; `POST /admin/artifacts` (or a presigned R2 upload URL from it) for bytes over the MCP payload limit | Stored content-addressed in R2; returns the hash used everywhere else |
@@ -295,42 +295,46 @@ Every operation the system needs beyond agent reads has exactly one surface. Sur
 | Read PR state | Public tool, plus resource read | `pr_get`, `pr_list`; `pr://<repo>/<number>` | Section 3.1, Issue Context |
 | Store health | Public tool | `recall_store_health` | Section 3.1 |
 
-Scopes added to Section 6.2: `publish` (grant on top of `write` for `ref_publish`) and `ingest` (runner only, connector routes). Admin endpoints and `fleetctl` are not part of the agent-facing API and are excluded from the benchmark's with-arm tool schema (Section 8.6).
+Section 6.2 assigns per-operation capabilities, including `context:publish` and `connector:fleet`; coarse write/ingest grants are not accepted. Admin endpoints and `fleetctl` are not part of the agent-facing API and are excluded from the benchmark's with-arm tool schema (Section 8.6).
 
 ## 4. Data model
 
 ### 4.1 Entities
+
+Every key below is prefixed by `(tenant_id, namespace_id)` and every row carries `owner_principal_id`; Section 6.1 governs ownership and authorization for all stores, caches, feeds and blobs.
 
 | Entity | Key | Stored in | Notes |
 |---|---|---|---|
 | Exemplar version | (name, version) | D1 (registry) + R2 (body) | Immutable. Body addressed by content hash. |
 | Doc version | (path, version) | D1 (registry) + R2 (body) | Same shape as exemplars. |
 | Lesson | id (stable, assigned once at creation, never recomputed) plus `content_hash` (SHA-256 of the canonical lesson text, changes on edit) | D1 (index) + agentdb store (source of truth, see 4.4) | Kind, what, why, hit count, source DB, created and last-recalled timestamps. |
-| Issue cache entry | (repo, number, version) | D1 (index) + KV (body) | Version increments on every GitHub change event; body is the structured issue JSON. |
+| Issue snapshot | (repo, number, version) | D1 (every version body, plus the current-version pointer) + KV (disposable copy keyed by version) | Version allocated in the same D1 transaction as the change-feed append (Section 7.5.5); body is the structured issue JSON with `source_observed_at`. |
 | Brief version | (id, version) | D1 | Parsed fields plus run history links. |
 | Run record | (brief_id, n) | D1 | Outcome, duration, worker, summary, lesson links. |
 | Checkpoint | (session, n) | D1 (index) + R2 (state blob) | Immutable. State blob is structured JSON, not a transcript dump. |
 | Session | id | D1 + Durable Object | Status, last checkpoint, last worker, task ref. |
 | Flight | id | D1 | Status, worker, task ref, progress, last event. |
 | Job | id | D1 | Status, attempts, last outcome, next run. |
-| Verification result | (file_hash, check list hash) | D1 + KV | Pass/fail per check, evidence, run id, computed timestamp. |
-| Render | id | D1 (metadata) + R2 (PNG) | URL, viewport, state, content hash, rendered timestamp. |
+| Verification result | complete computation identity hash (Section 7.5.1) | D1 (record and evidence) + KV (disposable copy) | Check kind (`pure`, `workspace`, `live`), identity components, pass/fail per check, evidence, run id, producer, computed and validated timestamps. |
+| Render | id, plus Render identity hash (Section 7.5.7) | D1 (metadata) + R2 (PNG keyed by screenshot hash) | URL, final URL, viewport, state profile, renderer and browser version, readiness rule, normalization version, screenshot hash, rendered and last-validated timestamps. |
 | Change event | sequence number (monotonic) | D1 | Resource, version, timestamp, change kind, actor. The single ordered log every `what_changed` tool reads. |
-| Audit entry | id | D1 | Caller token id, tool, result class, latency, timestamp, plus inputs passed through a field-allowlist sanitizer: only fields named in a per-tool allowlist are stored (identifiers, enums, sizes, hashes); free text, bodies, and any unlisted field are dropped, replaced by their length and hash. Retention per Section 4.6. |
-| Credential status | (account, credential) | Not stored; each preflight result is recorded only as an audit entry | Liveness only. No secret material is ever stored by this server. |
+| Outbox entry | sequence number | D1 | Written in the same transaction as the change event; drives cache changes and waiter wakeups after commit (Section 7.5.5). |
+| Idempotency record | (token id, tool, idempotency_key) | D1 | Request hash, result reference, status, created timestamp (Section 7.5.6). |
+| Audit entry | id | D1 | Caller token id, tool, result class, latency, timestamp, plus inputs passed through a field-allowlist sanitizer: only fields named in a per-tool allowlist are stored (identifiers, enums, sizes, hashes); free text, bodies, and any unlisted field are dropped; length/digest only for explicitly allowed non-secret content (Section 6.5). Retention per Section 4.6. |
+| Credential status | (account, credential) | Not stored; each preflight result is recorded only as an audit entry | Liveness only. No agent credential material is stored; upstream credentials use Workers secrets (Section 6.3). |
 
 ### 4.2 Storage choices and why
 
 - **D1** holds everything that needs querying, ordering, or joining: the version registry, the change feed, briefs, runs, checkpoints index, verification records, issue cache index, lessons index, audit log. One database, one schema, migrations in the repo.
-- **KV** holds the hot cache only: cached issue bodies, cached verification results, cached state snapshots, cached query results. KV is a cache, never the record: every KV entry has a D1 or upstream source of truth, and losing KV loses speed, not data.
-- **R2** holds blobs that are large or rarely read: exemplar and doc bodies, checkpoint state blobs, render PNGs, and the benchmark raw-data archive (Section 8.8). R2 objects are named by content hash, so they are immutable and deduplicated by construction.
+- **KV** holds disposable copies only: immutable bodies keyed by content hash or (resource, version), and disposable copies of D1 or R2 records. Every KV entry has a D1, R2, or upstream source of truth; losing KV loses speed, not data. Mutable pointers (current version, coverage marks, leases) live in D1 or a Durable Object, never in KV, because KV is eventually consistent (Section 7.5.4).
+- **R2** holds blobs that are large or rarely read: exemplar and doc bodies, checkpoint state blobs, render PNGs, and the benchmark raw-data archive (Section 8.8). R2 objects are named by tenant, namespace and content hash, so deduplication never crosses ownership boundaries (Section 6.1).
 - **Durable Objects** hold only coordination state: `fleet_wait_for` subscriptions and per-session checkpoint serialization. They hold no long-lived data; everything durable lands in D1 or R2.
 
 ### 4.3 Versioning scheme
 
 - Every versioned resource has a monotonic integer version (1, 2, 3, ...) plus a SHA-256 content hash of its canonical bytes. The version orders changes; the hash proves identity.
 - Versions are append-only. An update creates a new version; no version is ever edited or deleted. A deletion is a new version with `status: deleted` (tombstone), so `what_changed` can report it.
-- Every tool response carries `version`, `content_hash`, and `fetched_at`. A caller that holds version N asks for the delta since N; the server answers with the diff or with `unchanged: true`.
+- Every tool response carries `version`, `content_hash`, and the Section 7.5.3 timestamps. A caller that holds version N asks for the delta since N; the server answers with the diff or with `unchanged: true`.
 - The change feed assigns a single monotonic sequence number across all resources, so `fleet_what_changed_since(cursor)` and `issue_what_changed(repo, cursor)` are answered from one log with a consistent ordering. The sequence number is the canonical cursor (Section 3).
 - Lesson identity: a lesson's `id` is stable for its lifetime; its `content_hash` identifies the text version. An edit keeps the id and changes the hash, so recall telemetry (`hit_count`) and links survive edits, while caches and the benchmark can still tell two versions apart.
 
@@ -350,16 +354,16 @@ The live agentdb store is a set of SQLite files on the Studio (77 `agent.db` fil
 | Exemplar/doc current-version pointer | New version published (immediate, write-through) |
 | Exemplar/doc version body | Never (immutable by version) |
 | Recall query results | New lesson recorded that matches the query terms, or 5 min TTL, whichever comes first |
-| Issue body | GitHub webhook event for that issue or PR (immediate), reconciliation fetch (Section 3.1), or 60 s TTL |
+| Issue body | GitHub webhook event for that issue or PR (new D1 version, outbox-driven copy update), reconciliation fetch (Section 3.1), or the caller's `max_age_s` (default 60 s) |
 | Issue list | 60 s TTL (lists are cheap to recompute and change often) |
 | Flight/job state | State change event (immediate, write-through) or 10 s TTL |
-| Verification result | Never invalidated by time; keyed by file hash, so a changed file is a different key. Explicit `force: true` re-runs. |
-| Render | Never invalidated by time; keyed by URL plus viewport plus state plus content hash. A changed page is a different key. |
+| Verification result | Keyed by the complete computation identity (Section 7.5.1): any changed identity component is a different key. Freshness still applies: callers bound reuse with `max_age_s`; live probes are never reused beyond their freshness window. `force: true` creates a distinct record. |
+| Render | Not reused without observation: always-observe (Section 7.5.7); the stored PNG is deduplicated by normalized screenshot hash under the full Render identity. |
 | Deploy status | 30 s TTL; failed-build results cached 5 min |
 | Live check | 60 s TTL per (url, expected_text) |
 | Credential liveness | Never cached: probed live on every preflight call (one rule, Section 3.2) |
 
-The governing rule: a cache entry is valid only while its key is valid. Content-addressed entries (verification, render, versioned bodies) cannot go stale because the key includes the content. Time-based entries (issue bodies, state snapshots) carry `fetched_at` and a TTL, and every response says whether it is fresh, cached, or stale, so the agent can decide whether to trust it.
+The governing rule: a cache entry is valid only while its complete identity matches the caller's current inputs AND it satisfies the caller's freshness requirement (Section 7.5). No entry is safe merely because its key contains a content hash: a key is only as safe as the identity it covers, so identities are complete by contract and freshness is enforced, never assumed.
 
 ### 4.6 Retention per record class
 
@@ -384,10 +388,10 @@ Retention is set per class. Durations below are design decisions, not measured n
 - **Transport: Streamable HTTP**, the current MCP transport. `POST /mcp` accepts JSON-RPC requests and returns JSON-RPC responses, with an optional SSE stream for server-initiated messages (used by `fleet_wait_for` progress and by resource change notifications). `GET /mcp` opens the SSE stream for clients that subscribe. No WebSocket, no legacy SSE endpoint.
 - **Routes:**
   - `POST /mcp` and `GET /mcp`: the MCP endpoint.
-  - `GET /health`: liveness plus dependency status (D1, KV, R2, GitHub API reachability, Browser Rendering reachability). Returns per-dependency status, not just a bare 200.
+  - `GET /health`: public liveness only; authenticated `ops:read` adds namespace-scoped dependency status (D1, KV, R2, GitHub API reachability, Browser Rendering reachability), per Section 6.2.
   - `GET /version`: deployed commit hash, build time, and the MCP protocol version the server speaks.
   - `POST /webhooks/github`: GitHub webhook receiver (issue and PR events) for cache invalidation. Verified with the webhook secret; events outside the repo allowlist are dropped.
-  - `POST /internal/sync`: the agentdb sync endpoint, authenticated with a separate sync token, accepting only the Studio sync job.
+  - `POST /internal/sync`: the agentdb sync endpoint, authenticated with a separate identity-bound sync token plus registered sign-in/service identity (Section 6.3), accepting only the authorized Studio sync job.
 - **Domain (proposed):** `mcp.ariaxhan.com` for production, `staging.mcp.ariaxhan.com` for the staging Worker. Final domain choice is Aria's call (Section 9).
 - **Browser Rendering:** `verify_render` uses the Cloudflare Browser Rendering API (Puppeteer-compatible) for a warm browser pool. Renders run in the same Worker request when fast, or as a queued render with a pollable `render_id` when slow; the tool response always says which path was taken.
 
@@ -409,39 +413,90 @@ Render splits into its own Worker (same tool names, same `render://` namespace, 
 
 The numeric thresholds for each metric and the persistence rule (how many consecutive days over threshold) are NOT set in this PRD. They are set from Phase 3 measurements and recorded as a dated amendment to this section before Phase 4; inventing them now would violate the evidence standard.
 
-## 6. Auth model
+## 6. Auth model (R3, normative)
 
-### 6.1 Who can call it
+### 6.1 Principals, tenants, and namespaces
 
-- **Aria's agents:** the Studio runner, Claude and Codex lanes, and Muse. Each gets its own token, so usage and abuse are attributable per caller.
-- **Aria's clients:** scoped tokens per client, limited to that client's repos and to read-only tools unless Aria grants write scope. A client token can never see another client's data, and can never see Aria's personal fleet state (flights, jobs, checkpoints) unless explicitly granted.
-- **Aria herself:** an admin token with full scope, used from ChatGPT or Claude for ad-hoc recall and status checks.
+Aria, each agent, each client, and each connector have distinct principal IDs and tokens. Start with one personal tenant and explicit namespaces; client tenants are separate ownership domains. Shared D1 is a design decision, not a claim of proven isolation. No client token receives fleet, handoff, or credential visibility by default. Aria grants access explicitly within the personal-project boundary, which even an admin cannot override.
 
-### 6.2 Token model
+Every entity in Section 4.1, historical version, artifact, upload, cache entry, feed event, subscription, durable job, credential profile, browser profile, and benchmark fixture has immutable `tenant_id`, `namespace_id`, and `owner_principal_id`. Tenant and namespace prefix all logical keys, unique constraints, joins, KV keys, R2 object keys and Durable Object identities. Authorization partitions feed queries and cursor output even if the internal event sequence is global; expose opaque cursors, not foreign sequence gaps. Content hashes deduplicate only within a namespace and never confer access. D1 ownership rows govern every blob download. No public R2 bucket or reusable signed download bypasses current authorization.
 
-- Bearer tokens, issued by Aria, stored as Workers secrets (a hashed token table in D1; the server stores hashes, never plaintext tokens). Each token carries: owner, scope list, repo allowlist, expiry, and a revocation flag.
-- Scopes: `read` (all get/list/what_changed tools), `write` (learn, create, comment, record_run, save_checkpoint), `preflight` (credential checks), `admin` (token management, health, sync). A token with only `read` cannot write anything, even if the agent asks it to.
-- Tokens are per-client and per-agent, never shared, never pasted into prompts, never committed to any repo. An agent receives its token from its own environment (the runner injects it; a lane reads it from its own secret store), never from a brief or a prompt.
-- Rotation: tokens expire after 90 days by default (a design choice, not a measured number) and can be revoked immediately. Revocation is a D1 flag, effective on the next call.
+Every request resolves the principal from authentication, then intersects token grants, principal membership, namespace policy, operation capability, and resource allowlists. Caller-supplied ownership is never trusted. Default deny applies to missing ownership, unknown operations, unlisted resources, and cross-namespace references. Admin is a separate capability, never an implicit cross-tenant bypass. Cross-namespace sharing requires an explicit grant on the source object and destination principal, with provenance retained. Composite responses, historical reads, cache hits, diffs, counts and feed queries check every constituent before pagination or aggregation. Unauthorized IDs return indistinguishable `not_found`; no foreign counts, cursors, names or cache-hit hints escape. Cursors bind tenant, namespace, principal, effective filter and policy revision; changed grants invalidate them.
 
-### 6.3 Upstream credentials
+### 6.2 Per-operation capability matrix
 
-- The server's own upstream credentials (GitHub token, Vercel token, Cloudflare API token) live in Workers secrets. They are never in the repo, never in a prompt, never in a tool response, and never in a log. Tool responses that describe credential status (preflight) return liveness only (`live`, `expired`, `missing`), never any secret material and never a partial token.
-- The GitHub token is scoped to the repo allowlist and to the minimum permissions the tools need (read issues and PRs; write comments only where the `issue_comment` tool is enabled). The token's scope is documented in the repo's README so a reviewer can check it.
-- The preflight concept from Fleet Status (Section 3.2) is the credential story for the agents, not just for the server: before a lane launches, `fleet_preflight` verifies each credential that lane needs (Claude OAuth, Codex OAuth, GitHub, wrangler, repo checkout) and returns a go or no-go. A dead credential fails the preflight instead of killing an attempt mid-run. This addresses the measured failure class directly: OAuth expiry is the top recurring failure class in agentdb, and 10 runner attempts died on OAuth/auth failures in one week (Report Part 1, agentdb and runner).
+Each row requires its named capability plus Section 6.4 resource filters. No coarse `read`, `write`, `publish`, `preflight`, or `ingest` grant remains valid. Tool/resource discovery is filtered, but execution always rechecks. `admin` is required on every `/admin/*` route in addition to the row's capability. CLI uses the same routes and checks. Unknown future operations are denied until added to this matrix.
 
-### 6.4 Repo allowlist (the TBS boundary, enforced in code)
+| Operations (including resource equivalents) | Required capability | Additional restriction |
+|---|---|---|
+| Exemplar/doc get, list, diff; `exemplar://`, `doc://` | `context:read` | Explicit document/exemplar IDs, versions and source repos |
+| `ref_publish`, corpus seed, reference retire | `context:publish` | Source commit, manifest and destination namespace; retire via admin only |
+| `recall_query`, `recall_list_lessons`, lesson resource | `recall:read` | Allowed lesson IDs or explicitly granted collection; quarantine rules below |
+| `recall_store_health` | `recall:health` | Owned enumerated source DBs, no global store totals |
+| `recall_learn`, correction | `recall:write` | Owned lesson collection; correction requires access to original |
+| `recall_quarantine(action: flag)` | `recall:flag` | Allowed lesson, no release permission |
+| Quarantine, release, lesson revoke | `recall:moderate` plus `admin` | Audited reason; revoke via admin route |
+| Issue/PR get, list, delta; `issue://`, `pr://` | `issue:read` | Stable repository identity and issue/PR filter |
+| `issue_comment` | `issue:comment` | Explicit external-comment permission on destination repo |
+| Brief get, list, diff; `brief://`, brief-linked `run://` | `brief:read` | Allowed briefs and linked content |
+| `brief_create`, `brief_revise` | `brief:write` | Destination owner and base version checked |
+| `brief_record_run` | `brief:record` | Owned attempt and brief, no body revision permission |
+| Fleet get/list/status/delta/wait and flight/job resources | `fleet:read` | Explicit jobs/flights and namespace; waits and feeds inherit same filter |
+| `fleet_preflight` | `preflight:probe` | Principal-owned account, machine and credential-profile tuple |
+| `verify_check`, `verify_get`, `verify_list_checks`, verification resources | `verify:check` | Allowed upload/file IDs and named checkers; local suite additionally `verify:suite` and owned machine |
+| `verify_deploy_status`, `verify_live_check` | `verify:deploy`, `verify:live` respectively | Explicit deploy IDs or URL origins/paths, including redirects |
+| `verify_render`, `verify_get_render`, `verify_visual_diff`, render/screenshot resources | `verify:render` | Explicit URLs, upload IDs and browser profile; no arbitrary browsing |
+| `verify_render_cancel` | `verify:cancel` | Own job or explicit delegated job grant |
+| Handoff resume/list/history; `session://`, `checkpoint://`, `run://` | `handoff:read` | Explicit session/checkpoint/attempt filters, every composed area separately authorized |
+| `handoff_save_checkpoint`, `handoff_set_status` | `handoff:write` | Own session and fenced attempt; worker death reserved for connector |
+| `bench_tag_session`, fixture/archive operations | `benchmark:write` (reads: `benchmark:read`) | Owned run, fixture namespace and personal-only manifest; cannot authorize a benchmark before its gates |
+| Artifact upload, lookup, download | `artifact:write`, `artifact:read` respectively | Explicit upload grant and owning namespace; consuming operation capability also required |
+| `/ingest/fleet`, worker-death events | `connector:fleet` | Registered runner identity, assigned machines and namespaces only |
+| `/internal/sync`, agentdb reconciliation | `connector:sync` | Registered sync identity and enumerated DBs; no token-management authority |
+| GitHub reconciliation/webhook intake | `connector:github` | Registered integration and stable repo allowlist; webhook signature required |
+| Token issue/rotate/revoke; policy/allowlist changes | `auth:manage` plus `admin` | Cannot delegate beyond actor's grant ceiling; reason and audit mandatory |
+| Authenticated health, audit reads | `ops:read`, `audit:read` respectively | Tenant/namespace filters; audit metadata only |
+| Manual sync trigger | `connector:sync` or `connector:github`, plus `admin` | Target-specific; cannot broaden connector source grants |
 
-- Issue Context, Recall sync, and Fleet Status operate only on repos named in an explicit allowlist in D1, managed by Aria. The allowlist is a whitelist, not a blacklist: a repo not on the list is refused, with an error that names the repo and the allowlist, so a misconfiguration is visible instead of silent.
-- The Thinking-Brain-School org and every TBS repo are not on the allowlist and cannot be added without an explicit, recorded decision by Aria. The webhook receiver drops events for repos outside the allowlist. This is the code-level enforcement of the scope boundary in Section 0.
+Public liveness returns only service availability. Connector queues and cron tasks run as registered service principals, not ambient Worker authority. Internal calls carry the originating principal and grant snapshot IDs but reauthorize against current policy. Webhook authentication verifies raw payload signatures and delivery IDs, then maps the integration to its tenant and allowed stable repo ID before processing. No caller-selected tenant routing.
+
+### 6.3 Token lifecycle and upstream credentials
+
+Caller tokens are opaque bearer credentials: generate a cryptographically random 256-bit secret and random public token ID (design decisions), return `id.secret` once over authenticated TLS, never in a URL. D1 stores the ID, HMAC-SHA-256 verifier, key version, principal, tenant, namespaces, capabilities, filters, issuer, timestamps, expiry, predecessor and revocation metadata. A Worker secret holds only the HMAC key for caller-token verification, never a caller-token list. Lookup by public ID, recompute the HMAC over the complete token, compare in constant time, then read current policy from authoritative D1. Unknown IDs and failed comparisons have the same generic authentication response. Rate-limit failures. No positive authorization cache or KV policy decision; inability to read authoritative policy fails closed.
+
+Tokens are per agent/client, injected from that principal's secret store, never prompts, briefs, logs or source. Issuance requires `auth:manage` plus `admin`; the issuer cannot grant beyond its delegation ceiling or Section 0. Default expiry is 90 days; rotation overlap is at most 24 hours and cannot extend the old expiry (design decisions). Rotation issues a distinct token, records its predecessor and overlap deadline, and revokes the predecessor at that deadline. Expiry is checked using server time on every protected action. HMAC key rotation keeps versioned old keys only through valid-token overlap, then removes them; emergency key compromise revokes all affected tokens before replacement.
+
+Revocation, expiry, membership removal and filter narrowing increment an authoritative policy revision. Revocation is effective at the committed D1 change: new requests, reconnects, cache hits, result reads and blob fetches fail. Active streams/subscriptions register token IDs and receive cancellation; they also recheck before each event, response chunk and bounded wait renewal, so missed cancellation cannot leak another payload. Outstanding jobs recheck before dequeue, each protected stage, upstream side effect and result publication. Queued jobs cancel, running jobs stop at the next boundary, browser contexts close, and unpublished artifacts remain inaccessible. There is no resumable authority in a `wait_id`, session ID or artifact hash. Already delivered bytes or an upstream side effect accepted before revocation cannot be recalled; record the race and outcome, never claim rollback. In-flight side effects serialize their authorization boundary with policy mutation; no new dispatch is permitted after revocation commits. Persist cancellation state so deploy/reconnect cannot resurrect authority.
+
+Upstream service credentials live in Workers secrets alongside the separate caller-verification HMAC key, separate per environment and minimum-permission integration. D1 holds only profile references and ownership, never OAuth material. GitHub comment permission is separate from read permission. Upstream credential rotation/revocation cancels affected work and denies further dispatch until a valid replacement is bound. Never return headers, partial tokens, upstream error bodies or credential-bearing URLs. Screenshots/page content remain restricted artifacts, never audit fields.
+
+Preflight `account` resolves only through a principal-owned `(account_id, machine_id, credential_profile_id)` registry, with an explicit delegation for any shared probe. Local probes use the registered connector, never arbitrary paths or credentials supplied by the caller. Responses expose only liveness, observation time and fixed reason codes; offline or unsupported probes return `unknown`. A successful preflight does not authorize later actions or survive credential expiry.
+
+The separate sync token is bound to a registered signed-in identity or service-token identity, its audience, machine and credential profile. `/internal/sync` requires both that independently verified identity and its bound Fleet token with `connector:sync`; a bare bearer is insufficient. Recheck identity status on each sync request. Signed connector requests bind method, path, body hash, timestamp and single-use nonce to the registered machine key; reject replays. Sync enumerates authorized personal-project DBs, never scans an excluded tree then filters.
+
+### 6.4 Full resource allowlists and ingestion boundary
+
+D1 policy maps tenant, namespace and principal to allowed stable repo IDs, document/exemplar IDs and source paths, lesson collections and enumerated source DBs, upload/artifact IDs and purposes, checkpoint/session IDs, URL origins and paths, immutable deployment IDs and projects, resource schemes/IDs/versions, browser profile IDs, and benchmark run/fixture manifests. Missing entries deny. Explicit collection grants are scoped collections, never global wildcards. Policy changes use audited admin endpoints; removal applies to retained history and caches too. Repo membership alone does not authorize mixed-source content: every ingestion has permitted-source provenance and rejects or quarantines unresolved sources before serving.
+
+URL checks cover normalization, every redirect and subresource, private/local/metadata addresses, and allowed schemes; browser egress cannot escape the allowlist. Profiles are owned, isolated per tenant/namespace/principal, never shared cookies across clients. Upload completion validates namespace, declared purpose, size and digest before registration. No direct R2 upload grants read permission. Resource reads use the same matrix as tools, including historical versions and composed links.
+
+The personal-project boundary is non-overridable by tokens or admin policy: excluded sources cannot be added, ingested, rendered, synced or served. Webhooks outside the allowlist are dropped. Boundary acceptance uses synthetic excluded identifiers only and never contacts excluded systems.
+
+### 6.5 Audit ownership, sanitizer and served text
+
+The service owns append-only audit integrity; each row carries tenant, namespace, actor principal, token ID, operation, target ID, policy revision, request/job correlation ID, fixed result/reason enum, timestamp, latency, size and content digest where explicitly allowed. Tenant-scoped `audit:read` exposes only authorized rows; clients cannot edit or delete them. Token/policy mutations record issuer, affected token ID, changed capability/filter IDs and fixed reason code, never secret values. Audit-write failure denies protected operations before dispatch; completed effects with failed completion logging enter a durable reconciliation outbox and raise an operator alert.
+
+The sanitizer is a versioned per-operation field allowlist, not a blacklist or free-text scrubber. Only typed IDs, approved enums, timestamps, counts/sizes and approved artifact digests may pass. Unknown fields, nested objects without an explicit schema, bodies, lessons, prompts, queries, notes, headers, cookies, URL queries/fragments and raw upstream errors are dropped. Do not hash secret or arbitrary dropped fields: even hashes can disclose low-entropy values. Only explicitly designated non-secret content may contribute a length/digest. Sanitization precedes logs, traces, metrics and audit persistence; errors use fixed codes. Sanitized entries retain 180 days, daily sanitized aggregate summaries indefinitely (design decisions, Section 4.6). Benchmark-linked sanitized records are pinned indefinitely under Section 4.6; this exception never permits raw secrets or bodies in audit.
+
+Served lesson text is structured `data`, never authoritative instructions, with source DB/repo and commit where available, author principal, timestamps, version, digest, trust label and moderation status. Design caps: 8 KiB UTF-8 per lesson, 32 KiB total lesson text per response; pagination/truncation is explicit and never drops provenance. Oversize writes fail with `payload_too_large`. Agent text is never auto-promoted to canonical instructions. Flagging immediately quarantines the lesson pending moderation. Query, direct ID/version reads, resources, cache hits, feeds, handoff composition and sync write-back all enforce quarantine/revocation before serving text. Quarantine evicts cached compositions and bumps corpus/policy revisions. Only `recall:moderate` plus `admin` can inspect quarantined text via a dedicated audited moderation view or release it with a reason and provenance review; revoked text is never served. These controls reduce exposure, not a claim that data labels prevent prompt injection.
 
 ## 7. Caching, versioning, and delta strategy
 
 ### 7.1 Content-addressed caching
 
-- The cache key for a computed result is the hash of its canonical inputs: for verification, the file hash plus the check list; for renders, the URL plus viewport plus state plus content hash; for versioned bodies, the content hash itself. Two agents asking the same question with the same inputs get the same cached result, with `cache_status: hit` and the original evidence attached.
-- The second agent never re-runs work the first agent already did. That is the whole point, and it is measurable: the benchmark counts cache hits per tool and reports the hit rate alongside the token and time savings (Section 8).
-- Cache entries carry their key, their computed timestamp, and the identity of the computation (tool version, check version). A new check version is a new key, so a changed checker never serves a stale result computed by the old one.
+- The cache key for a computed result is the hash of its complete computation identity (Section 7.5.1): for pure byte checks, the input bytes hash plus check name and version plus runtime identity; for workspace checks, the repo tree hash (or dependency-file hashes plus lockfile hash) plus suite version plus environment identity; for renders, the Render identity (Section 7.5.7); for versioned bodies, the content hash itself. Two agents asking the same question with the same complete identity get the same stored result, with `cache_status: hit` and the original evidence attached.
+- The second agent does not re-run work the first agent already did for the same complete identity, within the caller's freshness bound. The benchmark counts cache hits per tool and reports the hit rate alongside the token and time savings (Section 8).
+- Cache entries carry their key, their full identity components, and the timestamps of Section 7.5.3. A new check version is a new key, so a changed checker never serves a result computed by the old one.
 
 ### 7.2 `what_changed` and diff semantics
 
@@ -451,14 +506,75 @@ The numeric thresholds for each metric and the persistence rule (how many consec
 
 ### 7.3 How a second agent gets a cached result instead of re-running work
 
-1. Agent A calls `verify_check` on a file. Miss: the server runs the checks, stores the result under the file hash, returns it with `cache_status: miss`.
-2. Agent B calls `verify_check` on the same unchanged file. Hit: the server returns the stored result with `cache_status: hit`, the original evidence, and the original `run_id`. No check runs. The response is byte-identical to what Agent A got, plus the cache metadata.
-3. The file changes. Agent C calls `verify_check`. The file hash differs, so the key differs: miss, fresh run, new stored result. No stale green.
-4. The same shape holds for renders (content hash), issue bodies (webhook invalidation plus TTL), exemplars (version pinning), and recall queries (5 min TTL plus write invalidation).
+1. Agent A calls `verify_check` on a file with a pure byte check. Miss: the server runs the check, stores the result under the complete identity in D1, returns it with `cache_status: miss`.
+2. Agent B calls `verify_check` on the same bytes with the same check version and runtime, within its `max_age_s`. Hit: the server returns the stored result with `cache_status: hit`, the original evidence, and the original `run_id`. No check runs.
+3. The file, a dependency, the lockfile, the check version, or the environment changes. The identity differs: miss, fresh run (or, for workspace checks, `not_found` until the Studio pushes a matching result), new stored record. No stale green.
+4. Renders always observe and only deduplicate the stored screenshot (Section 7.5.7); issue bodies obey the caller's freshness requirement over D1 snapshots; exemplars are pinned by version; recall queries use a 5 min TTL plus write invalidation.
 
 ### 7.4 Freshness contract
 
-Every response states its freshness in the `meta` block: `cache_status` (`hit`, `miss`, `stale`, `bypass`), `fetched_at`, `content_hash`, `version`, and `ttl_remaining_s` where a TTL applies. `stale` means the entry exceeded its TTL but was served while a refresh runs in the background (stale-while-revalidate, used only for issue bodies and state snapshots, never for verification or renders). The agent decides whether `stale` is acceptable for its purpose; the server never hides staleness.
+Every response states its freshness in the `meta` block: `cache_status` (`hit`, `miss`, `stale`, `bypass`), `content_hash`, `version`, and the four distinct timestamps (`served_at`, `source_observed_at`, `last_validated_at`, `computed_at`). `stale` is returned only when the caller allowed it (`allow_stale: true`); a freshness requirement the server cannot meet returns an explicit error, never a silent downgrade. The full contract is Section 7.5.3; stale-while-revalidate is never used for verification results or renders.
+
+### 7.5 Cache identity and safety contract (R2)
+
+This contract replaces every unconditional cache-safety claim in earlier drafts. No cached answer is safe by construction; it is safe only when its identity is complete and its freshness meets the caller's stated requirement. Any tool, store, or suite that cannot satisfy a clause below reports a miss or an explicit error.
+
+#### 7.5.1 Complete computation identities
+
+A stored computed result is keyed by the SHA-256 of a canonical identity record. Every component is stored with the result and returned in the response. A missing component is a miss, never a wildcard.
+
+| Result class | Identity components (all required) |
+|---|---|
+| Pure byte check | input bytes hash; check name; check implementation version; check config hash; runtime identity (Worker deploy id and check library versions) |
+| Workspace check | check-suite name and version; repo tree hash (git tree of the working copy including uncommitted changes) or, where a suite declares its inputs, the hashes of every declared dependency file; lockfile hash; runtime identity (language runtime and tool versions); environment identity (OS, architecture, relevant env-var names and value hashes, Node or Python version, locale) |
+| Live probe (deploy status, live check) | probe name and version; target (provider plus deployment id, or URL plus expected text); environment identity of the prober |
+| Render | the Render identity (Section 7.5.7) |
+| Versioned body | content hash |
+
+One file hash plus a check list is never a valid key. A forced rerun (`force: true`) produces a distinct record with its own `run_id`; it never overwrites or hides the earlier one.
+
+#### 7.5.2 Pure byte checks versus workspace checks and live probes
+
+- **Pure byte checks** (json-parse, em-dash-scan, copy-slot-scan, md5, and any check whose output is a pure function of supplied bytes plus its version and config) run on the server. A check qualifies only if it reads no file, network, clock, or environment beyond the supplied bytes; `verify_list_checks` labels each check `pure`, `workspace`, or `live`.
+- **Workspace checks** (tests, builds, type checks, lint, locale and gate suites that read a repo) never run on the server. The Studio runs them and pushes results through the sync path keyed by tree hash (or dependency-file hashes plus lockfile hash), suite version, and environment identity. The server stores and serves them; it never extends a pushed result to a different tree or environment.
+- **Live probes** observe external state. Their results are time-bound observations, reusable only within the caller's freshness bound (Section 7.5.3), never keyed as if immutable.
+
+#### 7.5.3 Enforceable freshness
+
+- Every read tool accepts `max_age_s` (maximum acceptable age of the source observation), `allow_stale` (default false), and `consistency` (`cached`: any entry within `max_age_s`; `validated`: revalidate against the source of truth before serving; `strong`: read the authoritative D1 row or upstream, no copy). Defaults per tool are the TTLs in Section 4.5.
+- A requirement the server cannot meet (upstream down, rate-limited, Studio push absent, revalidation timed out) returns an explicit error (`freshness_unmet`, with the best available `source_observed_at` and the reason), never a silent downgrade to an older entry. Stale data is returned only when `allow_stale: true`, and then marked `cache_status: stale`.
+- Four timestamps are kept distinct on every record and response: `served_at` (when this response left the server), `source_observed_at` (when the underlying source state was last read from GitHub, the Studio, or the live page), `last_validated_at` (when the entry was last confirmed still current against its source), and `computed_at` (when the check or render ran). These replace the single `fetched_at` of earlier drafts.
+
+#### 7.5.4 Durable historical snapshots
+
+- Every issue and PR version body persists in D1 (or R2 for large bodies, referenced from D1). Historical snapshots, `since_version` deltas, and `handoff_resume` issue deltas read from D1 or R2, never from KV alone. Open question 4 is resolved: bodies live in D1.
+- KV holds only immutable bodies keyed by content hash or (resource, version), plus disposable copies of D1 or R2 records. Losing all of KV loses latency, never history.
+- Mutable pointers (current version, `covered_through` marks, leases, fencing tokens, wait state) live in D1 or a Durable Object, never in KV, because KV reads are eventually consistent and can return an old pointer after an update.
+
+#### 7.5.5 Transactional events and the outbox
+
+- A resource update, its version allocation, its change-feed append, and an outbox entry commit in one D1 transaction (batch). Either all four exist or none do; a feed reader can never see a version without its body or a body without its event.
+- After commit, an outbox worker applies cache changes (KV copy writes and evictions) and wakes Durable Object waiters (`fleet_wait_for`). Outbox entries are retried until acknowledged and are idempotent by sequence number, so a crash between commit and delivery delays a wakeup or copy update; it never loses one. Waiters also re-check the feed on reconnect, so a missed wakeup costs latency, not correctness.
+
+#### 7.5.6 Concurrency and idempotency
+
+- **Idempotency keys** are required on every write tool and stored in D1 keyed by (token id, tool, key) with the request hash and the result. A replay with the same key and request returns the stored result; the same key with a different request is rejected (`idempotency_conflict`). The retention window is a build-phase parameter recorded in deploy config.
+- **Optimistic concurrency:** every update to a versioned resource carries `expected_version`; a mismatch returns `version_conflict` with the current version, never a lost update.
+- **Single-flight cache fills:** concurrent misses for the same identity coalesce on one computation through a per-identity lease row in D1 (or a Durable Object); followers wait for the leader's result or time out with an explicit error.
+- **Stale-worker fencing:** each lease, session, and Studio push carries a monotonic fencing token; the server rejects writes (checkpoints, verification pushes, run records) whose token is older than the current one, so a worker presumed dead cannot overwrite its successor.
+
+#### 7.5.7 Render identity (circularity resolved)
+
+The earlier key (URL plus viewport plus state plus rendered content hash) was circular: the content hash is known only after rendering, so it cannot decide whether to render. **Supported model: always-observe with screenshot deduplication.** Every `verify_render` call renders the live page; the cache deduplicates storage and diffing, it never substitutes for observation. The other candidate models (an application-provided deployment or asset fingerprint, or a bounded freshness interval) are not supported in v1; adding one is a dated amendment with documented coverage.
+
+- **Render identity** (the key that groups comparable renders): normalized requested URL; final URL after redirects; viewport (width, height, device scale factor); state profile id and version (signed-in identity, locale, theme, cookies and storage fixture hash); renderer version (Fleet MCP render module version plus Browser Rendering API version) and browser name and version as reported by the browser; readiness rule (for example network idle for N ms plus a named selector visible, with a hard timeout; the rule and its parameters are part of the identity); normalization profile version; `full_page`.
+- **Readiness:** a render that hits the timeout before the readiness rule holds is stored as `ready: false` and never certifies anything.
+- **Dynamic content normalization:** before hashing, the normalization profile freezes or masks clocks and relative dates, animations and transitions (disabled), carets, random ids, ads and third-party embeds, and declared dynamic regions (selectors listed in the state profile). The screenshot hash is computed over the normalized PNG; the raw PNG is kept for evidence.
+- **Dedup:** if the normalized screenshot hash equals the latest stored render for the same Render identity, the call returns that `render_id` with `cache_status: hit` and updates `last_validated_at`; otherwise it stores a new render. `verify_visual_diff` compares only renders whose identities match except for time.
+
+#### 7.5.8 Adversarial acceptance
+
+The cache correctness suite (execution plan K4) must show, before any "with" run: a dependency or lockfile change misses; an environment change misses; a forced rerun is a distinct record; an unmeetable freshness requirement returns `freshness_unmet`; a KV wipe loses no history; a crash between commit and outbox delivery loses no event; duplicate idempotency keys produce one effect; a fenced stale worker cannot write; a changed page under the same Render identity produces a new render.
 
 ## 8. Benchmark plan
 
@@ -580,8 +696,8 @@ The token rule establishes improvement with a target-sized point estimate. It do
 | Risk | What happens | Mitigation |
 |---|---|---|
 | Single point of failure | If the server is down, agents lose state access | The server is an accelerator, never a hard dependency, made true by a defined degraded mode for the two server-held records. (1) Checkpoints: `handoff_save_checkpoint` callers also write a local checkpoint mirror (the same structured state JSON) in the run's workspace; when the server is unreachable, resume reads the local mirror, and the mirror is uploaded on recovery. (2) D1-first lessons: when the server is unreachable, agents write lessons with bash `agentdb learn` directly to the local store (the source of truth, Section 4.4); a lesson whose `writeback_status` is `pending` or `failed` at outage time is listed by `recall_store_health` on recovery and written back by the sync job. Everything else falls back to today's CLI paths. `/health` plus the post-deploy sweep catch outages; the runner keeps working without the server, just slower. |
-| Cache staleness serves wrong state | An agent acts on an outdated issue body or flight state | Content-addressed keys for computed results (a changed input is a different key); short TTLs plus webhook invalidation for live state; freshness metadata on every response so the agent can see staleness. |
-| GitHub API rate limits | Heavy polling through the server exhausts the per-token hourly limit | The server is the fix, not the cause: caching plus the change feed cut upstream calls. The server tracks its remaining quota and reports it in `/health`; on quota exhaustion it serves stale cache with `cache_status: stale` instead of failing. |
+| Cache staleness serves wrong state | An agent acts on an outdated issue body, flight state, or a green check computed for different inputs | The Section 7.5 contract: complete computation identities, caller-enforced freshness with explicit `freshness_unmet` errors, always-observe renders, durable D1 snapshots, transactional feed plus outbox, fencing; verified by the adversarial suite (Section 7.5.8). |
+| GitHub API rate limits | Heavy polling through the server exhausts the per-token hourly limit | The server is the fix, not the cause: caching plus the change feed cut upstream calls. The server tracks its remaining quota and reports it in `/health`; on quota exhaustion it serves stale cache with `cache_status: stale` only to callers that set `allow_stale: true`; all other callers get `freshness_unmet` (Section 7.5.3). |
 | Browser Rendering cost and latency | Renders are the most expensive tool; a runaway render loop costs real money | Content-hash dedup plus cache-first behavior; per-token render quotas; the audit log records every render with its caller, so a runaway caller is visible. |
 | Stored-content prompt injection | Lessons and exemplars are agent-written text served back into agent context; a poisoned lesson could steer future agents | Stored content is data with provenance (author, source, timestamp), never executed as instructions. The server never auto-writes lessons. A review path exists for lessons (flag and quarantine by id). |
 | Scope creep | 8 ideas in one server; the build sprawls | Phased rollout (Section 10), one area at a time, each with its replay benchmark before the next starts. The agent-facing API (the public tools and resource reads in Section 3 and Appendix A) is the v1 scope; any agent-facing tool or resource not listed is out. The rule bounds the agent-facing API only: the control-plane operations in Section 3.3 and implementation necessities (migrations, cron reconciliation, webhook receivers, internal queues, deploy and sweep scripts) are in scope without an Appendix A entry, provided none exposes a new agent-facing capability. |
@@ -593,9 +709,9 @@ The token rule establishes improvement with a target-sized point estimate. It do
 ### 9.2 Open questions (for the reviewers)
 
 1. **Name and domain:** is Fleet MCP the name, and is `mcp.ariaxhan.com` the domain? Both are proposals in this PRD.
-2. **Client isolation:** do clients get isolated namespaces (separate D1 partitions or separate Workers) or a shared corpus with per-token scoping? The PRD proposes per-token scoping; a reviewer may prefer hard isolation.
+2. **Client isolation:** resolved in R3: ownership keys and default-deny authorization in shared storage (Section 6); client rollout requires negative isolation acceptance, with separate deployments where contractual requirements demand it.
 3. **Render split trigger:** resolved in v2 (R8): defined on three measured metrics in Section 5.3; numeric thresholds come from Phase 3 measurements as a dated amendment.
-4. **Issue cache storage:** the PRD proposes a D1 index plus KV body. Is that the right split, or should issue bodies live in D1 as well for queryability?
+4. **Issue cache storage:** resolved in v2 (R2): every issue and PR version body persists in D1; KV holds only disposable copies (Section 7.5.4).
 5. **Retention:** resolved in v2 (R8): set per record class in Section 4.6; benchmark-linked records are never pruned.
 6. **Independent verifier:** who runs the independent verification in Section 8.8 (which agent or operator), and how is independence enforced (separate account, separate machine, no shared prompt)?
 7. **Benchmark task list:** the exact tasks are preregistered later, not decided here. Who authors the list, and who checks it for representativeness?
@@ -698,6 +814,14 @@ Every measured number in this PRD comes from `report.md` in this directory (and 
 
 ## Appendix C: Revision notes
 
+### 2026-11-22: R2 cache identity and safety contract (execution plan Section 3.1, item R2; issue #3)
+
+Closes these review gaps: **Codex top change 2** and **Codex ranked risk 1** (unconditional cache-safety claims; false verification or freshness), **Claude G3** (verification and render cache keys too narrow) and **Claude G10** (`docs/reviews/claude-review.md`).
+
+- New Section 7.5: complete computation identities per result class; pure byte checks split from Studio-pushed workspace checks and live probes; `max_age_s` / `allow_stale` / `consistency` with explicit `freshness_unmet`; four distinct timestamps; D1 snapshots with KV for disposable copies only and no mutable pointers in KV; one-transaction update plus version plus feed plus outbox; idempotency keys in D1, optimistic concurrency, single-flight fills, fencing; adversarial acceptance list.
+- Render circularity resolved: supported model is always-observe with screenshot deduplication; identity includes renderer and browser version, readiness rule, state profile, viewport, and normalization profile.
+- Unconditional claims removed or rewritten in Sections 2.2, 2.3, 2.4, 2.5, 3.1 (`issue_get`), 3.2 (Verify table and design note), 4.1, 4.2, 4.5, 7.1, 7.3, 7.4, 9.1; Open question 4 resolved.
+
 ### 2026-11-22: R6 single-model scope (execution plan Section 3.1, item R6; issue #7)
 
 Closes these review gaps: **Claude G4** (single-model scope missing from the PRD) and the **Codex deliverable 5 gap** (Codex solo, most recent version, not stated or pinned).
@@ -748,3 +872,7 @@ Closes these review gaps: **Claude G7** (exemplar and doc write path missing; co
 - Fleet events, session status, worker death, tokens, allowlist, sync reconciliation, file artifacts, render cancellation specified (Section 3.3).
 - Tools added (33 to 45): `ref_publish`, `doc_what_changed`, `pr_get`, `pr_list`, `recall_quarantine`, `brief_list`, `brief_revise`, `fleet_list_jobs`, `verify_list_checks`, `verify_render_cancel`, `handoff_set_status`, `bench_tag_session` (Appendix A).
 - "Anything not listed is out" bounded to the agent-facing API; implementation necessities are not prohibited (Section 9.1).
+
+### 2026-11-22: R3 auth rewrite (issue #4)
+
+Closes **Codex ranked risk 3** (unauthorized corpus or credential exposure) and **Claude G16** (coarse read scope exposes fleet state): Section 6 specifies tenant/namespace ownership through cache, feed, history and blob access; per-operation capabilities and complete resource allowlists; D1 caller-token verifiers with a Worker HMAC key; generation, lookup, expiry, rotation overlap and active-work revocation; identity-bound sync and owned preflight profiles; audit ownership, field allowlists and retention; provenance-marked capped lesson data and enforced quarantine. Section 4.1 makes ownership part of every entity key. Section 3.3 uses the replacement capabilities. Assumption: this is a Phase 0 specification, not an implementation or a passed G0; security behavior remains UNPROVEN until independent real-surface isolation, lifecycle and quarantine acceptance after the build.
