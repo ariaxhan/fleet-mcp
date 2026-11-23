@@ -135,7 +135,97 @@ The sides are not silos. The composition paths are first-class behaviors, not em
 - **KV** for disposable copies only: immutable bodies keyed by content hash or (resource, version), plus disposable copies of D1 or R2 records. KV never holds a mutable pointer or the only copy of anything (Section 7.5.4).
 - **R2** for blobs: exemplar and doc bodies, lesson attachments, render PNGs, benchmark raw-data archive (Section 8.8).
 - **Cloudflare Browser Rendering** for `verify_render`: a warm browser pool behind the render tool, so agents stop launching Chromium themselves (Report Part 1, Claude: 327 Playwright launches, 286 in one session).
+- **Studio sidecar** (`sidecar/`): the outbound-only local connector that pushes fleet events, probe attestations, checkout state, file bytes, workspace suite results, checkpoint hashes, and agentdb rows (Section 2.6).
 - **Upstream APIs, server-side only:** GitHub API (issues, PRs), Vercel and Cloudflare deployment APIs (deploy status), and the agentdb store (Recall reads the live store; see Section 4.4 for the sync design). Upstream credentials live in Workers secrets, never in the repo and never in prompts (Section 6).
+
+### 2.6 Studio connector (sidecar) (R1, normative)
+
+The Worker cannot see the Studio. Flight and job state, credentials, checkouts, working-tree bytes, local check suites, and the agentdb files all live on Aria's Studio Mac. The third component is **`fleet-sidecar`** (`sidecar/` in this repo): one long-running process per registered machine, run as Aria's user under launchd, that is the only path by which local state reaches the server. Without it, every State-side tool is limited to cloud-visible data (Section 2.6.9).
+
+#### 2.6.1 Direction: outbound only, no inbound command channel in v1
+
+- The sidecar opens every connection. Nothing on the Studio listens for the server; no tunnel, no inbound port, no remote shell.
+- v1 has **no general command channel**. The server can never make the Studio run an arbitrary command, path, or argument.
+- The single server-to-sidecar path is a **pull-only work queue** of typed, pre-registered jobs (Section 2.6.5): the sidecar long-polls `GET /connector/work`, and only job kinds compiled into the sidecar binary can execute. An unknown kind is rejected and audited, never interpreted.
+
+#### 2.6.2 Local data classes
+
+Every local data class has exactly one producer, one authoritative store, one direction, and one authentication path. The authoritative store is always local; D1/R2 hold observed copies stamped with `source_observed_at`, except where the row says otherwise.
+
+| Data class | Producer | Authoritative store | Direction | Authentication |
+|---|---|---|---|---|
+| Flight and job events (created, started, state transition, done, failed, `worker_dead`) | nexus-office runner, read by the sidecar from the runner state DB and event log | Runner state DB on the Studio | Push: sidecar to `POST /ingest/fleet` | Signed connector request (2.6.4), `connector:fleet` scope, registered runner identity |
+| Credential liveness (claude-oauth, codex-oauth, github, wrangler) | Sidecar probe modules, run locally | The local credential stores themselves (keychain, CLI config); the server stores only attestations | Push: attestation per probe on schedule and on a queued `probe` job | Signed request, `connector:fleet`; payload is `{credential_profile_id, status, reason_code, observed_at}`, never a token |
+| Repo checkout state (path id, HEAD, branch, dirty flag, tree hash including uncommitted changes) | Sidecar git probe | The working copy on disk | Push: snapshot on schedule, on change, and on a queued `checkout_state` job | Signed request, `connector:fleet` |
+| Local file bytes and hashes | Sidecar file reader | The working copy on disk | Push on request: `file_upload` job uploads bytes to R2 as an immutable content-addressed artifact; hash-only reports for comparisons | Signed request plus upload completion validation (Section 6.4): namespace, purpose, size, SHA-256 |
+| Local check-suite results (workspace checks, Section 7.5.2) | Sidecar suite runner | The run log and output archive on disk, mirrored to R2 | Push: result plus full workspace computation identity (Section 7.5.1) and artifact references | Signed request, `connector:fleet`; result accepted only for a queued `suite_run` job id or a scheduled suite in the registry |
+| Checkpoint hashes (Handoff) | Sidecar, hashing the local checkpoint mirror and session files | Server: Handoff checkpoint index in D1 is authoritative for checkpoints (Section 3.2); the local mirror is a copy | Push: sidecar reports the local mirror's hash per checkpoint; the server compares and records `match` or `diverged` | Signed request, `handoff:write` scoped to the session's fenced attempt |
+| agentdb lesson rows | agentdb sync module inside the sidecar (the sync job in Section 4.4) | The owning local `agent.db` file; D1 is authoritative only for a lesson whose `writeback_status` is not `done` | Push: incremental rows; pull: `recall_learn` write-backs via the outbox | Signed request plus independently verified sync identity, `connector:sync` (Section 6.3) |
+| Connector heartbeat | Sidecar | Server D1 `connector_status` (the only class born on the server side of the wire) | Push every heartbeat interval | Signed request, `connector:fleet` |
+
+#### 2.6.3 Stable identities
+
+All IDs are opaque, assigned once, and never derived from a path or a hostname at read time.
+
+- **`machine_id`**: generated at sidecar enrollment, bound to an Ed25519 machine key pair whose private half never leaves the Studio keychain. The server stores only the public key. Re-enrollment issues a new `machine_id`; the old one is revoked, never reused.
+- **`repo_id`**: the GitHub numeric repository ID (stable across renames), from the allowlist (2.6.7).
+- **`checkout_id`**: `(machine_id, repo_id, checkout slot)` registered once per canonical checkout; the absolute path is local config only and never sent.
+- **`session_id`**, **`attempt_id`**, **`task_id`**: taken from the runner as produced, namespaced by `machine_id`; `attempt_id` carries the runner's fencing token so a stale attempt cannot write over a newer one (Section 7.5.6). `task_id` is the issue reference `owner/repo#n` mapped to `repo_id`.
+- **`credential_profile_id`**: registered per `(account_id, machine_id)` (Section 6.3); names the credential class, never the secret location.
+- Every pushed record carries `(machine_id, sidecar_version, seq)` where `seq` is a per-machine monotonic counter.
+
+#### 2.6.4 Authentication and namespace ownership
+
+- Every sidecar request is signed with the machine key over method, path, body SHA-256, timestamp, and a single-use nonce (Section 6.3); the server rejects replays, skew beyond the configured window, and any `machine_id` not in the registry.
+- The connector principal is distinct from Aria's admin principal and from every agent principal. It holds `connector:fleet` and, for the sync module, `connector:sync`; it holds no read scope on public tools and no token-management authority.
+- **Namespace ownership:** a machine writes only into namespaces assigned to it in D1 policy (Section 6.1). The server, not the payload, decides the namespace: it maps `machine_id` plus `repo_id` to the owning namespace and rejects a record naming any other.
+
+#### 2.6.5 Allowed operations, bounded execution, retries, duplicates
+
+The work queue accepts exactly these job kinds in v1:
+
+| Job kind | Queued by | Local action | Bound |
+|---|---|---|---|
+| `probe` | `fleet_preflight` | Run the named probe modules for one `credential_profile_id` | Per-probe timeout; no network beyond the probe's provider host |
+| `checkout_state` | `fleet_preflight` (repo checkout need), Handoff resume | git status and tree hash for one `checkout_id` | Read-only git commands; timeout |
+| `file_upload` | `verify_check` with a workspace file reference | Read one file under one allowlisted checkout root, upload to R2 | Size cap; path resolution rule below |
+| `suite_run` | `verify_check` naming a registered workspace suite | Run one suite from the local suite registry (name, version, fixed argv, working directory = checkout root) | Wall-clock timeout, output byte cap, killed process group on timeout |
+
+- The suite registry is a file in `sidecar/` versioned in git; the server sends only a suite name and `checkout_id`, never argv, env, or a path. A suite missing from the local registry returns `unsupported`.
+- **Path protection:** a file reference is `(checkout_id, repo-relative path)`. The sidecar joins it to the checkout root, resolves symlinks with `realpath`, and refuses if the result is outside the root, inside `.git/`, matches the local deny list (`.env*`, `.envrc`, `.mcp.json`, keychain exports, any file the repo gitignores as secret), or is not a regular file. Refusals are audited with a fixed reason code.
+- Execution runs as Aria's user with no elevated privilege, no shell interpolation (argv only), a scrubbed environment containing only the variables the suite declares, and a per-job temp directory removed on exit.
+- **Retries and duplicates:** every job carries a server-issued `job_id` and an expiry. The sidecar acks a job before running it; a job whose lease expires returns to the queue at most the configured retry count, then ends `failed` with `lease_expired`. Every push is idempotent on `(machine_id, seq)` for events and on `job_id` for results; duplicate delivery returns the stored outcome and appends nothing to the change feed. The sidecar keeps an on-disk outbox and replays unacked pushes in `seq` order after a restart or outage.
+
+#### 2.6.6 Credentials stay on the machine
+
+Probes read local credential state and emit only `{status: live|expired|missing|unknown, reason_code, observed_at}`. No token, refresh token, cookie, key path, account email, or raw CLI output leaves the Studio. Reason codes are a fixed enum; free text is not accepted by the ingest endpoint, so a probe bug cannot leak a secret through a detail string. The sidecar never receives upstream credentials from the server.
+
+#### 2.6.7 Personal-only ingestion, enforced before upload
+
+The sidecar enforces the boundary locally, before any byte is read for upload, by an enumerated allowlist in `sidecar/allowlist.toml` (git-tracked, reviewed in commit). There is no exclusion list and no scan-then-filter: anything not enumerated is never opened. The server re-checks the same allowlist (Section 6.4) and drops anything outside it, as a second layer, never the first.
+
+v1 authorized repositories (GitHub `ariaxhan/<name>`, canonical checkouts under `~/VaultsInternal/CodingVault/<name>`): `fleet-mcp`, `nexus-office`, `the-tradition-harness`, `kernel-claude`, `renderstate`, `personalsite`, `llm-bench`, `modelmind`, `modelmind-site`, `drift-station`, `history-chronoscope`, `living-clay`.
+
+v1 authorized agentdb DBs: exactly `<checkout>/_meta/agentdb/agent.db` for each authorized checkout above. No glob over `~/VaultsInternal`, no global DB, and no DB outside an authorized checkout.
+
+v1 authorized fleet event source: the nexus-office runner state DB, with events admitted only when their `task_id` maps to an authorized `repo_id`; an event for any other repository is dropped on the Studio before upload and counted (count only, no identifiers) in the heartbeat.
+
+Adding a repository or DB is a reviewed commit to the allowlist plus the matching D1 policy entry. Any repository or DB whose name or owner matches the excluded domain in Section 0 cannot be added; the sidecar refuses to start if its allowlist contains one. Boundary tests use synthetic excluded identifiers only.
+
+#### 2.6.8 Heartbeat, last observation, and offline behavior
+
+- Heartbeat every configured interval: `machine_id`, `sidecar_version`, `last_seq`, outbox depth, per-class `last_successful_observation_at`, dropped-for-boundary count.
+- The server marks a connector `stale` after a missed-heartbeat threshold and `offline` after a longer one (both build-phase parameters in deploy config, measured in spike S6).
+- **Offline behavior:** every response built from sidecar data carries `source_observed_at` and `connector_status`. When the connector is stale or offline, tools return the last observed value labeled with its observation time and `freshness: stale`, never re-stamped, never fabricated, never presented as fresh. Credential liveness is never served stale: `fleet_preflight` returns `unknown` with reason `connector_offline` (Section 6.3). A queued job that cannot be delivered ends `unavailable` at its expiry instead of waiting indefinitely. `fleet_wait_for` reports `connector_status` in every bounded window so a caller can tell "not yet" from "cannot observe".
+- On recovery, the outbox replays in `seq` order; the change feed records the original `source_observed_at`, so late events are visible as late.
+
+#### 2.6.9 Narrowed and deferred behavior (no v1 command channel)
+
+- **`verify_check` workspace checks:** limited to suites in the sidecar registry run via `suite_run`, and to file bytes delivered via `file_upload`. Arbitrary commands, ad hoc scripts, and caller-supplied argv are deferred; with the sidecar offline, `verify_check` serves only server-runnable pure byte checks on uploaded bytes and stored results whose full identity matches.
+- **`fleet_preflight`:** limited to the four registered probe classes and registered checkouts. Any other `needs` entry returns `unknown` with `unsupported`. Claude OAuth probing is included only if the spike shows it can be checked without exposing the credential; otherwise it is `unsupported` in v1.
+- **Handoff:** the server compares checkpoint hashes reported by the sidecar; it never restores files onto the Studio. Writing a checkpoint back to disk is deferred.
+- **Fleet control:** starting, cancelling, or retrying runner flights from the server is deferred; Fleet Status is read-only over pushed events.
+- **Other machines:** v1 enrolls the Studio only. Muse's VM and any other host are deferred until a separate enrollment review.
 
 ## 3. Tools and resources
 
@@ -825,6 +915,10 @@ Use continuous durable capture, local spooling, resumable uploads, checksum/comp
 Every measured number in this PRD comes from `report.md` in this directory (and its `analysis/` files) and is cited inline with its report section. Numbers labeled as targets, thresholds, or design decisions are not measured results. No number in this PRD is invented. Where the report states a limitation (necessity not provable from transcripts alone; runner dollars unmeasurable; the KERNEL observational control group of n=1), this PRD carries the limitation forward instead of smoothing it over.
 
 ## Appendix C: Revision notes
+
+### 2026-11-22: R1 Studio connector/sidecar spec (execution plan Section 3.1, item R1; issue #2)
+
+Closes **Codex top change 1** and **Claude G1** (no Studio-to-server path; the State side could not deliver its behavior from cloud components alone). Section 2.6 adds the sidecar: outbound-only direction with no general command channel, producer/authoritative store/direction/authentication for every local data class, stable machine/repo/checkout/session/attempt/task identities, signed requests and namespace ownership, four bounded job kinds with path protection, retries and duplicate handling, credentials kept on the machine, an enumerated personal-only allowlist enforced before upload, heartbeat and offline labeling, and explicit narrowing/deferral of behavior without a v1 command channel (Section 2.6.9). Component map updated (Section 2.5). Assumption: the initial allowlist is a conservative seed of personal-project repos; additions are reviewed commits.
 
 ### 2026-11-22: R2 cache identity and safety contract (execution plan Section 3.1, item R2; issue #3)
 
