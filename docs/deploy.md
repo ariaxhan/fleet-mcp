@@ -102,3 +102,28 @@ checks, auth matrix and runtime tools belong to the spike/build issues. Binding
 presence is not Browser execution proof. No G1 or benchmark claim follows from
 this infrastructure sweep. Custom domains await the owner's domain decision;
 workers.dev origins are the scaffold deployment default.
+
+## Minimal Studio sidecar (spike, issue #12)
+
+`sidecar/fleet-sidecar.mjs` is the outbound-only connector (PRD 2.6). It reads the
+nexus-office runner DB read-only (rows for `sidecar/allowlist.toml` repos only; others
+are counted in SQL, never read), runs the github credential probe (fixed status and
+reason code, never CLI output) and hashes registered working-tree files under
+realpath path protection. Requests are signed with an Ed25519 machine key held in
+the keychain (`fleet-sidecar-machine-key-ENV`); the server stores only the public key.
+
+```sh
+node sidecar/fleet-sidecar.mjs enroll staging   # once: key to keychain, machine row via wrangler
+node sidecar/fleet-sidecar.mjs once staging     # collect and push; outbox replays on failure
+```
+
+- `POST /ingest/fleet`: signed push (method, path, body SHA-256, timestamp, single-use nonce).
+  Fleet events enter `/v1/changes` as `fleet_event` with the original `source_observed_at`;
+  duplicates (by machine and event key) append nothing.
+- `GET /v1/fleet/status` (`fleet:read`): connector `fresh|stale|offline`, probes, recent events.
+  Probe liveness is never served stale: non-fresh reports `unknown` with `connector_offline`.
+- `GET /v1/fleet/file-compare?repo=R&path=P` (`fleet:read`, `context:read`): sidecar working-tree
+  hash vs the published core version: `match|diverged|unknown_local|unknown_published`, labeled
+  `freshness` with the observation time.
+
+Thresholds: stale after 180 s, offline after 900 s without a heartbeat (design decisions, src/connector.ts).

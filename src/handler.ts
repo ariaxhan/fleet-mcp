@@ -14,6 +14,7 @@ export interface Env {
 }
 import { authenticate, writeAudit, PolicyUnavailable, type Caller } from './auth';
 import { publishDoc, getDoc, changes, CoreError, type Outcome } from './core';
+import { authenticateMachine, ingest, fleetStatus, fileCompare } from './connector';
 
 const STAGE = 'spike-core';
 const ROUTES: Record<string, { method: string; operation: string;
@@ -28,7 +29,31 @@ const ROUTES: Record<string, { method: string; operation: string;
   } },
   '/v1/changes': { method: 'GET', operation: 'doc_what_changed_since', run: (env, c, _r, u, now) =>
     changes(env, c, u.searchParams.get('cursor'), now) },
+  '/v1/fleet/status': { method: 'GET', operation: 'fleet_status', run: (env, c, _r, _u, now) => fleetStatus(env, c, now) },
+  '/v1/fleet/file-compare': { method: 'GET', operation: 'fleet_file_compare', run: (env, c, _r, u, now) =>
+    fileCompare(env, c, u.searchParams.get('repo'), u.searchParams.get('path'), now) },
 };
+
+/** Sidecar push: signed by the machine key, never a bearer token; audit precedes ingestion. */
+async function connectorIngest(request: Request, env: Env): Promise<Response> {
+  const start = Date.now(), now = new Date(), correlationId = crypto.randomUUID();
+  const raw = new Uint8Array(await request.arrayBuffer());
+  let machine;
+  try { machine = await authenticateMachine(request, env, raw, now); } catch { return json({ error: 'policy_unavailable' }, 503); }
+  const base = { operation: 'connector_ingest_fleet', correlationId, caller: null };
+  if (!machine) {
+    await writeAudit(env, { ...base, result: 'unauthenticated', latencyMs: Date.now() - start }, now).catch(() => {});
+    return json({ error: 'unauthorized' }, 401);
+  }
+  try { await writeAudit(env, { ...base, result: 'started', targetId: machine.machineId }, now); } catch { return json({ error: 'audit_unavailable' }, 503); }
+  let status = 200, payload: Record<string, unknown>;
+  try { payload = (await ingest(env, machine, raw, now)).body; } catch (e) {
+    status = e instanceof CoreError ? e.status : 500; payload = { error: e instanceof CoreError ? e.code : 'internal_error' };
+  }
+  await writeAudit(env, { ...base, result: status < 400 ? 'ok' : String(payload.error), targetId: machine.machineId,
+    latencyMs: Date.now() - start, size: raw.byteLength }, new Date()).catch(() => {});
+  return json({ ...payload, correlation_id: correlationId }, status);
+}
 
 /** Authenticated core route: audit precedes dispatch, and audit failure denies the operation. */
 async function protectedRoute(request: Request, env: Env, url: URL, route: typeof ROUTES[string]): Promise<Response> {
@@ -62,6 +87,7 @@ const json = (value: unknown, status = 200) => Response.json(value, {
 export async function handle(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url), path = url.pathname;
   const route = ROUTES[path];
+  if (path === '/ingest/fleet') return request.method === 'POST' ? connectorIngest(request, env) : json({ error: 'method_not_allowed' }, 405);
   if (route) return request.method === route.method ? protectedRoute(request, env, url, route) : json({ error: 'method_not_allowed' }, 405);
   if (request.method !== 'GET') return json({ error: 'not_implemented' }, 501);
   if (path === '/health') return json({ status: 'ok', service: 'fleet-mcp', stage: STAGE });

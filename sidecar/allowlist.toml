@@ -1,0 +1,16 @@
+# fleet-sidecar personal-only allowlist (PRD 2.6.7). Enumerated, reviewed in commit.
+# Anything not listed is never opened. There is no exclusion list.
+repos = [
+  "ariaxhan/fleet-mcp",
+  "ariaxhan/nexus-office",
+  "ariaxhan/the-tradition-harness",
+  "ariaxhan/kernel-claude",
+  "ariaxhan/renderstate",
+  "ariaxhan/personalsite",
+  "ariaxhan/llm-bench",
+  "ariaxhan/modelmind",
+  "ariaxhan/modelmind-site",
+  "ariaxhan/drift-station",
+  "ariaxhan/history-chronoscope",
+  "ariaxhan/living-clay",
+]

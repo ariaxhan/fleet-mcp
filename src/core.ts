@@ -1,8 +1,10 @@
 import type { Env } from './handler';
 import { type Caller, hmacHex, sha256Hex, constantTimeEqual } from './auth';
 
-/** Non-overridable personal-project boundary: only these source repos can be ingested or served. */
-export const PERSONAL_SOURCE_REPOS = ['ariaxhan/fleet-mcp'];
+/** Non-overridable personal-project boundary (PRD 2.6.7 v1 allowlist): only these source repos can be ingested or served. */
+export const PERSONAL_SOURCE_REPOS = ['fleet-mcp', 'nexus-office', 'the-tradition-harness', 'kernel-claude', 'renderstate',
+  'personalsite', 'llm-bench', 'modelmind', 'modelmind-site', 'drift-station', 'history-chronoscope', 'living-clay']
+  .map(name => `ariaxhan/${name}`);
 export const MAX_BODY_BYTES = 1024 * 1024; // Design decision for the spike.
 const FEED_PAGE = 100; // Design decision.
 
@@ -194,10 +196,11 @@ export async function changes(env: Env, c: Caller, cursor: string | null, now: D
     return { body: { bootstrap: true, resources: results.filter(r => visible(c, r.source_repo)).map(({ source_repo, ...r }) => r),
       next_cursor: await cursorFor(env, c, headRow!.s), meta: { served_at: now.toISOString(), source: 'd1', cache_status: 'bypass' } } };
   }
-  const { results } = await env.DB.prepare(`SELECT seq, kind, name, version, change_kind, source_repo, created_at FROM change_events
+  const { results } = await env.DB.prepare(`SELECT seq, kind, name, version, change_kind, source_repo, created_at, source_observed_at FROM change_events
     WHERE tenant_id = ? AND namespace_id = ? AND seq > ? ORDER BY seq LIMIT ?`).bind(...scope, from, FEED_PAGE).all<any>();
   const last = results.length ? results[results.length - 1].seq : from;
-  const events = results.filter(e => visible(c, e.source_repo)).map(({ seq, source_repo, ...e }) => e);
+  const events = results.filter(e => visible(c, e.source_repo))
+    .map(({ seq, source_repo, source_observed_at, ...e }) => source_observed_at ? { ...e, source_observed_at } : e);
   return { body: { events, unchanged: events.length === 0, has_more: results.length === FEED_PAGE,
     next_cursor: await cursorFor(env, c, last), meta: { served_at: now.toISOString(), source: 'd1', cache_status: 'bypass' } } };
 }
