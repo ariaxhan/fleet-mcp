@@ -66,5 +66,56 @@
     "benchmark/data/index.jsonl",
     "benchmark/data/DATA_INDEX.md",
     "benchmark/data/ledger.md"
+  ],
+  "followups": [
+    {
+      "checked_at": "2026-11-23T01:11:47.644785+00:00",
+      "commands": [
+        {
+          "argv": [
+            "git",
+            "rev-parse",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "stdout": "c67b080cba8b2cfa3428452a5af38d0c8e78be91\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "ls-tree",
+            "-r",
+            "--name-only",
+            "HEAD"
+          ],
+          "exit_code": 0,
+          "stdout": ".nexus.py\nAGENTS.md\nPRD.md\nREADME.md\n_meta/chronicles/2026/fleet-mcp-2026-11-22-001.md\nbenchmark/verification/issue-37-evidence.json\nbenchmark/verification/receipt.md\ndocs/baseline/analysis/agentdb-recent-findings.md\ndocs/baseline/analysis/antigravity-findings.md\ndocs/baseline/analysis/codex-findings.md\ndocs/baseline/report.md\ndocs/confirmatory-status.md\ndocs/execution-plan.md\ndocs/pilot-status.md\ndocs/report/build.py\ndocs/report/index.html\ndocs/reviews/claude-review.md\ndocs/reviews/codex-review.md\npaper/README.md\npaper/evidence-map.csv\npaper/figures/README.md\npaper/manuscript.md\npaper/references.bib\npaper/skeleton.md\nreport/report.md\nreport/scored.json\n",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "git",
+            "ls-remote",
+            "--tags",
+            "origin"
+          ],
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "argv": [
+            "python3",
+            "docs/report/build.py",
+            "--check"
+          ],
+          "exit_code": 0,
+          "stdout": "docs/report/index.html matches report/scored.json\n",
+          "stderr": ""
+        }
+      ],
+      "muse_ask_id": "20261123T011132Z_932981"
+    }
   ]
 }
