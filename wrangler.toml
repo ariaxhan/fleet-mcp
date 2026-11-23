@@ -1,6 +1,7 @@
 name = "fleet-mcp"
 main = "src/index.ts"
 compatibility_date = "2026-11-22"
+compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 preview_urls = false
 
@@ -11,8 +12,13 @@ enabled = true
 tag = "v1"
 new_sqlite_classes = ["FleetWait", "HandoffCoordinator"]
 
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["RenderCoordinator"]
+
 [env.staging]
 name = "fleet-mcp-staging"
+routes = [{ pattern = "staging-mcp.ariaxhan.com", custom_domain = true }]
 [env.staging.triggers]
 crons = ["*/15 * * * *"] # Spike reconciliation interval, design decision.
 [env.staging.vars]
@@ -40,6 +46,7 @@ class_name = "HandoffCoordinator"
 
 [env.production]
 name = "fleet-mcp"
+routes = [{ pattern = "mcp.ariaxhan.com", custom_domain = true }]
 [env.production.triggers]
 crons = ["*/15 * * * *"] # Spike reconciliation interval, design decision.
 [env.production.vars]
@@ -64,3 +71,11 @@ class_name = "FleetWait"
 [[env.production.durable_objects.bindings]]
 name = "HANDOFF_COORDINATOR"
 class_name = "HandoffCoordinator"
+
+[[env.staging.durable_objects.bindings]]
+name = "RENDER_HUB"
+class_name = "RenderCoordinator"
+
+[[env.production.durable_objects.bindings]]
+name = "RENDER_HUB"
+class_name = "RenderCoordinator"

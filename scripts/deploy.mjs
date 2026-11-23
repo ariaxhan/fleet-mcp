@@ -10,8 +10,8 @@ wrangler('deploy', '--env', environment, '--var', `BUILD_SHA:${sha}`, '--var', `
 
 // First deployment can return Cloudflare HTML before its routes propagate.
 // Wait for this exact build; the subsequent sweep remains a separate release gate.
-const host = environment === 'staging' ? 'fleet-mcp-staging' : 'fleet-mcp';
-const url = `https://${host}.ariaxhan.workers.dev/version`;
+const host = environment === 'staging' ? 'staging-mcp.ariaxhan.com' : 'mcp.ariaxhan.com';
+const url = `https://${host}/version`;
 let ready = false;
 const deadline = Date.now() + 45000; // Readiness budget, a design decision.
 while (Date.now() < deadline) {

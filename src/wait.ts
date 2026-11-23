@@ -8,7 +8,7 @@ export const WAIT_CAP_S=20, WAIT_TTL_MS=86400_000, MAX_ACTIVE=128;
 type Condition = { flight_id: string; state: string } | { repo: string };
 type Saved = { scope: string; condition: Condition; from: number; created: number; result?: any };
 export const hubName = (c: {tenantId:string;namespaceId:string}) => JSON.stringify([c.tenantId,c.namespaceId]);
-export async function fleetWait(env: Env,c: Caller,input: any): Promise<Outcome> {
+export async function fleetWait(env: Env,c: Caller,input: any, signal?: AbortSignal): Promise<Outcome> {
   requireFleet(c);
   if(!input || typeof input!=='object' || Array.isArray(input)) throw new CoreError(400,'invalid_input');
   const timeout=input?.timeout_s??WAIT_CAP_S;
@@ -21,7 +21,7 @@ export async function fleetWait(env: Env,c: Caller,input: any): Promise<Outcome>
       || typeof x.repo==='string' && repos(c).includes(x.repo))) throw new CoreError(400,'invalid_condition');
   }
   const stub=env.FLEET_WAIT.get(env.FLEET_WAIT.idFromName(hubName(c)));
-  const r=await stub.fetch('https://wait/call',{method:'POST',body:JSON.stringify({caller:c,input:{...input,timeout_s:timeout}})});
+  const r=await stub.fetch('https://wait/call',{method:'POST',signal,body:JSON.stringify({caller:c,input:{...input,timeout_s:timeout}})});
   const body=await r.json() as Record<string,unknown>;
   if(!r.ok) throw new CoreError(r.status,String(body.error));
   return {body};

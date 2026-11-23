@@ -1,0 +1,36 @@
+[
+  {
+    "type": "session_meta",
+    "id": "01a20979-896b-7e42-807b-5b8464b8e499",
+    "cwd": "/Users/slowember/VaultsInternal/CodingVault/fleet-mcp",
+    "cli_version": "0.163.0",
+    "timestamp": "2026-11-23T17:34:49.720Z"
+  },
+  {
+    "type": "turn_context",
+    "model": "gpt-6.1-sol",
+    "effort": "low"
+  },
+  {
+    "type": "token_count",
+    "info": {
+      "total_token_usage": {
+        "input_tokens": 20137,
+        "cached_input_tokens": 12288,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 10,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 20147
+      },
+      "last_token_usage": {
+        "input_tokens": 20137,
+        "cached_input_tokens": 12288,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 10,
+        "reasoning_output_tokens": 0,
+        "total_tokens": 20147
+      },
+      "model_context_window": 475000
+    }
+  }
+]

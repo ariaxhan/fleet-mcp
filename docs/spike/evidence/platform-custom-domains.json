@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://staging-mcp.ariaxhan.com/health",
+    "observed_at": "2026-11-23T17:34:34.225Z",
+    "status": 200,
+    "body": "{\"status\":\"ok\",\"service\":\"fleet-mcp\",\"stage\":\"spike-core\"}"
+  },
+  {
+    "url": "https://staging-mcp.ariaxhan.com/version",
+    "observed_at": "2026-11-23T17:34:34.251Z",
+    "status": 200,
+    "body": "{\"commit\":\"8f18164af73545515eae9349bb54edb8a783fe48\",\"build_time\":\"2026-11-23T02:30:18.402Z\",\"environment\":\"staging\",\"stage\":\"spike-core\",\"mcp_protocol\":null}"
+  },
+  {
+    "url": "https://mcp.ariaxhan.com/health",
+    "observed_at": "2026-11-23T17:34:34.407Z",
+    "status": 200,
+    "body": "{\"status\":\"ok\",\"service\":\"fleet-mcp\",\"stage\":\"spike-core\"}"
+  },
+  {
+    "url": "https://mcp.ariaxhan.com/version",
+    "observed_at": "2026-11-23T17:34:34.468Z",
+    "status": 200,
+    "body": "{\"commit\":\"8f18164af73545515eae9349bb54edb8a783fe48\",\"build_time\":\"2026-11-23T02:30:58.721Z\",\"environment\":\"production\",\"stage\":\"spike-core\",\"mcp_protocol\":null}"
+  }
+]

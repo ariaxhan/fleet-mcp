@@ -14,7 +14,7 @@ import { DatabaseSync } from 'node:sqlite';
 
 export const VERSION = '0.1.0-spike';
 const HERE = dirname(new URL(import.meta.url).pathname);
-const ORIGINS = { staging: 'https://fleet-mcp-staging.ariaxhan.workers.dev', production: 'https://fleet-mcp.ariaxhan.workers.dev' };
+const ORIGINS = { staging: 'https://staging-mcp.ariaxhan.com', production: 'https://mcp.ariaxhan.com' };
 const RUNNER_DB = join(process.env.RUNNER_HOME ?? join(homedir(), 'Library/Application Support/runner'), 'runner.sqlite');
 const LOOKBACK_S = 24 * 3600; // Design decision: event window per collection.
 const EVENT_KINDS = ['done', 'failed', 'blocker', 'stalled', 'preempted', 'retired'];

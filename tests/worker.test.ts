@@ -11,7 +11,7 @@ test('version identifies scaffold without claiming a working protocol', async ()
   const response = await handle(new Request('https://fixture/version'), env);
   const body = await response.json() as Record<string, unknown>;
   assert.equal(body.commit, env.BUILD_SHA);
-  assert.equal(body.mcp_protocol, null);
+  assert.equal(body.mcp_protocol, '2025-06-18');
 });
 test('unconfigured, missing and incorrect fixture credentials fail closed', async () => {
   for (const token of [undefined, 'valid']) {
@@ -23,7 +23,7 @@ test('unconfigured, missing and incorrect fixture credentials fail closed', asyn
   }
 });
 test('all ingestion and corpus routes remain disabled', async () => {
-  for (const path of ['/mcp', '/internal/sync', '/webhooks/github', '/synthetic-excluded']) {
+  for (const path of ['/internal/sync', '/webhooks/github', '/synthetic-excluded']) {
     assert.equal((await handle(new Request(`https://fixture${path}`), env)).status, 404);
     assert.equal((await handle(new Request(`https://fixture${path}`, { method: 'POST' }), env)).status, 501);
   }

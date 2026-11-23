@@ -24,5 +24,8 @@
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "wrangler": "4.166.0"
+  },
+  "dependencies": {
+    "@cloudflare/puppeteer": "^2.0.1"
   }
 }

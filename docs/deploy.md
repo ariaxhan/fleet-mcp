@@ -20,7 +20,7 @@ npm run build
 npm run migrate:local
 npm run migrate:local
 npm run deploy:staging
-npm run sweep -- https://fleet-mcp-staging.ariaxhan.workers.dev "$(git rev-parse HEAD)" staging
+npm run sweep -- https://staging-mcp.ariaxhan.com "$(git rev-parse HEAD)" staging
 ```
 
 Deploy requires a clean checkout and embeds HEAD plus build time. It waits for
@@ -52,7 +52,7 @@ For a deliberate manual production release, first sweep staging at the same SHA,
 then `npm run deploy:production`, then:
 
 ```sh
-npm run sweep -- https://fleet-mcp.ariaxhan.workers.dev "$(git rev-parse HEAD)" production
+npm run sweep -- https://mcp.ariaxhan.com "$(git rev-parse HEAD)" production
 npx wrangler r2 object put fleet-mcp-production-blobs/fixture-production/sweeps/manual-SHA.json --file artifacts/sweep-production.json --remote
 ```
 
@@ -63,8 +63,8 @@ then sweep against the rolled-back SHA. D1 is forward-only: follow migrations/RE
 
 ## Surfaces and limits
 
-- Staging: https://fleet-mcp-staging.ariaxhan.workers.dev/health
-- Production: https://fleet-mcp.ariaxhan.workers.dev/health
+- Staging: https://staging-mcp.ariaxhan.com/health
+- Production: https://mcp.ariaxhan.com/health
 - `/version`: exact deployed commit, build time, environment, scaffold stage.
 - `/health`: public liveness only. No dependency details or credentials.
 - `/internal/fixture`: credential-protected fixed fixture namespace checks for
@@ -100,8 +100,8 @@ in src/core.ts. Not yet built: MCP transport, diffs, single-flight leases, fenci
 Browser execution, MCP negotiation, fixture write/idempotency
 checks, auth matrix and runtime tools belong to the spike/build issues. Binding
 presence is not Browser execution proof. No G1 or benchmark claim follows from
-this infrastructure sweep. Custom domains await the owner's domain decision;
-workers.dev origins are the scaffold deployment default.
+this infrastructure sweep. Custom domains are the canonical endpoints by the owner decision dated 2026-11-23.
+The workers.dev origins remain fallback endpoints.
 
 ## Minimal Studio sidecar (spike, issue #12)
 

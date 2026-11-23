@@ -3,6 +3,7 @@ export interface Env {
   CACHE: KVNamespace;
   BLOBS: R2Bucket;
   BROWSER: Fetcher;
+  RENDER_HUB: DurableObjectNamespace;
   FLEET_WAIT: DurableObjectNamespace;
   HANDOFF_COORDINATOR: DurableObjectNamespace;
   ENVIRONMENT: string;
@@ -23,10 +24,15 @@ import { recallQuery, recallHealth, syncRecall } from './recall';
 
 import { fleetGet, fleetList, fleetChanges } from './fleet';
 import { fleetWait } from './wait';
+import { handleMcp, MCP_PROTOCOL } from './mcp';
+import { ingestVerification, verificationCheck } from './verification';
+import { renderCall, getRender } from './render';
 
 const STAGE = 'spike-core';
 const ROUTES: Record<string, { method: string; operation: string;
   run: (env: Env, c: Caller, r: Request, u: URL, now: Date) => Promise<Outcome> }> = {
+  '/v1/verify/check': { method:'POST', operation:'verify_check', run:async(e,c,r,_u,n)=>verificationCheck(e,c,await r.json(),n) },
+  '/v1/render/jobs': { method:'POST', operation:'verify_render', run:async(e,c,r)=>renderCall(e,c,await r.json()) },
   '/v1/issues/get': { method:'GET', operation:'issue_get', run:(e,c,_r,u,n)=>issueGet(e,c,u.searchParams,n) },
   '/v1/issues/list': { method:'GET', operation:'issue_list', run:(e,c,_r,u,n)=>issueList(e,c,u.searchParams,n) },
   '/v1/recall/query': { method:'GET', operation:'recall_query', run:(e,c,_r,u,n)=>recallQuery(e,c,u.searchParams,n) },
@@ -54,7 +60,7 @@ const ROUTES: Record<string, { method: string; operation: string;
   '/v1/fleet/changes': { method:'GET', operation:'fleet_what_changed_since', run:(e,c,_r,u,n)=>fleetChanges(e,c,u.searchParams,n) },
   '/v1/fleet/wait': { method:'POST', operation:'fleet_wait_for', run:async(e,c,r)=> {
     let input; try { input=await r.json(); } catch { throw new CoreError(400,'invalid_input'); }
-    return fleetWait(e,c,input);
+    return fleetWait(e,c,input,r.signal);
   } },
   '/v1/fleet/status': { method: 'GET', operation: 'fleet_status', run: (env, c, _r, _u, now) => fleetStatus(env, c, now) },
   '/v1/fleet/file-compare': { method: 'GET', operation: 'fleet_file_compare', run: (env, c, _r, u, now) =>
@@ -62,19 +68,19 @@ const ROUTES: Record<string, { method: string; operation: string;
 };
 
 /** Sidecar push: signed by the machine key, never a bearer token; audit precedes ingestion. */
-async function connectorIngest(request: Request, env: Env): Promise<Response> {
+async function connectorIngest(request: Request, env: Env, verification = false): Promise<Response> {
   const start = Date.now(), now = new Date(), correlationId = crypto.randomUUID();
   const raw = new Uint8Array(await request.arrayBuffer());
   let machine;
   try { machine = await authenticateMachine(request, env, raw, now); } catch { return json({ error: 'policy_unavailable' }, 503); }
-  const base = { operation: 'connector_ingest_fleet', correlationId, caller: null };
+  const base = { operation: verification ? 'connector_ingest_verification' : 'connector_ingest_fleet', correlationId, caller: null };
   if (!machine) {
     await writeAudit(env, { ...base, result: 'unauthenticated', latencyMs: Date.now() - start }, now).catch(() => {});
     return json({ error: 'unauthorized' }, 401);
   }
   try { await writeAudit(env, { ...base, result: 'started', targetId: machine.machineId }, now); } catch { return json({ error: 'audit_unavailable' }, 503); }
   let status = 200, payload: Record<string, unknown>;
-  try { payload = (await ingest(env, machine, raw, now)).body; } catch (e) {
+  try { payload = (await (verification ? ingestVerification : ingest)(env, machine, raw, now)).body; } catch (e) {
     status = e instanceof CoreError ? e.status : 500; payload = { error: e instanceof CoreError ? e.code : 'internal_error' };
   }
   await writeAudit(env, { ...base, result: status < 400 ? 'ok' : String(payload.error), targetId: machine.machineId,
@@ -113,6 +119,18 @@ const json = (value: unknown, status = 200) => Response.json(value, {
 
 export async function handle(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url), path = url.pathname;
+  if(path === '/mcp') return handleMcp(request,env,handle);
+  if(path === '/ingest/verification') return request.method==='POST' ? connectorIngest(request,env,true) : json({error:'method_not_allowed'},405);
+  const renderMatch=/^\/v1\/render\/jobs\/([a-f0-9-]{36})(\/screenshot)?$/.exec(path);
+  if(renderMatch) {
+    if(request.method!=='GET') return json({error:'method_not_allowed'},405);
+    try {
+      const c=await authenticate(request,env,new Date());
+      if(!c) return json({error:'unauthorized'},401);
+      await writeAudit(env,{caller:c,operation:'verify_render_read',correlationId:crypto.randomUUID(),result:'started'},new Date());
+      return await getRender(env,c,renderMatch[1],!!renderMatch[2]);
+    } catch(e) { return json({error:e instanceof CoreError?e.code:'policy_unavailable'},e instanceof CoreError?e.status:503); }
+  }
   if(path === '/webhooks/github' && request.method === 'POST') return githubWebhook(request,env);
   const route = ROUTES[path];
   if (path === '/ingest/fleet') return request.method === 'POST' ? connectorIngest(request, env) : json({ error: 'method_not_allowed' }, 405);
@@ -121,7 +139,7 @@ export async function handle(request: Request, env: Env): Promise<Response> {
   if (path === '/health') return json({ status: 'ok', service: 'fleet-mcp', stage: STAGE });
   if (path === '/version') return json({
     commit: env.BUILD_SHA ?? 'development', build_time: env.BUILD_TIME ?? null,
-    environment: env.ENVIRONMENT, stage: STAGE, mcp_protocol: null,
+    environment: env.ENVIRONMENT, stage: STAGE, mcp_protocol: MCP_PROTOCOL,
   });
   // This credential authorizes only fixed fixture probes, never corpus access.
   if (path === '/internal/fixture') {
@@ -144,7 +162,7 @@ export async function handle(request: Request, env: Env): Promise<Response> {
       return json({ error: 'fixture_dependency_failed' }, 503);
     }
   }
-  // MCP transport and all other corpus routes stay disabled in the core spike.
+  // Unregistered routes stay disabled in the bounded spike.
   return json({ error: 'not_found' }, 404);
 }
 

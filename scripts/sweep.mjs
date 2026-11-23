@@ -23,8 +23,8 @@ export async function sweep(base, expectedCommit, environment, token, coreToken)
   }
   await check('liveness', '/health', (r, b) => r.ok && b.status === 'ok' && b.stage === 'spike-core');
   await check('deployed-commit', '/version', (r, b) => r.ok && b.commit === expectedCommit
-    && b.environment === environment && b.mcp_protocol === null);
-  await check('corpus-route-disabled', '/mcp', r => r.status === 404);
+    && b.environment === environment && b.mcp_protocol === '2025-06-18');
+  await check('mcp-unauthenticated', '/mcp', r => r.status === 401);
   await check('fixture-unauthorized', '/internal/fixture', r => r.status === 401);
   await check('fixture-bindings', '/internal/fixture', (r, b) => r.ok
     && b.namespace === `fixture-${environment}` && Object.keys(b.checks ?? {}).length === 6

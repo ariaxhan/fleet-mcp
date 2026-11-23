@@ -1,0 +1,5 @@
+{"type":"thread.started","thread_id":"01a20979-896b-7e42-807b-5b8464b8e499"}
+{"type":"item.completed","item":{"id":"item_0","type":"error","message":"clamping SessionEnd hook timeout to 3s in /Users/slowember/.codex/hooks.json"}}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_1","type":"agent_message","text":"FLEET_TOKEN_CAPTURE_OK"}}
+{"type":"turn.completed","usage":{"input_tokens":20137,"cached_input_tokens":12288,"cache_write_input_tokens":0,"output_tokens":10,"reasoning_output_tokens":0}}
