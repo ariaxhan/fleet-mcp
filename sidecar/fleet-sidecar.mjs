@@ -146,9 +146,12 @@ function enroll(env) {
   const machineId = `m_${randomBytes(16).toString('hex')}`;
   const { publicKey, privateKey } = generateKeyPairSync('ed25519');
   const raw = publicKey.export({ format: 'der', type: 'spki' }).subarray(12).toString('base64url');
+  const secret = privateKey.export({ format: 'der', type: 'pkcs8' }).toString('base64');
   // Private half goes straight to the keychain (stdin, never argv) and never leaves the Studio.
   execFileSync('security', ['add-generic-password', '-U', '-s', keychainService(env), '-a', machineId, '-w'],
-    { input: privateKey.export({ format: 'der', type: 'pkcs8' }).toString('base64') + '\n', stdio: ['pipe', 'ignore', 'inherit'] });
+    { input: `${secret}\n${secret}\n`, stdio: ['pipe', 'ignore', 'ignore'] }); // security prompts twice (enter, retype).
+  if (execFileSync('security', ['find-generic-password', '-s', keychainService(env), '-a', machineId, '-w'], { encoding: 'utf8' }).trim() !== secret)
+    throw new Error('keychain did not store the machine key; nothing registered');
   execFileSync(join(HERE, '../node_modules/.bin/wrangler'), ['d1', 'execute', `fleet-mcp-${env}`, '--env', env, '--remote', '--command',
     `INSERT INTO machines VALUES ('${machineId}', '${raw}', 'personal', 'personal-docs', '${new Date().toISOString()}', NULL)`],
   { cwd: join(HERE, '..'), stdio: ['ignore', 'ignore', 'inherit'] });
