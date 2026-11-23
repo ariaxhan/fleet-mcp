@@ -16,7 +16,7 @@ test('workspace identity, forced append-only reruns, source freshness and recove
   const { db, env } = await setup();
   const now = new Date();
   db.prepare("INSERT INTO machines VALUES (?, 'key', 'personal', 'personal-docs', 'now', NULL)").run(machine.machineId);
-  db.prepare("INSERT INTO connector_status VALUES (?, 'spike', 0, 0, 0, ?)").run(machine.machineId, now.toISOString());
+  db.prepare("INSERT INTO connector_status (machine_id, sidecar_version, last_seq, outbox_depth, dropped_for_boundary, last_heartbeat_at) VALUES (?, 'spike', 0, 0, 0, ?)").run(machine.machineId, now.toISOString());
   const record = () => ({ identity, run_id: randomUUID(), passed: true, exit_code: 0, output_hash: 'e'.repeat(64), computed_at: now.toISOString(), source_observed_at: now.toISOString() });
   const first = record();
   const push = (r: any) => ingestVerification(env, machine, new TextEncoder().encode(JSON.stringify(r)), now);

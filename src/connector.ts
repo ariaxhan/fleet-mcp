@@ -10,9 +10,10 @@ const MAX_RECORDS = 200; // Design decision: records per ingest request.
 const MAX_INGEST_BYTES = 256 * 1024;
 
 const EVENT_KINDS = ['started', 'done', 'failed', 'blocker', 'stalled', 'preempted', 'retired', 'ended'];
-const PROBES = ['github'];
+export const PROBES = ['github', 'claude-oauth', 'codex-oauth', 'wrangler'];
 const PROBE_STATUS = ['live', 'expired', 'missing', 'unknown'];
-const REASONS = ['ok', 'not_authenticated', 'cli_missing', 'timeout', 'error'];
+export const REASONS = ['ok', 'not_authenticated', 'cli_missing', 'credential_missing', 'credential_expired', 'unparseable', 'timeout', 'error'];
+const OBSERVATION_CLASSES = ['fleet_event', 'probe', 'file_hash', 'checkout_state', 'checkpoint_hash', 'suite_run', 'lesson_writeback'];
 
 export interface Machine { machineId: string; tenantId: string; namespaceId: string }
 
@@ -93,12 +94,35 @@ export async function ingest(env: Env, m: Machine, raw: Uint8Array<ArrayBuffer>,
         WHERE excluded.source_observed_at >= file_hashes.source_observed_at`)
         .bind(m.machineId, r.repo, r.path, r.content_hash, r.size, r.head_commit, observed, at).run();
       result.accepted++;
+    } else if (r.type === 'checkout_state') {
+      if (!PERSONAL_SOURCE_REPOS.includes(r.repo) || typeof r.checkout_id !== 'string' || !/^[\w.-]{1,64}$/.test(r.checkout_id)
+        || !/^[a-f0-9]{40}$/.test(r.head_commit ?? '') || typeof r.branch !== 'string' || !/^[\w./-]{1,128}$/.test(r.branch)
+        || typeof r.dirty !== 'boolean' || !/^[a-f0-9]{64}$/.test(r.tree_hash ?? '')) { result.rejected++; continue; }
+      await env.DB.prepare(`INSERT INTO checkout_states VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO UPDATE SET
+        repo = excluded.repo, head_commit = excluded.head_commit, branch = excluded.branch, dirty = excluded.dirty, tree_hash = excluded.tree_hash,
+        source_observed_at = excluded.source_observed_at, received_at = excluded.received_at
+        WHERE excluded.source_observed_at >= checkout_states.source_observed_at`)
+        .bind(m.machineId, r.checkout_id, r.repo, r.head_commit, r.branch, r.dirty ? 1 : 0, r.tree_hash, observed, at).run();
+      result.accepted++;
+    } else if (r.type === 'checkpoint_hash') {
+      if (!PERSONAL_SOURCE_REPOS.includes(r.repo) || typeof r.checkpoint_id !== 'string' || !/^[\w.-]{1,128}$/.test(r.checkpoint_id)
+        || !/^[a-f0-9]{64}$/.test(r.local_hash ?? '')) { result.rejected++; continue; }
+      await env.DB.prepare(`INSERT INTO checkpoint_reports VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO UPDATE SET
+        repo = excluded.repo, local_hash = excluded.local_hash, source_observed_at = excluded.source_observed_at, received_at = excluded.received_at
+        WHERE excluded.source_observed_at >= checkpoint_reports.source_observed_at`)
+        .bind(m.machineId, r.checkpoint_id, r.repo, r.local_hash, observed, at).run();
+      result.accepted++;
     } else result.rejected++;
   }
-  await env.DB.prepare(`INSERT INTO connector_status VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO UPDATE SET
+  // Per-class last successful observation, fixed keys only; values are clamped timestamps.
+  const obs: Record<string, string> = {};
+  if (hb.observations && typeof hb.observations === 'object')
+    for (const k of OBSERVATION_CLASSES) { const t = iso(hb.observations[k], now); if (t) obs[k] = t; }
+  await env.DB.prepare(`INSERT INTO connector_status (machine_id, sidecar_version, last_seq, outbox_depth, dropped_for_boundary,
+    last_heartbeat_at, observations_json) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO UPDATE SET
     sidecar_version = excluded.sidecar_version, last_seq = excluded.last_seq, outbox_depth = excluded.outbox_depth,
-    dropped_for_boundary = excluded.dropped_for_boundary, last_heartbeat_at = excluded.last_heartbeat_at`)
-    .bind(m.machineId, input.sidecar_version, hb.last_seq, hb.outbox_depth, hb.dropped_for_boundary, at).run();
+    dropped_for_boundary = excluded.dropped_for_boundary, last_heartbeat_at = excluded.last_heartbeat_at, observations_json = excluded.observations_json`)
+    .bind(m.machineId, input.sidecar_version, hb.last_seq, hb.outbox_depth, hb.dropped_for_boundary, at, JSON.stringify(obs)).run();
   // Durable state commits before wakeup. Duplicate retries also recover a failed notification.
   if (env.FLEET_WAIT) {
     const name=JSON.stringify([m.tenantId,m.namespaceId]);
@@ -119,7 +143,7 @@ function requireFleet(c: Caller) {
 }
 const visibleRepo = (c: Caller, repo: string) => PERSONAL_SOURCE_REPOS.includes(repo) && c.sourceRepos.includes(repo);
 
-async function connectors(env: Env, c: Caller, now: Date) {
+export async function connectors(env: Env, c: Caller, now: Date) {
   const { results } = await env.DB.prepare(`SELECT s.* FROM connector_status s JOIN machines m ON m.machine_id = s.machine_id
     WHERE m.tenant_id = ? AND m.namespace_id = ? AND m.revoked_at IS NULL ORDER BY s.machine_id`)
     .bind(c.tenantId, c.namespaceId).all<Record<string, any>>();
@@ -133,11 +157,28 @@ export async function fleetStatus(env: Env, c: Caller, now: Date): Promise<Outco
   const ids = [...conns.keys()];
   const probes = ids.length ? (await env.DB.prepare(`SELECT * FROM probe_results WHERE machine_id IN (${ids.map(() => '?').join(',')}) ORDER BY probe`)
     .bind(...ids).all<Record<string, any>>()).results : [];
+  const inIds = ids.map(() => '?').join(',');
+  const checkouts = ids.length ? (await env.DB.prepare(`SELECT * FROM checkout_states WHERE machine_id IN (${inIds}) ORDER BY checkout_id`)
+    .bind(...ids).all<Record<string, any>>()).results : [];
+  const checkpoints = ids.length ? (await env.DB.prepare(`SELECT r.*, h.content_hash AS server_hash FROM checkpoint_reports r
+    LEFT JOIN handoff_checkpoints h ON h.tenant_id = ? AND h.namespace_id = ? AND h.checkpoint_id = r.checkpoint_id
+    WHERE r.machine_id IN (${inIds}) ORDER BY r.source_observed_at DESC LIMIT 50`).bind(c.tenantId, c.namespaceId, ...ids).all<Record<string, any>>()).results : [];
+  const label = (machineId: string) => { const cs = conns.get(machineId)!.connector_status; return { connector_status: cs, freshness: cs === 'fresh' ? 'fresh' : 'stale' }; };
   const events = ids.length ? (await env.DB.prepare(`SELECT * FROM fleet_events WHERE machine_id IN (${ids.map(() => '?').join(',')})
     ORDER BY change_seq DESC LIMIT 50`).bind(...ids).all<Record<string, any>>()).results : [];
   return { body: {
-    connectors: [...conns.values()].map(({ machine_id, sidecar_version, last_seq, outbox_depth, dropped_for_boundary, last_heartbeat_at, connector_status }) =>
-      ({ machine_id, sidecar_version, last_seq, outbox_depth, dropped_for_boundary, last_heartbeat_at, connector_status })),
+    connectors: [...conns.values()].map(r => ({ machine_id: r.machine_id, sidecar_version: r.sidecar_version, last_seq: r.last_seq,
+      outbox_depth: r.outbox_depth, dropped_for_boundary: r.dropped_for_boundary, last_heartbeat_at: r.last_heartbeat_at,
+      connector_status: r.connector_status, last_successful_observation_at: JSON.parse(r.observations_json ?? '{}'),
+      last_reconciled_at: r.last_reconciled_at ?? null, reconcile_missing: r.reconcile_missing ?? null })),
+    checkouts: checkouts.filter(k => visibleRepo(c, k.repo)).map(k => ({ machine_id: k.machine_id, checkout_id: k.checkout_id, repo: k.repo,
+      head_commit: k.head_commit, branch: k.branch, dirty: !!k.dirty, tree_hash: k.tree_hash,
+      source_observed_at: k.source_observed_at, received_at: k.received_at, ...label(k.machine_id) })),
+    // The server index is authoritative; a report with no index entry is never called a match.
+    checkpoints: checkpoints.filter(k => visibleRepo(c, k.repo)).map(k => ({ machine_id: k.machine_id, checkpoint_id: k.checkpoint_id, repo: k.repo,
+      local_hash: k.local_hash, server_hash: k.server_hash ?? null,
+      comparison: !k.server_hash ? 'unknown_server' : k.server_hash === k.local_hash ? 'match' : 'diverged',
+      source_observed_at: k.source_observed_at, received_at: k.received_at, ...label(k.machine_id) })),
     // Credential liveness is never served stale (PRD 2.6.8): a non-fresh observation reports unknown.
     probes: probes.map(p => {
       const cs = conns.get(p.machine_id)!.connector_status;

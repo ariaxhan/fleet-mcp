@@ -17,7 +17,8 @@ export interface Env {
 }
 import { authenticate, writeAudit, PolicyUnavailable, type Caller } from './auth';
 import { publishDoc, getDoc, changes, CoreError, type Outcome } from './core';
-import { authenticateMachine, ingest, fleetStatus, fileCompare } from './connector';
+import { authenticateMachine, ingest, fleetStatus, fileCompare, type Machine } from './connector';
+import { enqueueJob, recallLearn, readJob, leaseWork, jobResult, reconcile as reconcileConnector } from './jobs';
 
 import { issueGet, issueList, githubWebhook, reconcile } from './issues';
 import { recallQuery, recallHealth, syncRecall } from './recall';
@@ -62,25 +63,43 @@ const ROUTES: Record<string, { method: string; operation: string;
     let input; try { input=await r.json(); } catch { throw new CoreError(400,'invalid_input'); }
     return fleetWait(e,c,input,r.signal);
   } },
+  '/v1/connector/jobs': { method: 'POST', operation: 'connector_enqueue_job', run: async (e, c, r, _u, n) => {
+    let input; try { input = await r.json(); } catch { throw new CoreError(400, 'invalid_input'); }
+    return enqueueJob(e, c, input, n);
+  } },
+  '/v1/connector/job': { method: 'GET', operation: 'connector_read_job', run: (e, c, _r, u, n) => readJob(e, c, u.searchParams, n) },
+  '/v1/recall/learn': { method: 'POST', operation: 'recall_learn', run: async (e, c, r, _u, n) => {
+    let input; try { input = await r.json(); } catch { throw new CoreError(400, 'invalid_input'); }
+    return recallLearn(e, c, input, n);
+  } },
   '/v1/fleet/status': { method: 'GET', operation: 'fleet_status', run: (env, c, _r, _u, now) => fleetStatus(env, c, now) },
   '/v1/fleet/file-compare': { method: 'GET', operation: 'fleet_file_compare', run: (env, c, _r, u, now) =>
     fileCompare(env, c, u.searchParams.get('repo'), u.searchParams.get('path'), now) },
 };
 
 /** Sidecar push: signed by the machine key, never a bearer token; audit precedes ingestion. */
-async function connectorIngest(request: Request, env: Env, verification = false): Promise<Response> {
+type ConnectorOp = (env: Env, m: Machine, raw: Uint8Array<ArrayBuffer>, now: Date) => Promise<Outcome>;
+const CONNECTOR_ROUTES: Record<string, [string, string, ConnectorOp]> = {
+  '/ingest/fleet': ['POST', 'connector_ingest_fleet', ingest],
+  '/ingest/verification': ['POST', 'connector_ingest_verification', ingestVerification],
+  '/connector/work': ['GET', 'connector_lease_work', (e, m, _r, n) => leaseWork(e, m, n)],
+  '/connector/result': ['POST', 'connector_job_result', jobResult],
+  '/connector/reconcile': ['POST', 'connector_reconcile', reconcileConnector],
+};
+
+async function connectorIngest(request: Request, env: Env, operation: string, op: ConnectorOp): Promise<Response> {
   const start = Date.now(), now = new Date(), correlationId = crypto.randomUUID();
   const raw = new Uint8Array(await request.arrayBuffer());
   let machine;
   try { machine = await authenticateMachine(request, env, raw, now); } catch { return json({ error: 'policy_unavailable' }, 503); }
-  const base = { operation: verification ? 'connector_ingest_verification' : 'connector_ingest_fleet', correlationId, caller: null };
+  const base = { operation, correlationId, caller: null };
   if (!machine) {
     await writeAudit(env, { ...base, result: 'unauthenticated', latencyMs: Date.now() - start }, now).catch(() => {});
     return json({ error: 'unauthorized' }, 401);
   }
   try { await writeAudit(env, { ...base, result: 'started', targetId: machine.machineId }, now); } catch { return json({ error: 'audit_unavailable' }, 503); }
   let status = 200, payload: Record<string, unknown>;
-  try { payload = (await (verification ? ingestVerification : ingest)(env, machine, raw, now)).body; } catch (e) {
+  try { payload = (await op(env, machine, raw, now)).body; } catch (e) {
     status = e instanceof CoreError ? e.status : 500; payload = { error: e instanceof CoreError ? e.code : 'internal_error' };
   }
   await writeAudit(env, { ...base, result: status < 400 ? 'ok' : String(payload.error), targetId: machine.machineId,
@@ -120,7 +139,8 @@ const json = (value: unknown, status = 200) => Response.json(value, {
 export async function handle(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url), path = url.pathname;
   if(path === '/mcp') return handleMcp(request,env,handle);
-  if(path === '/ingest/verification') return request.method==='POST' ? connectorIngest(request,env,true) : json({error:'method_not_allowed'},405);
+  const signed = CONNECTOR_ROUTES[path];
+  if (signed) return request.method === signed[0] ? connectorIngest(request, env, signed[1], signed[2]) : json({ error: 'method_not_allowed' }, 405);
   const renderMatch=/^\/v1\/render\/jobs\/([a-f0-9-]{36})(\/screenshot)?$/.exec(path);
   if(renderMatch) {
     if(request.method!=='GET') return json({error:'method_not_allowed'},405);
@@ -133,7 +153,6 @@ export async function handle(request: Request, env: Env): Promise<Response> {
   }
   if(path === '/webhooks/github' && request.method === 'POST') return githubWebhook(request,env);
   const route = ROUTES[path];
-  if (path === '/ingest/fleet') return request.method === 'POST' ? connectorIngest(request, env) : json({ error: 'method_not_allowed' }, 405);
   if (route) return request.method === route.method ? protectedRoute(request, env, url, route) : json({ error: 'method_not_allowed' }, 405);
   if (request.method !== 'GET') return json({ error: 'not_implemented' }, 501);
   if (path === '/health') return json({ status: 'ok', service: 'fleet-mcp', stage: STAGE });

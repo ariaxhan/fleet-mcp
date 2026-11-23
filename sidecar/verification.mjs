@@ -32,6 +32,20 @@ export function runSuite(logDir) {
   return { run_id: randomUUID(), identity, source_observed_at: observed, computed_at: new Date().toISOString(),
     passed: result.status === 0, exit_code: result.status ?? -1, output_hash: hash(output) };
 }
+/** Suite registry (PRD 2.6.5): the server sends only a name; argv lives here, versioned in git. */
+export const SUITES = { 'fleet-mcp-typecheck': { repo: 'ariaxhan/fleet-mcp', run: runSuite } };
+/** Runs a registered suite and preserves its receipt and outbox entry before any network action. */
+export function runAndQueue(dir, suite = 'fleet-mcp-typecheck') {
+  if (!SUITES[suite]) throw new Error('unknown_suite');
+  mkdirSync(join(dir, 'verification-logs'), { recursive: true });
+  const record = SUITES[suite].run(join(dir, 'verification-logs'));
+  writeFileSync(join(dir, 'verification-logs', record.run_id + '.txt'), readFileSync(join(dir, 'verification-logs/latest-output.txt')));
+  writeFileSync(join(dir, 'verification-logs', record.run_id + '.json'), JSON.stringify(record, null, 2));
+  const outbox = join(dir, 'verification-outbox.json');
+  const pending = existsSync(outbox) ? JSON.parse(readFileSync(outbox, 'utf8')) : [];
+  pending.push(record); writeFileSync(outbox, JSON.stringify(pending));
+  return record;
+}
 export async function pushPending(dir, origin, machineId, key, send = fetch) {
   const path = join(dir, 'verification-outbox.json');
   const pending = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : [];
@@ -51,14 +65,7 @@ if (process.argv[1] && realpathSync(process.argv[1]) === realpathSync(new URL(im
   const expected = `https://fleet-mcp${env === 'staging' ? '-staging' : ''}.ariaxhan.workers.dev`;
   const canonical = env === 'staging' ? 'https://staging-mcp.ariaxhan.com' : 'https://mcp.ariaxhan.com';
   if (![expected, canonical].includes(cfg.origin) || realpathSync(cfg.checkouts['ariaxhan/fleet-mcp']) !== ROOT) throw new Error('unregistered_checkout');
-  mkdirSync(join(dir, 'verification-logs'), { recursive: true });
-  const record = runSuite(join(dir, 'verification-logs'));
-  writeFileSync(join(dir, 'verification-logs', record.run_id + '.txt'), readFileSync(join(dir, 'verification-logs/latest-output.txt')));
-  // Preserve the receipt before any network action; retries keep the same immutable run ID.
-  writeFileSync(join(dir, 'verification-logs', record.run_id + '.json'), JSON.stringify(record, null, 2));
-  const outbox = join(dir, 'verification-outbox.json');
-  const pending = existsSync(outbox) ? JSON.parse(readFileSync(outbox, 'utf8')) : [];
-  pending.push(record); writeFileSync(outbox, JSON.stringify(pending));
+  const record = runAndQueue(dir);
   const key = createPrivateKey({ key: Buffer.from(execFileSync('security', ['find-generic-password', '-s', `fleet-sidecar-machine-key-${env}`, '-a', cfg.machine_id, '-w'], { encoding: 'utf8' }).trim(), 'base64'), format: 'der', type: 'pkcs8' });
   await pushPending(dir, cfg.origin, cfg.machine_id, key);
   console.log(JSON.stringify(record));

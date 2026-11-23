@@ -6,7 +6,7 @@ const machine='m_'+'a'.repeat(32);
 async function fixture() {
   const h=await setup();
   h.db.prepare("INSERT INTO machines VALUES (?, 'unused', 'personal','personal-docs','2026-01-01',NULL)").run(machine);
-  h.db.prepare("INSERT INTO connector_status VALUES (?, 'test',0,0,0,?)").run(machine,new Date().toISOString());
+  h.db.prepare("INSERT INTO connector_status (machine_id, sidecar_version, last_seq, outbox_depth, dropped_for_boundary, last_heartbeat_at) VALUES (?, 'test',0,0,0,?)").run(machine,new Date().toISOString());
   const values=new Map<string,any>();
   const storage={get:async(k:string)=>values.get(k),put:async(k:string,v:any)=>{values.set(k,structuredClone(v));},
     delete:async(k:string)=>values.delete(k),list:async()=>values,setAlarm:async()=>{}} as unknown as DurableObjectStorage;

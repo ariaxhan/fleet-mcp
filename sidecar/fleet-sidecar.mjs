@@ -1,18 +1,20 @@
 #!/usr/bin/env node
-// fleet-sidecar spike (PRD 2.6, issue #12): outbound-only Studio connector.
-// Pushes runner flight events, one credential probe (github) and working-tree file hashes,
-// signed with an Ed25519 machine key held in the macOS keychain.
+// fleet-sidecar (PRD 2.6, issues #12, #18): outbound-only Studio connector.
+// Pushes runner flight events, credential liveness attestations, checkout state, file hashes and
+// checkpoint hashes; reconciles delivered events; executes typed jobs pulled from /connector/work
+// (probe, checkout_state, file_upload, suite_run, lesson_writeback). Signed with an Ed25519 machine
+// key held in the macOS keychain. Credentials never leave the machine: only fixed status enums do.
 //   node sidecar/fleet-sidecar.mjs enroll <staging|production>   generate key, register machine (wrangler)
 //   node sidecar/fleet-sidecar.mjs once <staging|production>     collect and push once
 //   node sidecar/fleet-sidecar.mjs loop <staging|production> [interval_s]
 import { execFileSync, execFile } from 'node:child_process';
 import { createHash, createPrivateKey, generateKeyPairSync, randomBytes, sign } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync, existsSync, realpathSync, statSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, realpathSync, statSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, sep, dirname } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
-export const VERSION = '0.1.0-spike';
+export const VERSION = '0.2.0';
 const HERE = dirname(new URL(import.meta.url).pathname);
 const ORIGINS = { staging: 'https://staging-mcp.ariaxhan.com', production: 'https://mcp.ariaxhan.com' };
 const RUNNER_DB = join(process.env.RUNNER_HOME ?? join(homedir(), 'Library/Application Support/runner'), 'runner.sqlite');
@@ -72,16 +74,68 @@ export function collectFleetEvents(dbPath, repos, nowS) {
   } finally { db.close(); }
 }
 
-/** Credential probe: emits only a fixed status and reason code, never CLI output. */
-export function probeGithub() {
+const att = (status, reason_code) => ({ status, reason_code, observed_at: new Date().toISOString() });
+/** CLI probe: exit status only. Output is discarded unread, never forwarded. */
+function cliProbe(cmd, args, timeout = 15_000) {
   return new Promise(resolve => {
-    execFile('gh', ['auth', 'status', '--hostname', 'github.com'], { timeout: 10_000, env: { PATH: process.env.PATH, HOME: homedir() } }, err => {
-      const observed_at = new Date().toISOString();
-      if (!err) return resolve({ status: 'live', reason_code: 'ok', observed_at });
-      if (err.code === 'ENOENT') return resolve({ status: 'missing', reason_code: 'cli_missing', observed_at });
-      if (err.killed) return resolve({ status: 'unknown', reason_code: 'timeout', observed_at });
-      resolve({ status: 'expired', reason_code: 'not_authenticated', observed_at });
+    execFile(cmd, args, { timeout, env: { PATH: process.env.PATH, HOME: homedir() } }, err => {
+      if (!err) return resolve(att('live', 'ok'));
+      if (err.code === 'ENOENT') return resolve(att('missing', 'cli_missing'));
+      if (err.killed) return resolve(att('unknown', 'timeout'));
+      resolve(att('expired', 'not_authenticated'));
     });
+  });
+}
+/** Classifies an OAuth credential blob locally; the blob itself stays in this function. */
+export function classifyOAuth(blob, nowMs = Date.now()) {
+  let j; try { j = JSON.parse(blob); } catch { return att('unknown', 'unparseable'); }
+  const o = j?.claudeAiOauth ?? j?.tokens ?? j;
+  if (!o || typeof o !== 'object') return att('unknown', 'unparseable');
+  if (o.refresh_token || o.refreshToken) return att('live', 'ok'); // Refreshable without a human.
+  const exp = Number(o.expiresAt ?? o.expires_at);
+  if (exp) return exp > nowMs ? att('live', 'ok') : att('expired', 'credential_expired');
+  return o.access_token || o.accessToken ? att('unknown', 'unparseable') : att('missing', 'credential_missing');
+}
+export const PROBES = {
+  github: () => cliProbe('gh', ['auth', 'status', '--hostname', 'github.com']),
+  wrangler: () => cliProbe(join(HERE, '../node_modules/.bin/wrangler'), ['whoami'], 30_000),
+  'codex-oauth': async () => {
+    const p = join(process.env.CODEX_HOME ?? join(homedir(), '.codex'), 'auth.json');
+    return existsSync(p) ? classifyOAuth(readFileSync(p, 'utf8')) : att('missing', 'credential_missing');
+  },
+  'claude-oauth': async () => {
+    try { return classifyOAuth(execFileSync('security', ['find-generic-password', '-s', 'Claude Code-credentials', '-w'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 10_000 })); }
+    catch (e) { return e.status === 44 ? att('missing', 'credential_missing') : att('unknown', 'error'); }
+  },
+};
+export const probeGithub = PROBES.github;
+
+/** Checkout state: HEAD, branch, dirty flag and a tree hash that includes uncommitted bytes. */
+export function checkoutState(root, repo, repos, checkoutId) {
+  if (!repos.includes(repo)) return { refused: 'repo_not_allowlisted' };
+  const git = (...a) => execFileSync('git', ['-C', root, ...a], { encoding: 'buffer', maxBuffer: 64 * 1024 * 1024 });
+  const status = git('status', '--porcelain=v1', '-z').toString();
+  const paths = git('ls-files', '-z', '--cached', '--others', '--exclude-standard').toString().split('\0').filter(Boolean).sort();
+  const h = createHash('sha256');
+  for (const p of paths) {
+    const r = resolveUnderRoot(root, p);
+    h.update(p + '\0' + (r.path ? createHash('sha256').update(readFileSync(r.path)).digest('hex') : r.refused) + '\0');
+  }
+  return { type: 'checkout_state', repo, checkout_id: checkoutId, head_commit: git('rev-parse', 'HEAD').toString().trim(),
+    branch: git('rev-parse', '--abbrev-ref', 'HEAD').toString().trim(), dirty: status.length > 0, tree_hash: h.digest('hex'),
+    observed_at: new Date().toISOString() };
+}
+
+/** Checkpoint mirror hashes: one record per regular file directly under the configured directory. */
+export function checkpointHashes(root, repo, rel, repos) {
+  if (!repos.includes(repo)) return [];
+  const base = join(realpathSync(root), rel);
+  if (!existsSync(base)) return [];
+  return readdirSync(base).filter(f => /^[\w.-]{1,128}$/.test(f)).flatMap(f => {
+    const r = resolveUnderRoot(root, `${rel}/${f}`);
+    if (!r.path) return [];
+    return [{ type: 'checkpoint_hash', repo, checkpoint_id: f.replace(/\.[^.]+$/, ''), local_hash: createHash('sha256').update(readFileSync(r.path)).digest('hex'),
+      observed_at: new Date().toISOString() }];
   });
 }
 
@@ -101,43 +155,142 @@ export function signRequest(privateKey, machineId, method, path, body) {
     'x-fleet-signature': sign(null, Buffer.from(msg), privateKey).toString('base64url'), 'content-type': 'application/json' };
 }
 
+const loadKey = (env, cfg) => createPrivateKey({ key: Buffer.from(execFileSync('security', ['find-generic-password', '-s', keychainService(env), '-a', cfg.machine_id, '-w'],
+  { encoding: 'utf8' }).trim(), 'base64'), format: 'der', type: 'pkcs8' });
+
+/** One signed request; GET carries an empty signed body. */
+export async function signedFetch(cfg, key, method, path, payload, send = fetch) {
+  const body = payload === undefined ? '' : JSON.stringify(payload);
+  const r = await send(`${cfg.origin}${path}`, { method, body: method === 'GET' ? undefined : body, redirect: 'error',
+    signal: AbortSignal.timeout(60_000), headers: signRequest(key, cfg.machine_id, method, path, body) });
+  const out = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`${path} ${r.status} ${out.error ?? ''}`);
+  return out;
+}
+
+const MAX_UPLOAD = 1024 * 1024;
+/** Executes one typed job. Unknown kinds and suites are refused, never interpreted. */
+export async function runJob(job, ctx) {
+  const { cfg, repos, record, dir } = ctx, p = job.params ?? {}, now = () => new Date().toISOString();
+  const done = extra => ({ job_id: job.job_id, status: 'done', reason_code: 'ok', observed_at: now(), ...extra });
+  const refuse = (reason, status = 'refused') => ({ job_id: job.job_id, status, reason_code: reason });
+  const root = p.repo ? cfg.checkouts?.[p.repo] : null;
+  if (p.repo && !repos.includes(p.repo)) return refuse('repo_not_allowlisted');
+  switch (job.kind) {
+    case 'probe': {
+      if (!PROBES[p.probe]) return refuse('unsupported_kind', 'unsupported');
+      const a = await PROBES[p.probe](); record({ type: 'probe', probe: p.probe, ...a });
+      return done({ probe_reason: a.reason_code });
+    }
+    case 'checkout_state': {
+      if (!root) return refuse('checkout_not_registered');
+      record(checkoutState(root, p.repo, repos, checkoutIdOf(p.repo))); return done({});
+    }
+    case 'file_upload': {
+      if (!root) return refuse('checkout_not_registered');
+      const r = resolveUnderRoot(root, p.path);
+      if (r.refused) return refuse(r.refused);
+      if (statSync(r.path).size > MAX_UPLOAD) return refuse('too_large', 'failed');
+      const bytes = readFileSync(r.path);
+      return done({ bytes_base64: bytes.toString('base64'), content_hash: createHash('sha256').update(bytes).digest('hex'), size: bytes.length,
+        head_commit: execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim() });
+    }
+    case 'suite_run': {
+      const { SUITES, runAndQueue } = await import('./verification.mjs');
+      if (!SUITES[p.suite] || SUITES[p.suite].repo !== p.repo) return refuse('unknown_suite', 'unsupported');
+      try { const rec = runAndQueue(dir, p.suite); await ctx.pushVerification(); return done({ run_id: rec.run_id, passed: rec.passed }); }
+      catch (e) { return refuse(e.message === 'workspace_changed_during_suite' ? e.message : 'error', 'failed'); }
+    }
+    case 'lesson_writeback': {
+      // Write to the owning agent.db through its own CLI, in the owning checkout. Idempotent locally on job_id.
+      const owner = cfg.checkouts?.['ariaxhan/fleet-mcp'];
+      if (!owner || p.source_db !== 'ariaxhan/fleet-mcp/_meta/agentdb/agent.db') return refuse('checkout_not_registered');
+      if (!ctx.state.written?.[job.job_id]) {
+        try { execFileSync('agentdb', ['learn', p.kind, p.what, p.why], { cwd: owner, stdio: 'ignore', timeout: 30_000 }); }
+        catch { return refuse('write_failed', 'failed'); }
+        ctx.state.written = { ...ctx.state.written, [job.job_id]: now() }; ctx.save();
+      }
+      return done({});
+    }
+  }
+  return refuse('unsupported_kind', 'unsupported');
+}
+const checkoutIdOf = repo => repo.split('/')[1];
+
 async function once(env) {
   const repos = loadAllowlist();
   const dir = stateDir(env), cfg = readJson(join(dir, 'config.json'), null);
   if (!cfg) throw new Error(`not enrolled: run enroll ${env}`);
   const state = readJson(join(dir, 'state.json'), { seq: 0, keys: {}, outbox: [] });
-  const assign = rec => {
-    const key = rec.event_key ?? `${rec.type}:${rec.probe ?? `${rec.repo}/${rec.path}`}:${rec.observed_at}`;
-    if (rec.event_key && state.keys[key]) return null; // Already delivered and acknowledged.
-    return { ...rec, seq: ++state.seq };
+  state.observations ??= {};
+  const save = () => writeFileSync(join(dir, 'state.json'), JSON.stringify(state));
+  const key = loadKey(env, cfg);
+  const send = (m, path, payload) => signedFetch(cfg, key, m, path, payload);
+
+  // Sync reconciliation: delivered keys the server lacks are forgotten locally and re-collected below.
+  const delivered = Object.keys(state.keys).slice(-2000);
+  if (delivered.length) {
+    try {
+      const { missing } = await send('POST', '/connector/reconcile', { event_keys: delivered });
+      for (const k of missing) delete state.keys[k];
+      if (missing.length) console.error(`reconcile: ${missing.length} delivered events missing on server; re-queued`);
+    } catch (e) { console.error(`reconcile failed: ${e.message}`); }
+  }
+  const fresh = [];
+  const record = rec => {
+    if (!rec || rec.refused) { if (rec?.refused) console.error(`refused ${rec.refused}`); return; }
+    const k = rec.event_key;
+    if (k && (state.keys[k] || state.outbox.some(o => o.event_key === k))) return; // Delivered or already queued.
+    fresh.push({ ...rec, seq: ++state.seq });
   };
   const { events, dropped } = collectFleetEvents(RUNNER_DB, repos, Date.now() / 1000);
-  const fresh = [...events.map(assign).filter(Boolean)];
-  fresh.push(assign({ type: 'probe', probe: 'github', ...(await probeGithub()) }));
+  events.forEach(record);
+  for (const name of Object.keys(PROBES)) record({ type: 'probe', probe: name, ...(await PROBES[name]()) });
+  for (const [repo, root] of Object.entries(cfg.checkouts ?? {})) {
+    if (!repos.includes(repo)) { console.error(`refused ${repo} repo_not_allowlisted`); continue; }
+    record(checkoutState(root, repo, repos, checkoutIdOf(repo)));
+  }
   for (const f of cfg.hash_files ?? []) {
     const root = cfg.checkouts?.[f.repo];
-    const r = root ? hashFile(root, f.repo, f.path, repos) : { refused: 'checkout_not_registered' };
-    if (r.refused) console.error(`refused ${f.repo}:${f.path} ${r.refused}`); else fresh.push(assign(r));
+    record(root ? hashFile(root, f.repo, f.path, repos) : { refused: 'checkout_not_registered' });
   }
+  for (const c of cfg.checkpoint_dirs ?? []) {
+    const root = cfg.checkouts?.[c.repo];
+    if (root) checkpointHashes(root, c.repo, c.path, repos).forEach(record);
+  }
+
+  // Jobs: lease (the ack), execute, report. Bounded per run; records they produce ride the same push.
+  const results = [];
+  const ctx = { cfg, repos, dir, state, save, record,
+    pushVerification: async () => (await import('./verification.mjs')).pushPending(dir, cfg.origin, cfg.machine_id, key) };
+  for (let i = 0; i < 10; i++) {
+    let job;
+    try { ({ job } = await send('GET', '/connector/work')); } catch (e) { console.error(`work poll failed: ${e.message}`); break; }
+    if (!job) break;
+    results.push(await runJob(job, ctx).catch(() => ({ job_id: job.job_id, status: 'failed', reason_code: 'error' })));
+  }
+
   // On-disk outbox: unacked records replay in seq order after a restart or outage.
   state.outbox = [...state.outbox, ...fresh].sort((a, b) => a.seq - b.seq);
-  writeFileSync(join(dir, 'state.json'), JSON.stringify(state));
-  const key = createPrivateKey({ key: Buffer.from(execFileSync('security', ['find-generic-password', '-s', keychainService(env), '-a', cfg.machine_id, '-w'],
-    { encoding: 'utf8' }).trim(), 'base64'), format: 'der', type: 'pkcs8' });
+  save();
   // At least one push per run so the heartbeat always lands, even with nothing new.
   do {
     const batch = state.outbox.slice(0, 200);
-    const body = JSON.stringify({ sidecar_version: VERSION, records: batch,
-      heartbeat: { last_seq: state.seq, outbox_depth: state.outbox.length - batch.length, dropped_for_boundary: dropped } });
-    const r = await fetch(`${cfg.origin}/ingest/fleet`, { method: 'POST', body, redirect: 'error', signal: AbortSignal.timeout(30_000),
-      headers: signRequest(key, cfg.machine_id, 'POST', '/ingest/fleet', body) });
-    const out = await r.json();
-    if (!r.ok) { console.error(`push failed ${r.status} ${out.error}; ${state.outbox.length} records stay in outbox`); process.exitCode = 1; return; }
+    for (const r of batch) state.observations[r.type] = r.observed_at > (state.observations[r.type] ?? '') ? r.observed_at : state.observations[r.type];
+    let out;
+    try {
+      out = await send('POST', '/ingest/fleet', { sidecar_version: VERSION, records: batch,
+        heartbeat: { last_seq: state.seq, outbox_depth: state.outbox.length - batch.length, dropped_for_boundary: dropped, observations: state.observations } });
+    } catch (e) { console.error(`push failed ${e.message}; ${state.outbox.length} records stay in outbox`); process.exitCode = 1; return; }
     for (const rec of batch) if (rec.event_key) state.keys[rec.event_key] = rec.seq;
     state.outbox = state.outbox.slice(batch.length);
-    writeFileSync(join(dir, 'state.json'), JSON.stringify(state));
+    save();
     console.log(JSON.stringify({ pushed: batch.length, ...out }));
   } while (state.outbox.length);
+  // Job results after the records they reference; a lost result is re-leased and stays idempotent.
+  for (const r of results) {
+    try { console.log(JSON.stringify(await send('POST', '/connector/result', r))); } catch (e) { console.error(`result failed ${e.message}`); process.exitCode = 1; }
+  }
 }
 
 function enroll(env) {
