@@ -490,6 +490,18 @@ The sanitizer is a versioned per-operation field allowlist, not a blacklist or f
 
 Served lesson text is structured `data`, never authoritative instructions, with source DB/repo and commit where available, author principal, timestamps, version, digest, trust label and moderation status. Design caps: 8 KiB UTF-8 per lesson, 32 KiB total lesson text per response; pagination/truncation is explicit and never drops provenance. Oversize writes fail with `payload_too_large`. Agent text is never auto-promoted to canonical instructions. Flagging immediately quarantines the lesson pending moderation. Query, direct ID/version reads, resources, cache hits, feeds, handoff composition and sync write-back all enforce quarantine/revocation before serving text. Quarantine evicts cached compositions and bumps corpus/policy revisions. Only `recall:moderate` plus `admin` can inspect quarantined text via a dedicated audited moderation view or release it with a reason and provenance review; revoked text is never served. These controls reduce exposure, not a claim that data labels prevent prompt injection.
 
+### 6.6 Auth acceptance contract (required before client access)
+
+These are required future real-surface checks, not reported test results. The independent reviewer records the deployed build, policy revision, principal, operation, expected/actual result and sanitized receipt for each matrix row. Synthetic excluded identifiers are local fixtures only; never query excluded systems.
+
+- Two isolated fixture tenants: allow an owned object and deny foreign object IDs, identical hashes, historical versions, resource reads, cache hits, R2 downloads, feeds, counts and pagination. No client fleet visibility without explicit `fleet:read`; a repo grant alone cannot grant it.
+- Capability denial: exercise every Section 6.2 row with the capability absent, then present with an allowed resource, then present with a forbidden resource. Broad legacy scopes cannot authorize any row. Verify composition cannot launder a missing area grant.
+- Token lifecycle: unknown/malformed token, expiry, overlap deadline, predecessor revocation, HMAC-key retirement and policy-store outage. Revoke during a stream, wait, queued job, running render and artifact transfer; verify no subsequent protected dispatch or payload, including after deploy/reconnect. Record already accepted upstream effects separately.
+- Identity and provenance: deny a bare sync bearer, wrong identity/audience/machine/profile, replayed signed request, foreign preflight account, unlisted source DB, mixed-source document, redirect escape, foreign browser profile and unregistered upload.
+- Quarantine and audit: flag a cached lesson, then deny its text through query, direct/historical/resource/feed/handoff and sync paths; test authorized moderation and release. Check lesson caps and provenance. Inject secret-shaped synthetic fields into every audit input and error path, verify only the typed allowlist persists, then exercise audit failure, retention pruning and benchmark pinning.
+
+Security behavior is **UNPROVEN** until these checks have independent deployed-surface receipts. Passing a documentation check does not pass G0, G1, G2 or authorize a benchmark run.
+
 ## 7. Caching, versioning, and delta strategy
 
 ### 7.1 Content-addressed caching
