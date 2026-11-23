@@ -32,6 +32,17 @@ async function current(env: Env, c: Caller, repo: string, number: number): Promi
     .bind(...scope(c), repo, number).first();
 }
 async function observe(env: Env, c: Caller, number: number): Promise<any> {
+  // Read the commit identity before contacting the upstream. The transaction below
+  // refuses publication if any observation or invalidation changed this identity.
+  const old = await current(env,c,REPO,number);
+  const guardId=crypto.randomUUID();
+  const expected=old ? `${old.version}:${old.validated_at}:${old.invalidated}` : 'absent';
+  const guard=()=>env.DB.prepare(`INSERT INTO observation_guards VALUES (?, ?, ?,
+    COALESCE((SELECT version || ':' || source_observed_at || ':' || invalidated FROM issue_heads
+      WHERE tenant_id=? AND namespace_id=? AND repo=? AND number=?),'absent'), ?)`)
+    .bind(...scope(c),guardId,...scope(c),REPO,number,expected);
+  const clear=()=>env.DB.prepare('DELETE FROM observation_guards WHERE tenant_id=? AND namespace_id=? AND id=?')
+    .bind(...scope(c),guardId);
   const observed = new Date().toISOString();
   const issue = await github(env, `issues/${number}`);
   if (issue.number !== number || issue.repository_url !== `https://api.github.com/repos/${REPO}`)
@@ -47,15 +58,16 @@ async function observe(env: Env, c: Caller, number: number): Promise<any> {
     linked_prs_coverage: 'issue_pull_request_field_only',
     comments: comments.slice(-8).map((x: any) => ({ id: x.id, body: x.body, author: x.user?.login,
       created_at: x.created_at, updated_at: x.updated_at })) });
-  const hash = await sha256Hex(body), old = await current(env, c, REPO, number);
+  const hash = await sha256Hex(body);
   if (old?.content_hash === hash) {
-    await env.DB.prepare(`UPDATE issue_heads SET invalidated=0, source_observed_at=?
+    try { await env.DB.batch([guard(),env.DB.prepare(`UPDATE issue_heads SET invalidated=0, source_observed_at=?
       WHERE tenant_id=? AND namespace_id=? AND repo=? AND number=? AND version=?`)
-      .bind(observed, ...scope(c), REPO, number, old.version).run();
+      .bind(observed, ...scope(c), REPO, number, old.version),clear()]);
+    } catch { throw new CoreError(409,'observation_conflict'); }
   } else {
     const version = (old?.version ?? 0) + 1, at = new Date().toISOString();
     try {
-      await env.DB.batch([
+      await env.DB.batch([guard(),
         env.DB.prepare('INSERT INTO issue_snapshots VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
           .bind(...scope(c), REPO, number, version, hash, body, observed, at),
         env.DB.prepare(`INSERT INTO issue_heads VALUES (?, ?, ?, ?, ?, 0, ?)
@@ -63,7 +75,7 @@ async function observe(env: Env, c: Caller, number: number): Promise<any> {
           .bind(...scope(c), REPO, number, version, observed),
         env.DB.prepare(`INSERT INTO change_events (tenant_id,namespace_id,kind,name,version,change_kind,source_repo,actor_principal_id,created_at)
           VALUES (?,?,'issue',?,?, ?,?,?,?)`).bind(...scope(c), `${REPO}/${number}`, version,
-          old ? 'updated' : 'created', REPO, c.principalId, at),
+          old ? 'updated' : 'created', REPO, c.principalId, at),clear(),
       ]);
     } catch { throw new CoreError(409, 'version_conflict'); }
   }

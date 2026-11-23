@@ -65,3 +65,48 @@ test('owned recall collection, store report, rank, telemetry, removal and stale 
  assert.equal(health.body.meta.cache_status,'stale');assert.equal(health.body.stores[0].coverage_gaps.length,1);
  db.close();
 });
+
+
+test('a slower issue observation cannot replace a newer committed snapshot',async()=>{
+ const {env,db}=await setup(); const original=globalThis.fetch;
+ let release!:(value:Response)=>void,entered!:()=>void;
+ const started=new Promise<void>(r=>entered=r);
+ let count=0;
+ globalThis.fetch=async()=>{
+  if(++count===1) { entered(); return new Promise<Response>(r=>release=r); }
+  return Response.json(fixture('newer observation'));
+ };
+ try {
+  const older=issueGet(env,caller,p('repo=ariaxhan/fleet-mcp&number=13&consistency=validated'),now());
+  const rejected=assert.rejects(older,/version_conflict|observation_conflict/);
+  await started;
+  await issueGet(env,caller,p('repo=ariaxhan/fleet-mcp&number=13&consistency=validated'),now());
+  release(Response.json(fixture('older observation')));
+  await rejected;
+  assert.equal((await issueGet(env,caller,p('repo=ariaxhan/fleet-mcp&number=13'),now())).body.title,'newer observation');
+  assert.equal(db.prepare('SELECT count(*) n FROM observation_guards').get()!.n,0);
+ } finally {globalThis.fetch=original;db.close();}
+});
+
+test('older concurrent recall sync rolls back membership and freshness atomically',async()=>{
+ const {env,db}=await setup();
+ const original=env.DB.batch.bind(env.DB);
+ let release!:()=>void,entered!:()=>void,first=true;
+ const started=new Promise<void>(r=>entered=r),resume=new Promise<void>(r=>release=r);
+ (env.DB as any).batch=async(list:any[])=>{
+  if(first){first=false;entered();await resume;}
+  return original(list);
+ };
+ const base={source_repo:'ariaxhan/fleet-mcp',source_db:SOURCE_DB,
+  report:{schema_version:'test-v1',drift_flags:[]}};
+ const lesson=(id:string)=>({id,kind:'gotcha',what:'fleet-mcp '+id,why:'concurrency',hit_count:0,last_recalled:null});
+ const older=syncRecall(env,caller,{...base,observed_at:new Date(Date.now()-1000).toISOString(),lessons:[lesson('older')]},now());
+ const rejected=assert.rejects(older,/observation_conflict/);
+ await started;
+ await syncRecall(env,caller,{...base,observed_at:now().toISOString(),lessons:[lesson('newer')]},now());
+ release();await rejected;
+ const result:any=await recallQuery(env,caller,p('query=fleet-mcp'),now());
+ assert.deepEqual(result.body.lessons.map((x:any)=>x.id),['newer']);
+ assert.equal(db.prepare('SELECT count(*) n FROM observation_guards').get()!.n,0);
+ db.close();
+});

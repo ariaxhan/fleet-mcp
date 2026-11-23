@@ -88,7 +88,13 @@ export async function syncRecall(env:Env,c:Caller,input:any,now:Date):Promise<Ou
   if(prior && Date.parse(prior.observed_at)>Date.parse(input.observed_at)) throw new CoreError(409,'observation_conflict');
   const generation=(prior?.generation??0)+(prior?.content_hash===hash?0:1);
   // Atomically replace membership. Telemetry survives refresh, deleted lessons stop serving.
-  await env.DB.batch([
+  const guardId=crypto.randomUUID();
+  const expected=prior ? `${prior.generation}:${prior.content_hash}:${prior.observed_at}` : 'absent';
+  try { await env.DB.batch([
+    env.DB.prepare(`INSERT INTO observation_guards VALUES (?, ?, ?,
+      COALESCE((SELECT generation || ':' || content_hash || ':' || observed_at FROM recall_collections
+        WHERE tenant_id=? AND namespace_id=? AND source_db=?),'absent'), ?)`)
+      .bind(...scope(c),guardId,...scope(c),SOURCE_DB,expected),
     env.DB.prepare("UPDATE recall_lessons SET status='removed' WHERE tenant_id=? AND namespace_id=? AND source_db=?")
       .bind(...scope(c),SOURCE_DB),
     ...lessons.map(x=>env.DB.prepare(`INSERT INTO recall_lessons VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
@@ -98,6 +104,7 @@ export async function syncRecall(env:Env,c:Caller,input:any,now:Date):Promise<Ou
     env.DB.prepare(`INSERT INTO recall_collections VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT DO UPDATE SET generation=excluded.generation,content_hash=excluded.content_hash,observed_at=excluded.observed_at,report=excluded.report`)
       .bind(...scope(c),REPO,SOURCE_DB,generation,hash,input.observed_at,JSON.stringify(input.report)),
-  ]);
+    env.DB.prepare('DELETE FROM observation_guards WHERE tenant_id=? AND namespace_id=? AND id=?').bind(...scope(c),guardId),
+  ]); } catch { throw new CoreError(409,'observation_conflict'); }
   return {body:{synced:lessons.length,generation,content_hash:hash,source_db:SOURCE_DB,source_observed_at:input.observed_at}};
 }

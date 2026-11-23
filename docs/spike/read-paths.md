@@ -70,3 +70,10 @@ published here. No screenshot is applicable to these backend JSON routes.
   non-success response, so credentials never follow redirects. Raw diagnostic
   receipt: artifacts/issue-debug-tail.json (operator-local, contains request metadata).
 - Live sweep receipts have unique timestamps; failed captures are retained.
+
+Independent review identified issue-observation and recall-sync ordering races.
+Migration 0005 adds transient transaction assertions: each observation compares
+its pre-fetch/pre-sync identity inside the same atomic D1 batch as all writes.
+A concurrent update or invalidation rolls the older batch back. Regression tests
+interleave the older request after the newer commit and check no stale content
+or membership survives. The guard rows are removed in the successful batch.
