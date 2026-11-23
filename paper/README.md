@@ -50,3 +50,9 @@ Reply verification on resumption: Muse confirms no owner-side freeze exists, G0 
 | UNPROVEN across paper, report, HTML | Labels agree; HTML scaffold drift check passes; no efficacy claim authorized |
 
 The owner-reserved prerequisite is the Unified MCP Server chat's implementation-ready G0 sign-off ([execution plan Section 3.1](../docs/execution-plan.md#31-phase-0-revision-first)). This paper task cannot manufacture that sign-off. After revision and sign-off, the upstream build, frozen preregistration, captured experiments, and separate verification must supply real evidence before the paper can finish. Missing prerequisites are not a measured negative result or a data-loss event. This continuation records the incomplete acceptance explicitly and leaves issue #40 open.
+
+## PRD v2 alignment, 2026-11-23 (UTC)
+
+Inspected source: `dfd8900` on origin/main. Revision issues #2 through #10 are now CLOSED (source: GitHub issue API inspected this attempt); the PRD declares v2 in revision and contains dated R1-R8 notes. Earlier v1 descriptions above are historical inspection records. Updated manuscript system and methods to the revised R1, R2 and R5 contracts. This does not assert G0 or final protocol registration.
+
+Current remote tag inventory contains no `bench-prereg-v1`; the tracked benchmark tree contains verification records, with no raw-data index or scoring implementation. The existing receipt remains NOT CERTIFIED. Full-experiment acceptance remains incomplete; no result assets were generated. Owner gate evaluation requested through Muse inbox message `20261123T013032Z_e78484`, with the newly closed revision issues as evidence. No experiment or publication was repeated.
