@@ -1,0 +1,292 @@
+{
+ "purpose": "Second reviewer session: freshness metadata (issue body text elided by reviewer, length kept)",
+ "token_id": "fmt_06ea2b6e307bddbf169945fd0f0a0481",
+ "exchanges": [
+  {
+   "label": "initialize",
+   "observed_at": "2026-11-23T18:13:28.647954+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+     "protocolVersion": "2025-06-18",
+     "capabilities": {},
+     "clientInfo": {
+      "name": "g1-r2-review",
+      "version": "1"
+     }
+    }
+   },
+   "status": 200,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+     "protocolVersion": "2025-06-18",
+     "capabilities": {
+      "tools": {
+       "listChanged": false
+      },
+      "resources": {
+       "subscribe": false,
+       "listChanged": false
+      }
+     },
+     "serverInfo": {
+      "name": "fleet-mcp-spike",
+      "version": "0.1.0"
+     },
+     "instructions": "Bounded personal-project spike. Session-bound request IDs; reconnect fleet_wait_for using durable wait_id. Disconnect releases the current observation, not its durable wait registration."
+    }
+   }
+  },
+  {
+   "label": "issue_get",
+   "observed_at": "2026-11-23T18:13:29.229255+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/call",
+    "params": {
+     "name": "issue_get",
+     "arguments": {
+      "repo": "ariaxhan/fleet-mcp",
+      "number": 15
+     }
+    }
+   },
+   "status": 200,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "repo": "ariaxhan/fleet-mcp",
+        "number": 15,
+        "title": "Spike: prove the platform",
+        "body": "[elided 3900 chars]",
+        "state": "closed",
+        "labels": [],
+        "assignees": [],
+        "github_updated_at": "2026-11-23T18:11:10Z",
+        "linked_prs": [],
+        "linked_prs_coverage": "issue_pull_request_field_only",
+        "comments": [
+         {
+          "id": 7088961283,
+          "body": "[elided 307 chars]",
+          "author": "ariaxhan",
+          "created_at": "2026-11-23T01:12:34Z",
+          "updated_at": "2026-11-23T01:12:34Z"
+         },
+         {
+          "id": 7089357576,
+          "body": "The runner holds this issue until what it waits on resolves.\n\nWaits on: waits on ariaxhan/fleet-mcp#14",
+          "author": "ariaxhan",
+          "created_at": "2026-11-23T01:42:35Z",
+          "updated_at": "2026-11-23T01:42:35Z"
+         },
+         {
+          "id": 7089986906,
+          "body": "[elided 565 chars]",
+          "author": "ariaxhan",
+          "created_at": "2026-11-23T02:30:06Z",
+          "updated_at": "2026-11-23T02:30:06Z"
+         }
+        ],
+        "version": 10,
+        "content_hash": "45e28f1f5a44b023e4f8bc8c3e3fafe24d582ba8da89668c45ffb1f6c2398652",
+        "meta": {
+         "content_hash": "45e28f1f5a44b023e4f8bc8c3e3fafe24d582ba8da89668c45ffb1f6c2398652",
+         "version": 10,
+         "cache_status": "hit",
+         "served_at": "2026-11-23T18:13:30.054Z",
+         "source_observed_at": "2026-11-23T18:13:04.327Z",
+         "last_validated_at": "2026-11-23T18:13:04.327Z",
+         "computed_at": "2026-11-23T18:11:14.699Z",
+         "source": "github+d1"
+        },
+        "correlation_id": "11200aa6-185c-4f34-95d1-d35b23e4e545"
+       }
+      }
+     ],
+     "isError": false
+    }
+   }
+  },
+  {
+   "label": "recall_query allow_stale",
+   "observed_at": "2026-11-23T18:13:30.318125+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+     "name": "recall_query",
+     "arguments": {
+      "query": "wait",
+      "limit": 2,
+      "allow_stale": true
+     }
+    }
+   },
+   "status": 200,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "lessons": [
+         {
+          "id": "LRN-20261122174221-10363-5802",
+          "content_hash": "27d4b78e0e6d3e71807a962a58dde55bb8ec11963ff0e5bce606a5ee2c7604b2",
+          "kind": "gotcha",
+          "what": "fleet-mcp #15 platform spike cannot run before spike slices #11 core, #12 sidecar, #14 fleet_wait_for land; src at 2026-11-22 is scaffold only (index.ts, handler.ts)",
+          "why": "acceptance needs wait_id and sidecar suite, which those slices build",
+          "hit_count": 17,
+          "last_recalled": "2026-11-23T18:13:30.613Z",
+          "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+          "score": 3
+         },
+         {
+          "id": "LRN-20261122174238-17226-18470",
+          "content_hash": "141bcc63ebd944c18d0a82b112a0920dbe1d66b38d3ed2a6c392ae0bcedfc707",
+          "kind": "gotcha",
+          "what": "fleet-mcp #14 waits on #11 shared core and #12 minimal sidecar; G0 signed off in docs/gates/g0-signoff.md",
+          "why": "At a369320 handlers and FleetWait remain scaffold only, with no sidecar or real event ingestion. Do not substitute synthetic events for real-sidecar acceptance.",
+          "hit_count": 13,
+          "last_recalled": "2026-11-23T18:13:30.613Z",
+          "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+          "score": 3
+         }
+        ],
+        "total_matches": 6,
+        "latency_ms": 95,
+        "latency_source": "Worker performance.now, query entry through telemetry commit",
+        "meta": {
+         "content_hash": "fe2c90c309aade883675aa298869be40d7dd8aba85d16870ca7861b30602d91a",
+         "version": 3,
+         "cache_status": "stale",
+         "source": "studio-agentdb+d1",
+         "served_at": "2026-11-23T18:13:30.613Z",
+         "source_observed_at": "2026-11-23T02:13:13.079003+00:00",
+         "last_validated_at": "2026-11-23T02:13:13.079003+00:00",
+         "computed_at": "2026-11-23T02:13:13.079003+00:00"
+        },
+        "correlation_id": "14031cdb-89d8-4e87-9bd6-9b51b0520dc2"
+       }
+      }
+     ],
+     "isError": false
+    }
+   }
+  },
+  {
+   "label": "recall_store_health allow_stale",
+   "observed_at": "2026-11-23T18:13:30.907412+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "tools/call",
+    "params": {
+     "name": "recall_store_health",
+     "arguments": {
+      "allow_stale": true
+     }
+    }
+   },
+   "status": 200,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 4,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "stores": [
+         {
+          "source_db": "ariaxhan/fleet-mcp/_meta/agentdb/agent.db",
+          "schema_version": "017_recall_aliases",
+          "drift_flags": [],
+          "errors_last_write": null,
+          "collection_filter": "project-tagged active agent-visible low-sensitivity lessons",
+          "source_rows": 17,
+          "top_failure_classes": [
+           {
+            "kind": "gotcha",
+            "count": 13
+           },
+           {
+            "kind": "pattern",
+            "count": 4
+           }
+          ],
+          "learnings_count": 17,
+          "never_recalled_count": 0,
+          "never_recalled_rate": 0,
+          "coverage_gaps": [],
+          "coverage_gap_identity": "sha256 of normalized query",
+          "metric_source": "D1 recall_lessons and recall_queries; schema and error timestamp from read-only Studio sync"
+         }
+        ],
+        "meta": {
+         "content_hash": "fe2c90c309aade883675aa298869be40d7dd8aba85d16870ca7861b30602d91a",
+         "version": 3,
+         "cache_status": "stale",
+         "source": "studio-agentdb+d1",
+         "served_at": "2026-11-23T18:13:31.167Z",
+         "source_observed_at": "2026-11-23T02:13:13.079003+00:00",
+         "last_validated_at": "2026-11-23T02:13:13.079003+00:00",
+         "computed_at": "2026-11-23T02:13:13.079003+00:00"
+        },
+        "correlation_id": "6ed6e2ae-47c9-4412-a01f-832527a6fc68"
+       }
+      }
+     ],
+     "isError": false
+    }
+   }
+  },
+  {
+   "label": "out-of-scope repo (synthetic id)",
+   "observed_at": "2026-11-23T18:13:31.505453+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 5,
+    "method": "tools/call",
+    "params": {
+     "name": "issue_get",
+     "arguments": {
+      "repo": "someone-else/excluded-synthetic",
+      "number": 1
+     }
+    }
+   },
+   "status": 200,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 5,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": {
+        "error": "source_not_allowlisted",
+        "correlation_id": "a036acce-a275-4c01-8e16-73907bf5f0c1"
+       }
+      }
+     ],
+     "isError": true
+    }
+   }
+  }
+ ]
+}

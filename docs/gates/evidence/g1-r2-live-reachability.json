@@ -1,0 +1,102 @@
+{
+ "purpose": "G1 r2 read-only live reachability from Studio client (#43)",
+ "client": "Studio, python urllib, UA fleet-mcp-g1-review",
+ "observations": [
+  {
+   "url": "https://mcp.ariaxhan.com/health",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:11:43.513359+00:00",
+   "status": 200,
+   "body": {
+    "status": "ok",
+    "service": "fleet-mcp",
+    "stage": "spike-core"
+   }
+  },
+  {
+   "url": "https://mcp.ariaxhan.com/version",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:11:43.681826+00:00",
+   "status": 200,
+   "body": {
+    "commit": "b497e3c37e13a5e257f5b6ec671a96b68104b135",
+    "build_time": "2026-11-23T18:09:37.602Z",
+    "environment": "production",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+   }
+  },
+  {
+   "url": "https://staging-mcp.ariaxhan.com/health",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:11:45.826775+00:00",
+   "status": 200,
+   "body": {
+    "status": "ok",
+    "service": "fleet-mcp",
+    "stage": "spike-core"
+   }
+  },
+  {
+   "url": "https://staging-mcp.ariaxhan.com/version",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:11:55.064037+00:00",
+   "status": 200,
+   "body": {
+    "commit": "d4107c4d33246ca26b19e394266eae27b100db3c",
+    "build_time": "2026-11-23T18:11:15.405Z",
+    "environment": "staging",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+   }
+  },
+  {
+   "url": "https://fleet-mcp.ariaxhan.workers.dev/health",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:11:56.231313+00:00",
+   "status": 200,
+   "body": {
+    "status": "ok",
+    "service": "fleet-mcp",
+    "stage": "spike-core"
+   }
+  },
+  {
+   "url": "https://fleet-mcp.ariaxhan.workers.dev/version",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:11:58.552234+00:00",
+   "status": 200,
+   "body": {
+    "commit": "d4107c4d33246ca26b19e394266eae27b100db3c",
+    "build_time": "2026-11-23T18:11:42.317Z",
+    "environment": "production",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+   }
+  },
+  {
+   "url": "https://fleet-mcp-staging.ariaxhan.workers.dev/health",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:12:00.114816+00:00",
+   "status": 200,
+   "body": {
+    "status": "ok",
+    "service": "fleet-mcp",
+    "stage": "spike-core"
+   }
+  },
+  {
+   "url": "https://fleet-mcp-staging.ariaxhan.workers.dev/version",
+   "method": "GET",
+   "observed_at": "2026-11-23T18:12:01.402941+00:00",
+   "status": 200,
+   "body": {
+    "commit": "d4107c4d33246ca26b19e394266eae27b100db3c",
+    "build_time": "2026-11-23T18:11:15.405Z",
+    "environment": "staging",
+    "stage": "spike-core",
+    "mcp_protocol": "2025-06-18"
+   }
+  }
+ ]
+}

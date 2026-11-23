@@ -1,0 +1,262 @@
+{
+ "purpose": "Independent reviewer MCP use on staging (#43); read-only token, revoked after",
+ "reviewer": "G1 r2 review lane, not a producer of #11-#15",
+ "token_id": "fmt_5231336e2ec055da091fc7f2aa7403b5",
+ "exchanges": [
+  {
+   "label": "unauthenticated initialize (expect deny)",
+   "observed_at": "2026-11-23T18:13:01.033788+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+     "protocolVersion": "2025-06-18",
+     "capabilities": {},
+     "clientInfo": {
+      "name": "g1-r2-review",
+      "version": "1"
+     }
+    }
+   },
+   "authenticated": false,
+   "status": 401,
+   "session_header_returned": false,
+   "body": {
+    "error": "unauthorized"
+   }
+  },
+  {
+   "label": "initialize",
+   "observed_at": "2026-11-23T18:13:01.381286+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+     "protocolVersion": "2025-06-18",
+     "capabilities": {},
+     "clientInfo": {
+      "name": "g1-r2-review",
+      "version": "1"
+     }
+    }
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": true,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+     "protocolVersion": "2025-06-18",
+     "capabilities": {
+      "tools": {
+       "listChanged": false
+      },
+      "resources": {
+       "subscribe": false,
+       "listChanged": false
+      }
+     },
+     "serverInfo": {
+      "name": "fleet-mcp-spike",
+      "version": "0.1.0"
+     },
+     "instructions": "Bounded personal-project spike. Session-bound request IDs; reconnect fleet_wait_for using durable wait_id. Disconnect releases the current observation, not its durable wait registration."
+    }
+   }
+  },
+  {
+   "label": "initialized",
+   "observed_at": "2026-11-23T18:13:02.825617+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "method": "notifications/initialized"
+   },
+   "authenticated": true,
+   "status": 202,
+   "session_header_returned": false,
+   "body": ""
+  },
+  {
+   "label": "tools/list",
+   "observed_at": "2026-11-23T18:13:03.074244+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "tools/list"
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": false,
+   "body": {
+    "truncated_by_reviewer": "{\"jsonrpc\": \"2.0\", \"id\": 2, \"result\": {\"tools\": [{\"name\": \"exemplar_get_doc\", \"description\": \"Personal-project exemplar_get_doc. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\"}, \"version\": {\"type\": \"number\"}, \"since_version\": {\"type\": \"number\"}, \"max_age_s\": {\"type\": \"number\"}, \"allow_stale\": {\"type\": \"boolean\"}, \"consistency\": {\"type\": \"string\"}}, \"required\": [\"name\"], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructiveHint\": false, \"idempotentHint\": true, \"openWorldHint\": false}}, {\"name\": \"doc_what_changed\", \"description\": \"Personal-project doc_what_changed. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"cursor\": {\"type\": \"string\"}}, \"required\": [], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructiveHint\": false, \"idempotentHint\": true, \"openWorldHint\": false}}, {\"name\": \"issue_get\", \"description\": \"Personal-project issue_get. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"repo\": {\"type\": \"string\"}, \"number\": {\"type\": \"number\"}, \"include_comments\": {\"type\": \"boolean\"}, \"since_version\": {\"type\": \"number\"}, \"max_age_s\": {\"type\": \"number\"}, \"allow_stale\": {\"type\": \"boolean\"}, \"consistency\": {\"type\": \"string\"}}, \"required\": [\"repo\", \"number\"], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructiveHint\": false, \"idempotentHint\": true, \"openWorldHint\": false}}, {\"name\": \"issue_list\", \"description\": \"Personal-project issue_list. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"repo\": {\"type\": \"string\"}, \"state\": {\"type\": \"string\"}, \"max_age_s\": {\"type\": \"number\"}, \"allow_stale\": {\"type\": \"boolean\"}, \"consistency\": {\"type\": \"string\"}}, \"required\": [\"repo\"], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructiveHint\": false, \"idempotentHint\": true, \"openWorldHint\": false}}, {\"name\": \"recall_query\", \"description\": \"Personal-project recall_query. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"query\": {\"type\": \"string\"}, \"kinds\": {\"type\": \"string\"}, \"limit\": {\"type\": \"number\"}, \"max_age_s\": {\"type\": \"number\"}, \"allow_stale\": {\"type\": \"boolean\"}, \"consistency\": {\"type\": \"string\"}}, \"required\": [\"query\"], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructiveHint\": false, \"idempotentHint\": true, \"openWorldHint\": false}}, {\"name\": \"recall_store_health\", \"description\": \"Personal-project recall_store_health. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"max_age_s\": {\"type\": \"number\"}, \"allow_stale\": {\"type\": \"boolean\"}, \"consistency\": {\"type\": \"string\"}}, \"required\": [], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructiveHint\": false, \"idempotentHint\": true, \"openWorldHint\": false}}, {\"name\": \"fleet_get_flight\", \"description\": \"Personal-project fleet_get_flight. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"id\": {\"type\": \"string\"}}, \"required\": [\"id\"], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructiveHint\": false, \"idempotentHint\": true, \"openWorldHint\": false}}, {\"name\": \"fleet_list_flights\", \"description\": \"Personal-project fleet_list_flights. Uses the protected HTTP route and its authorization, freshness and audit rules.\", \"inputSchema\": {\"type\": \"object\", \"properties\": {\"state\": {\"type\": \"string\"}, \"limit\": {\"type\": \"number\"}}, \"required\": [], \"additionalProperties\": false}, \"annotations\": {\"readOnlyHint\": true, \"destructi"
+   }
+  },
+  {
+   "label": "resources/list",
+   "observed_at": "2026-11-23T18:13:03.303770+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "resources/list"
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": false,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+     "resources": []
+    }
+   }
+  },
+  {
+   "label": "issue_get real issue",
+   "observed_at": "2026-11-23T18:13:03.993188+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 4,
+    "method": "tools/call",
+    "params": {
+     "name": "issue_get",
+     "arguments": {
+      "repo": "ariaxhan/fleet-mcp",
+      "number": 15
+     }
+    }
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": false,
+   "body": {
+    "truncated_by_reviewer": "{\"jsonrpc\": \"2.0\", \"id\": 4, \"result\": {\"content\": [{\"type\": \"text\", \"text\": \"{\\\"repo\\\":\\\"ariaxhan/fleet-mcp\\\",\\\"number\\\":15,\\\"title\\\":\\\"Spike: prove the platform\\\",\\\"body\\\":\\\"Phase: 1 (Spike)\\\\nOwner: E (O = Unified MCP Server chat, E = Studio lanes via runner, V = independent verifier)\\\\nGate: Waits on gate G0 (revised PRD) and the other spike slices.\\\\n\\\\nScope boundary: Fleet MCP is a personal project with its own corpus. It does not touch TBS data, TBS repos, TBS issues, or the TBS MCP server's content. Benchmark tasks are drawn from personal-project work only.\\\\n\\\\nSource: docs/execution-plan.md, Section 5 (issue list) and Section 3 (phases).\\\\n\\\\n## Scope\\\\n\\\\nProve the risky platform claims: Streamable HTTP negotiation, tool errors, resource reads, notifications, session handling, cancellation, and reconnect behavior in the Codex client; a fleet_wait_for call across disconnects, deploys, and timeouts; Browser Rendering startup and reuse, context cleanup, concurrency, and a slow queued render completing after the initiating request ends; one named local verification suite executed through the sidecar; connector offline and recovery behavior without fabricated freshness. Also confirm token capture from Codex sessions for the pinned model, measure the tool-schema token overhead, and cost the pilot workload from measurements (Worker, D1, KV, R2, Durable Objects, browser, upstream APIs) with a stated budget.\\\\n\\\\n## Acceptance\\\\n\\\\n- [ ] The Codex client holds the MCP contract: tool calls, resource reads, notifications, cancellation, and reconnect all work against the Worker\\\\n- [ ] A wait survives disconnects, deploys, and timeouts via the resumable wait_id\\\\n- [ ] Browser Rendering reuse, cleanup, concurrency, and queued completion are demonstrated\\\\n- [ ] One named local verification suite runs through the sidecar\\\\n- [ ] The verification cache identity holds under adversarial tests: a dependency change misses, a forced rerun is a distinct record, no stale green is servable\\\\n- [ ] Token capture from Codex sessions is confirmed for the pinned model and the tool-schema token overhead is measured\\\\n- [ ] A staging deploy plus sweep is green and the production deploy path with a fixture namespace is proven\\\\n- [ ] The pilot workload is costed from measurements with a stated budget\\\\n\\\\n## Owner unblock (Unified MCP Server chat, 2026-11-23)\\\\n- Custom domains are live (TBS pattern): production https://mcp.ariaxhan.com, staging https://staging-mcp.ariaxhan.com. Attached via the workers/domains API in the ariaxhan.com zone. Verified 200 from the Studio (the client that got 403 Error 1010 on workers.dev) on 2026-11-23, and workers.dev also answers 200 from the Studio now (the 1010 flag cleared). Update deploy.md surfaces, wrangler.toml (record the custom domains), and the sweep to use the custom domains as the canonical endpoints; workers.dev remains a fallback.\\\\n- Pinned model for the spike (owner decision): Codex model `gpt-6.1-sol`, reasoning effort low, from the Studio personal Codex config (~/.codex/config.toml, read 2026-11-23). Confirm it against the running CLI, record the CLI version in the spike evidence, and validate token field semantics and schema accounting on this exact configuration. The formal benchmark freeze (#33) pins the model again after G2; this spike pin does not replace #33.\\\\n- Re-prove the 8 Section 3.2 criteria against the current deployed revision (8f18164af or later), preserving raw evidence. The G1 NO-GO judged a36932075, which predates the spike slices; the re-review is issue #43 and waits on this issue closing.\\\\n\\\\n## Owner disposition (2026-11-23)\\\\nACCEPT the narrowing: cancellation is proven only at the observed scope (client turn interruption, bounded server observation, HTTP-endpoint cancellation, wait resume). Explicit remote MCP cancellation (CancelledNotification) stays UNPROVEN. No upstream wait. Scope incident: contained near-miss, read boundary NOT CERTIFIED for this attempt, forward"
+   }
+  },
+  {
+   "label": "recall_store_health",
+   "observed_at": "2026-11-23T18:13:05.058113+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 5,
+    "method": "tools/call",
+    "params": {
+     "name": "recall_store_health",
+     "arguments": {}
+    }
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": false,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 5,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"error\":\"freshness_unmet\",\"source_observed_at\":\"2026-11-23T02:13:13.079003+00:00\",\"correlation_id\":\"12f9a5b5-daad-4bda-bcf3-a294f91e7f65\"}"
+      }
+     ],
+     "isError": true
+    }
+   }
+  },
+  {
+   "label": "recall_query",
+   "observed_at": "2026-11-23T18:13:05.475392+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 6,
+    "method": "tools/call",
+    "params": {
+     "name": "recall_query",
+     "arguments": {
+      "query": "wait",
+      "limit": 2
+     }
+    }
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": false,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 6,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"error\":\"freshness_unmet\",\"source_observed_at\":\"2026-11-23T02:13:13.079003+00:00\",\"correlation_id\":\"ed984981-01e6-45b2-a396-5d1d11d25fd5\"}"
+      }
+     ],
+     "isError": true
+    }
+   }
+  },
+  {
+   "label": "fleet_list_flights (stale labeling)",
+   "observed_at": "2026-11-23T18:13:07.650731+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 7,
+    "method": "tools/call",
+    "params": {
+     "name": "fleet_list_flights",
+     "arguments": {
+      "limit": 2
+     }
+    }
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": false,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 7,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"flights\":[{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1221\",\"task_ref\":\"ariaxhan/fleet-mcp#19\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:35:05.474Z\",\"updated\":\"2026-11-23T17:35:46.457Z\",\"source_observed_at\":\"2026-11-23T17:35:46.457Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"offline\",\"freshness\":\"stale\"},{\"id\":\"m_18e9418a1b9a9771ff1efa6f32b76da6:1220\",\"task_ref\":\"ariaxhan/fleet-mcp#23\",\"status\":\"blocker\",\"worker\":\"m_18e9418a1b9a9771ff1efa6f32b76da6\",\"started\":\"2026-11-23T17:34:36.090Z\",\"updated\":\"2026-11-23T17:35:01.832Z\",\"source_observed_at\":\"2026-11-23T17:35:01.832Z\",\"last_event\":\"blocker\",\"progress\":null,\"connector_status\":\"offline\",\"freshness\":\"stale\"}],\"has_more\":true,\"meta\":{\"source\":\"d1\",\"cache_status\":\"bypass\",\"served_at\":\"2026-11-23T18:13:08.837Z\"},\"correlation_id\":\"a093d454-a4ef-4c45-989b-8aa1aebc38bb\"}"
+      }
+     ],
+     "isError": false
+    }
+   }
+  },
+  {
+   "label": "expected tool error",
+   "observed_at": "2026-11-23T18:13:09.836999+00:00",
+   "request": {
+    "jsonrpc": "2.0",
+    "id": 8,
+    "method": "tools/call",
+    "params": {
+     "name": "exemplar_get_doc",
+     "arguments": {
+      "name": "g1-r2-nonexistent-doc"
+     }
+    }
+   },
+   "authenticated": true,
+   "status": 200,
+   "session_header_returned": false,
+   "body": {
+    "jsonrpc": "2.0",
+    "id": 8,
+    "result": {
+     "content": [
+      {
+       "type": "text",
+       "text": "{\"error\":\"not_found\",\"correlation_id\":\"a4c8bca6-1409-4192-8709-c91f53635c3a\"}"
+      }
+     ],
+     "isError": true
+    }
+   }
+  }
+ ]
+}
