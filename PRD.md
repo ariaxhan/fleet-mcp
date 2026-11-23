@@ -1,6 +1,6 @@
 # PRD: Fleet MCP, a unified MCP server for fleet state
 
-**Status:** Draft for review. Author: Muse (PRD author, per Aria's commission Nov 22, 2026, 16:40 PT).
+**Status:** PRD v2 in revision (Phase 0). Revision sweeps are logged as dated notes in Appendix C. Originally a draft for review. Author: Muse (PRD author, per Aria's commission Nov 22, 2026, 16:40 PT).
 **Working name:** Fleet MCP. **Proposed repo:** `ariaxhan/fleet-mcp` (name to confirm). **Proposed domain:** `mcp.ariaxhan.com` (name to confirm).
 **Source of every measured number:** `report.md` in this directory and its `analysis/` files. Citations use the form (Report Part 1, Codex). Any number without a citation is labeled as a target, a threshold, or a design decision, never as a measured result.
 **Evidence standard:** Aria's binding evidence standard of Nov 22, 2026, 16:42 PT governs the benchmark plan in Section 8 and the reporting of all results from this project.
@@ -115,7 +115,7 @@ Both sides are built on one core, not two stacks. The core owns:
 2. A render is a verification artifact: it is keyed by URL plus viewport plus content hash, cached, diffed against the previous render, and consumed by the same cold-read and deploy-gate agents that consume verification results. It shares Verify's content-addressed cache, its invalidation rules (re-render only when the content hash changed), and its evidence shape.
 3. A separate Render server would duplicate the cache, the versioning, and the browser pool for no functional gain.
 
-Render keeps its own tool names (`verify_render`, `verify_get_render`, `verify_visual_diff`) and its own resource namespace (`render://`), so it can be split into its own Worker later without renaming anything the agents call. The split trigger is preregistered as an open question in Section 9: if render volume or browser-rendering cost dominates the server's bill or latency budget, Render splits out behind the same tool names.
+Render keeps its own tool names (`verify_render`, `verify_get_render`, `verify_visual_diff`) and its own resource namespace (`render://`), so it can be split into its own Worker later without renaming anything the agents call. The split trigger is defined in Section 5.3 on three metrics the daily audit summary already computes; its numeric thresholds are set from Phase 3 measurements and recorded as a dated amendment, never invented in this PRD. When the trigger fires, Render splits out behind the same tool names.
 
 ### 2.4 How tools compose across sides
 
@@ -133,13 +133,17 @@ The sides are not silos. The composition paths are first-class behaviors, not em
 - **Durable Objects** for the two genuinely stateful behaviors: `fleet_wait_for` subscriptions (server-side wait, one object per waited condition) and Handoff checkpoint coordination (one object per session, serializing checkpoint writes).
 - **D1** for structured records: version registry, change feed, briefs, run history, checkpoints index, verification records, issue cache index, lessons index, audit log.
 - **KV** for the hot cache: cached issue bodies, cached verification results, cached state snapshots, with per-class TTLs.
-- **R2** for blobs: exemplar and doc bodies, lesson attachments, render PNGs, benchmark raw-data archive (Section 8.4).
+- **R2** for blobs: exemplar and doc bodies, lesson attachments, render PNGs, benchmark raw-data archive (Section 8.8).
 - **Cloudflare Browser Rendering** for `verify_render`: a warm browser pool behind the render tool, so agents stop launching Chromium themselves (Report Part 1, Claude: 327 Playwright launches, 286 in one session).
 - **Upstream APIs, server-side only:** GitHub API (issues, PRs), Vercel and Cloudflare deployment APIs (deploy status), and the agentdb store (Recall reads the live store; see Section 4.4 for the sync design). Upstream credentials live in Workers secrets, never in the repo and never in prompts (Section 6).
 
 ## 3. Tools and resources
 
-Naming: flat MCP tool names, `<area>_<verb>`, matching the MCP tool-name rule (letters, digits, underscore, hyphen only; no dots). Every tool response is a JSON object with a `meta` block: `content_hash`, `version`, `cache_status`, `fetched_at`, and `source` (which upstream or store served it). Every tool that takes a `since_version` or `since` parameter returns a delta when the caller already holds a version, and the full object only when it does not.
+Naming: flat MCP tool names, `<area>_<verb>`, matching the MCP tool-name rule (letters, digits, underscore, hyphen only; no dots). Every tool response is a JSON object with a `meta` block: `content_hash`, `version`, `cache_status`, `fetched_at`, and `source` (which upstream or store served it). Every tool that takes a `since_version` or `cursor` parameter returns a delta when the caller already holds a version, and the full object only when it does not.
+
+**Delta cursor semantics (one rule everywhere).** The change-feed sequence number (Section 4.3) is the canonical cursor. Cross-resource change tools (`issue_what_changed`, `fleet_what_changed_since`) take an opaque, scoped `cursor` (it encodes the sequence number plus the caller's scope, so a cursor minted under one token or repo filter is rejected under another) and always return `next_cursor`. A call with no cursor returns the current state summary plus `next_cursor` (bootstrap); timestamps are never accepted as cursors. Single-resource diffs (`exemplar_what_changed`, `brief_get`, `issue_get`) take a resource `since_version`, the resource's own monotonic version. A cursor older than the retained feed window (Section 4.6) returns `cursor_expired` with a fresh `next_cursor`, never a silently partial delta.
+
+**Idempotency (every write tool).** Every write tool (`recall_learn`, `issue_comment`, `brief_create`, `brief_record_run`, `handoff_save_checkpoint`, `verify_render`, and every control-plane write) takes a required `idempotency_key` (caller-generated string, scoped to the caller token). The server stores the key with the request hash and the result in D1; a retry with the same key and the same request returns the original result without a second side effect, and the same key with a different request is rejected with `idempotency_conflict`. This matters most for `issue_comment`, which is outward-facing: a retried worker never posts a duplicate comment.
 
 Two dedup decisions from the report's Part 4 tool lists: `get_brief` appears in both Exemplar (Idea 1) and Brief (Idea 8); it lives once, under Brief, and Exemplar cross-references it. `render` appears in both Verify (Idea 3) and Render (Idea 7); it lives once, under Verify, per Section 2.3. `diff_screenshots` (Idea 7) and `visual_diff` (Idea 3) are the same operation; it is `verify_visual_diff`.
 
@@ -154,8 +158,8 @@ Grounded in: 27.3% repeat prompt bytes; the L042 block pasted 8 times (97,622 re
 | `exemplar_get` | `name` (string, required), `version` (optional; default current) | Exemplar body, `version`, `content_hash`, `created_at`, `change_note` | Immutable by version; KV cached indefinitely per version; current-version pointer cached with a 60 s TTL |
 | `exemplar_list` | `prefix` (optional), `limit` (default 50) | Name, current version, hash, size, updated time per exemplar | List cached 60 s |
 | `exemplar_what_changed` | `name`, `since_version` (required) | Diff between versions (unified diff for text, field-level diff for JSON), `from_version`, `to_version` | Diffs computed on demand and cached per (name, from, to) triple |
-| `doc_get` | `path`, `version` (optional) | Canonical doc body plus version metadata (same shape as `exemplar_get`) | Same as `exemplar_get` |
-| `doc_list_canonical` | none | The canonical doc set (the docs every lane re-establishes from scratch today) | List cached 60 s |
+| `exemplar_get_doc` | `path`, `version` (optional) | Canonical doc body plus version metadata (same shape as `exemplar_get`) | Same as `exemplar_get` |
+| `exemplar_list_docs` | none | The canonical doc set (the docs every lane re-establishes from scratch today) | List cached 60 s |
 
 Resources: `exemplar://<name>`, `doc://<path>`. A resource read returns the current version; a resource read with a version fragment returns that version.
 
@@ -165,12 +169,12 @@ Grounded in: 36 recall plus 55 learn calls via bash across 12 Claude sessions; r
 
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
-| `recall_query` | `query` (string, required), `limit` (default 8), `kinds` (optional filter: failure, gotcha, pattern, preference) | Ranked lessons: `id`, `kind`, `what`, `why`, `hit_count`, `last_recalled`, `source_db`, `score`, plus `total_matches` | Query results cached 5 min per normalized query; recall also bumps `hit_count` in D1 (the usage telemetry the bash path never produced) |
+| `recall_query` | `query` (string, required), `limit` (default 8), `kinds` (optional filter: failure, gotcha, pattern, preference) | Ranked lessons: `id` (stable), `content_hash`, `kind`, `what`, `why`, `hit_count`, `last_recalled`, `source_db`, `score`, plus `total_matches` | Query results cached 5 min per normalized query; recall also bumps `hit_count` in D1 (the usage telemetry the bash path never produced) |
 | `recall_learn` | `kind` (required), `what` (required), `why` (required), `source` (optional: session or task ref) | Created lesson `id`, `version`, `content_hash` | Write-through: D1 first, then the agentdb store sync (Section 4.4); invalidates matching query caches |
 | `recall_list_lessons` | `topic` (required), `limit` (default 20) | Lessons on the topic, newest first, with hit counts | Cached 5 min per topic |
 | `recall_store_health` | none | Per-DB: schema version, drift flags, learnings count, never-recalled count and rate, errors-table last-write timestamp, coverage gaps (queries with 0 results in the last 7 days, e.g. the empty "workday" recall), top failure classes by keyword | Computed on demand, cached 1 h; the health snapshot itself is versioned and stored |
 
-Resources: `lesson://<id>`, `gotcha://<id>`.
+Resources: `lesson://<id>`. One namespace for every lesson kind (failure, gotcha, pattern, preference); the kind is a field, not a scheme, so a gotcha is `lesson://<id>` with `kind: gotcha`.
 
 Design note: Recall is the adoption instrument as well as the memory tool. The benchmark measures whether recall actually runs through MCP (adoption) alongside the outcome, because the report's finding is that the instructed memory path is often skipped (Report Part 3). Every `recall_query` call is logged with its query, result count, and caller, so adoption is measured, not assumed.
 
@@ -180,12 +184,14 @@ Grounded in: 500 gh calls across 12 Claude sessions; 314 gh calls with 142 extra
 
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
-| `issue_get` | `repo` (required, must be allowlisted), `number` (required), `include_comments` (default true, capped at the last 8, matching the runner brief shape), `since_version` (optional) | Structured issue: title, body, state, labels, assignees, linked PRs, comments, `version`, `content_hash`, `github_updated_at` | Cached in KV with a 60 s TTL; served stale-while-revalidate when GitHub is slow; invalidated immediately by the GitHub webhook (Section 7) |
+| `issue_get` | `repo` (required, must be allowlisted), `number` (required), `include_comments` (default true, capped at the last 8, matching the runner brief shape), `since_version` (optional) | Structured issue: title, body, state, labels, assignees, linked PRs, comments, `version`, `content_hash`, `github_updated_at` | Cached in KV with a 60 s TTL; served stale-while-revalidate when GitHub is slow; invalidated immediately by the GitHub webhook (Section 7), with reconciliation covering missed webhooks (below) |
 | `issue_list` | `query` (structured filters: repo, state, labels, assignee, updated-since), `limit` (default 50) | Matching issues, summary fields only (no bodies), `total_count` | Cached 60 s per normalized query |
-| `issue_what_changed` | `repo`, `since` (timestamp or version, required) | New, closed, updated, and commented issues since `since`, with per-issue field-level change summaries; replaces the poll loop plus seen-file | Reads the change feed; no upstream call when the feed covers the window |
-| `issue_comment` | `repo`, `number`, `body` (required) | Created comment id and URL | Write-through to GitHub; invalidates the issue cache. Structured write, replacing `gh api -f body=@file`, which the report records as writing a 14-byte literal body (Report Part 1, agentdb) |
+| `issue_what_changed` | `repo`, `cursor` (optional; opaque scoped feed cursor, Section 3) | New, closed, updated, and commented issues since `since`, with per-issue field-level change summaries, plus `next_cursor` and the repo's `covered_through` high-water mark; replaces the poll loop plus seen-file | Reads the change feed; no upstream call when the feed covers the window |
+| `issue_comment` | `repo`, `number`, `body`, `idempotency_key` (required) | Created comment id and URL | Write-through to GitHub; invalidates the issue cache. Structured write, replacing `gh api -f body=@file`, which the report records as writing a 14-byte literal body (Report Part 1, agentdb) |
 
 Resources: `issue://<repo>/<number>`, `pr://<repo>/<number>`.
+
+**Webhook reconciliation.** Webhooks are an accelerator, not the source of completeness. The server keeps a coverage high-water mark per allowlisted repo (`covered_through`: the latest GitHub `updated_at` for which the feed is known complete). A periodic reconciliation fetch lists issues and PRs updated since `covered_through`, appends any change event the webhooks missed, and only then advances the mark. `issue_what_changed` answers from the feed only when the requested window ends at or before `covered_through`; otherwise it runs a reconciliation fetch first, or returns the result marked `coverage: partial` with `covered_through`. The reconciliation interval is a design parameter set in the build phase and recorded in the deploy config, not a measured number.
 
 #### Brief: the brief as a structured object with run history
 
@@ -194,8 +200,8 @@ Grounded in: 91 single-line pointer prompts each naming a brief file twice; 4 le
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
 | `brief_get` | `id` (required), `version` (optional), `include_runs` (default true, last 5 runs) | Parsed brief: goal, inputs, acceptance criteria, constraints, plus run history (each run: outcome, duration, worker, summary, lesson links) | Immutable by version; current-version pointer cached 60 s |
-| `brief_create` | `goal`, `inputs`, `acceptance` (required), `constraints`, `source_ref` (optional: issue or task ref) | Created brief `id`, `version` | Write-through to D1; new brief starts at version 1 |
-| `brief_record_run` | `brief_id`, `outcome` (done, failed, blocked, machine, preempted, retired), `summary`, `duration_s`, `lesson_ids` (optional) | Updated brief version, run record id | Write-through; invalidates the brief cache; appends to the change feed so Handoff sees it |
+| `brief_create` | `goal`, `inputs`, `acceptance`, `idempotency_key` (required), `constraints`, `source_ref` (optional: issue or task ref) | Created brief `id`, `version` | Write-through to D1; new brief starts at version 1 |
+| `brief_record_run` | `brief_id`, `idempotency_key`, `outcome` (done, failed, blocked, machine, preempted, retired), `summary`, `duration_s`, `lesson_ids` (optional) | Updated brief version, run record id | Write-through; invalidates the brief cache; appends to the change feed so Handoff sees it |
 
 Resources: `brief://<id>`, `run://<brief-id>/<n>`.
 
@@ -210,9 +216,9 @@ Grounded in: 179 sqlite3 queries, 131 wait/listen calls, 311 sleep commands, 500
 | `fleet_get_flight` | `id` (required) | Flight state: status, started, updated, worker, task ref, progress, last event | Live read from the state store; cached 10 s; `fetched_at` always present so the agent knows the freshness |
 | `fleet_list_flights` | `state` (optional filter), `limit` (default 50) | Flights matching the filter, summary fields | Cached 10 s |
 | `fleet_get_job` | `id` (required) | Job state: status, attempts, last outcome, next scheduled run | Live read; cached 10 s |
-| `fleet_what_changed_since` | `timestamp` (required) | New, closed, updated, and failed flights and jobs since the timestamp, including issue state changes from the change feed | Reads the change feed; no polling |
-| `fleet_wait_for` | `condition` (structured: flight id plus target state, or job id plus target state, or change-feed pattern), `timeout_s` (default 300, max 3,600) | Returns when the condition is met or the timeout expires: `met` (bool), `final_state`, `waited_s` | Server-side wait via Durable Object; the agent makes one call instead of sleeping and re-querying. This replaces the 311 sleep commands and the 37-invocation poll loop (Report Part 1, Claude) |
-| `fleet_preflight` | `account` (required), `needs` (list of required credentials and checkouts, e.g. claude-oauth, codex-oauth, github, wrangler, repo checkout path) | Per-credential status: `live`, `expired`, `missing`, or `unknown`, with `checked_at` and a non-sensitive detail string (never a token, never a secret). Overall `go` / `no_go` | Credential liveness is probed live on every call (never cached past 60 s); a dead credential fails the preflight instead of killing an attempt mid-run |
+| `fleet_what_changed_since` | `cursor` (optional; opaque scoped feed cursor, Section 3) | New, closed, updated, and failed flights and jobs since the cursor, including issue state changes from the change feed, plus `next_cursor` | Reads the change feed; no polling |
+| `fleet_wait_for` | `condition` (structured: flight id plus target state, or job id plus target state, or change-feed pattern), or `wait_id` (resume an existing wait); `timeout_s` (bounded: the cap is set below the Codex client's measured tool-call timeout, measured in the Phase 1 spike, criterion 4) | Returns when the condition is met or the bounded call window ends: `met` (bool), `final_state`, `waited_s`, `wait_id`, and `next_cursor`. On `met: false` the caller re-calls with the same `wait_id`; the wait's state lives in the Durable Object, so it survives client disconnects, client timeouts, and deploys, and an event that lands between calls is not lost | Server-side wait via Durable Object; the agent makes one bounded call (or a short chain of resumed calls) instead of sleeping and re-querying. Verified against the Codex client before the build (Phase 1 spike, S5 and S6). This replaces the 311 sleep commands and the 37-invocation poll loop (Report Part 1, Claude) |
+| `fleet_preflight` | `account` (required), `needs` (list of required credentials and checkouts, e.g. claude-oauth, codex-oauth, github, wrangler, repo checkout path) | Per-credential status: `live`, `expired`, `missing`, or `unknown`, with `checked_at` and a non-sensitive detail string (never a token, never a secret). Overall `go` / `no_go` | One rule: credential liveness is probed live on every call and never served from cache, so there is no `fresh` parameter. A dead credential fails the preflight instead of killing an attempt mid-run |
 
 Resources: `flight://<id>`, `job://<id>`.
 
@@ -226,7 +232,7 @@ Grounded in: 32 Antigravity lanes re-reporting verification; 327 Playwright laun
 | `verify_get` | `file_hash` (required), `checks` (optional filter) | Stored verification result, or `not_found` | Direct cache read |
 | `verify_deploy_status` | `deployment` (provider plus deployment id or URL) | `readyState`, build status, deploy URL, `checked_at`; catches a failed build before the verify step (the readyState lesson) | Cached 30 s; a failed build result is cached 5 min to stop re-probing |
 | `verify_live_check` | `url` (required), `expected_text` (required) | `found` (bool), HTTP status, response excerpt, `checked_at` | Cached 60 s per (url, expected_text) |
-| `verify_render` | `url` (required), `viewport` (default 390x844 phone width, matching the fleet's phone-screen verification habit), `state` (optional: signed-in, locale, theme), `full_page` (default false) | `render_id`, screenshot (as an MCP image content part or an R2 URL, caller chooses), `content_hash` of the rendered page, `rendered_at` | Content-addressed: same URL plus viewport plus state plus content hash returns the cached render; a new render runs only when the content hash changed. Warm browser pool via Cloudflare Browser Rendering |
+| `verify_render` | `url` (required), `idempotency_key` (required), `viewport` (default 390x844 phone width, matching the fleet's phone-screen verification habit), `state` (optional: signed-in, locale, theme), `full_page` (default false) | `render_id`, screenshot (as an MCP image content part or an R2 URL, caller chooses), `content_hash` of the rendered page, `rendered_at` | Content-addressed: same URL plus viewport plus state plus content hash returns the cached render; a new render runs only when the content hash changed. Warm browser pool via Cloudflare Browser Rendering |
 | `verify_get_render` | `render_id` (required) | Cached render (screenshot plus metadata), or `not_found` | Direct cache read |
 | `verify_visual_diff` | `render_id` (required), `previous_id` (required) | `changed` (bool), diff percentage, diff image (optional), changed regions | Diff computed on demand, cached per (render_id, previous_id) |
 
@@ -240,7 +246,7 @@ Grounded in: 7 Antigravity duplicate-task pairs; one documented 80-minute run sp
 
 | Tool | Inputs | Outputs | Caching |
 |---|---|---|---|
-| `handoff_save_checkpoint` | `session` (required), `state` (structured: current step, files touched with hashes, decisions made, pending items, brief version pinned), `note` (optional) | `checkpoint_id`, `checkpoint_n`, `saved_at` | Write-through to D1 plus R2 (state blob); appends to the change feed |
+| `handoff_save_checkpoint` | `session`, `idempotency_key` (required), `state` (structured: current step, files touched with hashes, decisions made, pending items, brief version pinned), `note` (optional) | `checkpoint_id`, `checkpoint_n`, `saved_at` | Write-through to D1 plus R2 (state blob); appends to the change feed |
 | `handoff_resume` | `session` (required) | Latest checkpoint, plus the composition from Section 2.4: brief diff since the checkpoint, lessons recorded since the checkpoint, issue delta since the checkpoint, and `what_changed` for every file the checkpoint names (hash comparison, so the resumed agent re-reads only changed files) | Composed live from D1 plus the change feed; the checkpoint itself is immutable |
 | `handoff_list_sessions` | `state` (optional filter: active, dead, completed), `limit` (default 50) | Sessions with last checkpoint time, last worker, status | Cached 30 s |
 | `handoff_get_run_history` | `task` (required: task or brief ref) | Every run of the task: worker, outcome, duration, summary, checkpoint ids, lesson links; includes the prior attempt's outcome so a retry reads state instead of re-fetching the issue and re-reading the repo | Read from D1; cached 60 s |
@@ -257,7 +263,7 @@ Design note: checkpoints are written by the agent at natural boundaries (after e
 |---|---|---|---|
 | Exemplar version | (name, version) | D1 (registry) + R2 (body) | Immutable. Body addressed by content hash. |
 | Doc version | (path, version) | D1 (registry) + R2 (body) | Same shape as exemplars. |
-| Lesson | id (stable, content-derived) | D1 (index) + agentdb store (source of truth, see 4.4) | Kind, what, why, hit count, source DB, created and last-recalled timestamps. |
+| Lesson | id (stable, assigned once at creation, never recomputed) plus `content_hash` (SHA-256 of the canonical lesson text, changes on edit) | D1 (index) + agentdb store (source of truth, see 4.4) | Kind, what, why, hit count, source DB, created and last-recalled timestamps. |
 | Issue cache entry | (repo, number, version) | D1 (index) + KV (body) | Version increments on every GitHub change event; body is the structured issue JSON. |
 | Brief version | (id, version) | D1 | Parsed fields plus run history links. |
 | Run record | (brief_id, n) | D1 | Outcome, duration, worker, summary, lesson links. |
@@ -268,14 +274,14 @@ Design note: checkpoints are written by the agent at natural boundaries (after e
 | Verification result | (file_hash, check list hash) | D1 + KV | Pass/fail per check, evidence, run id, computed timestamp. |
 | Render | id | D1 (metadata) + R2 (PNG) | URL, viewport, state, content hash, rendered timestamp. |
 | Change event | sequence number (monotonic) | D1 | Resource, version, timestamp, change kind, actor. The single ordered log every `what_changed` tool reads. |
-| Audit entry | id | D1 | Caller token id, tool, inputs (sanitized: no secrets), result class, latency, timestamp. |
-| Credential status | (account, credential) | KV (60 s TTL only, never persisted long-term) | Liveness only. No secret material is ever stored by this server. |
+| Audit entry | id | D1 | Caller token id, tool, result class, latency, timestamp, plus inputs passed through a field-allowlist sanitizer: only fields named in a per-tool allowlist are stored (identifiers, enums, sizes, hashes); free text, bodies, and any unlisted field are dropped, replaced by their length and hash. Retention per Section 4.6. |
+| Credential status | (account, credential) | Not stored; each preflight result is recorded only as an audit entry | Liveness only. No secret material is ever stored by this server. |
 
 ### 4.2 Storage choices and why
 
 - **D1** holds everything that needs querying, ordering, or joining: the version registry, the change feed, briefs, runs, checkpoints index, verification records, issue cache index, lessons index, audit log. One database, one schema, migrations in the repo.
 - **KV** holds the hot cache only: cached issue bodies, cached verification results, cached state snapshots, cached query results. KV is a cache, never the record: every KV entry has a D1 or upstream source of truth, and losing KV loses speed, not data.
-- **R2** holds blobs that are large or rarely read: exemplar and doc bodies, checkpoint state blobs, render PNGs, and the benchmark raw-data archive (Section 8.4). R2 objects are named by content hash, so they are immutable and deduplicated by construction.
+- **R2** holds blobs that are large or rarely read: exemplar and doc bodies, checkpoint state blobs, render PNGs, and the benchmark raw-data archive (Section 8.8). R2 objects are named by content hash, so they are immutable and deduplicated by construction.
 - **Durable Objects** hold only coordination state: `fleet_wait_for` subscriptions and per-session checkpoint serialization. They hold no long-lived data; everything durable lands in D1 or R2.
 
 ### 4.3 Versioning scheme
@@ -283,14 +289,15 @@ Design note: checkpoints are written by the agent at natural boundaries (after e
 - Every versioned resource has a monotonic integer version (1, 2, 3, ...) plus a SHA-256 content hash of its canonical bytes. The version orders changes; the hash proves identity.
 - Versions are append-only. An update creates a new version; no version is ever edited or deleted. A deletion is a new version with `status: deleted` (tombstone), so `what_changed` can report it.
 - Every tool response carries `version`, `content_hash`, and `fetched_at`. A caller that holds version N asks for the delta since N; the server answers with the diff or with `unchanged: true`.
-- The change feed assigns a single monotonic sequence number across all resources, so `fleet_what_changed_since(timestamp)` and `issue_what_changed(repo, since)` can be answered from one log with a consistent ordering.
+- The change feed assigns a single monotonic sequence number across all resources, so `fleet_what_changed_since(cursor)` and `issue_what_changed(repo, cursor)` are answered from one log with a consistent ordering. The sequence number is the canonical cursor (Section 3).
+- Lesson identity: a lesson's `id` is stable for its lifetime; its `content_hash` identifies the text version. An edit keeps the id and changes the hash, so recall telemetry (`hit_count`) and links survive edits, while caches and the benchmark can still tell two versions apart.
 
 ### 4.4 Recall and the agentdb store
 
 The live agentdb store is a set of SQLite files on the Studio (77 `agent.db` files under `~/VaultsInternal`, deduplicated by real path; Report Part 1, agentdb). The server does not move the store and does not replace it. The design:
 
 - The server keeps a D1 index of lessons (id, kind, text hash, source DB, hit count, timestamps), synced from the Studio by a small sync job that runs on the Studio and pushes changes to the server. The sync is incremental (new and changed rows only, keyed by row id plus content hash) and runs on a schedule plus on demand after a `recall_learn` write.
-- `recall_learn` writes to D1 first (so the lesson is visible to every client immediately), then the sync job writes it back to the owning agentdb DB on the Studio. If the write-back fails, the lesson stays in D1 and the failure is recorded in the health snapshot; the server never silently drops a lesson.
+- `recall_learn` writes to D1 first (so the lesson is visible to every client immediately), then the sync job writes it back to the owning agentdb DB on the Studio. If the write-back fails, the lesson stays in D1 and the failure is recorded in the health snapshot; the server never silently drops a lesson. The response carries `writeback_status` (`pending`, `done`, `failed`), so a caller can see when a lesson exists only server-side (see the degraded mode in Section 9.1).
 - `recall_store_health` reads the D1 index plus the sync job's own report (schema versions per DB, errors-table last-write timestamps, never-recalled counts). This is what makes the store's health visible: today 15 of 77 DBs have stale schema and the errors tables have had no writes since early September, and no health check monitors any of it (Report Part 1, agentdb).
 - Scope: the sync covers personal-project DBs only. TBS DBs are excluded from the sync allowlist (Section 0). The report's agentdb counts include TBS DBs as measurement context; the server's recall corpus does not include them.
 
@@ -301,16 +308,31 @@ The live agentdb store is a set of SQLite files on the Studio (77 `agent.db` fil
 | Exemplar/doc current-version pointer | New version published (immediate, write-through) |
 | Exemplar/doc version body | Never (immutable by version) |
 | Recall query results | New lesson recorded that matches the query terms, or 5 min TTL, whichever comes first |
-| Issue body | GitHub webhook event for that issue or PR (immediate), or 60 s TTL |
+| Issue body | GitHub webhook event for that issue or PR (immediate), reconciliation fetch (Section 3.1), or 60 s TTL |
 | Issue list | 60 s TTL (lists are cheap to recompute and change often) |
 | Flight/job state | State change event (immediate, write-through) or 10 s TTL |
 | Verification result | Never invalidated by time; keyed by file hash, so a changed file is a different key. Explicit `force: true` re-runs. |
 | Render | Never invalidated by time; keyed by URL plus viewport plus state plus content hash. A changed page is a different key. |
 | Deploy status | 30 s TTL; failed-build results cached 5 min |
 | Live check | 60 s TTL per (url, expected_text) |
-| Credential liveness | 60 s TTL maximum; preflight probes live on every call when the caller passes `fresh: true` |
+| Credential liveness | Never cached: probed live on every preflight call (one rule, Section 3.2) |
 
 The governing rule: a cache entry is valid only while its key is valid. Content-addressed entries (verification, render, versioned bodies) cannot go stale because the key includes the content. Time-based entries (issue bodies, state snapshots) carry `fetched_at` and a TTL, and every response says whether it is fresh, cached, or stale, so the agent can decide whether to trust it.
+
+### 4.6 Retention per record class
+
+Retention is set per class. Durations below are design decisions, not measured numbers, reviewable at any amendment and fixed before Phase 4 starts.
+
+| Record class | Policy |
+|---|---|
+| Benchmark-linked records (any record referenced by a benchmark run, replay, preregistration, scored dataset, or verification receipt: transcripts, run logs, checkpoints, renders, verification results, audit entries, versions, change events) | Never pruned. A benchmark link pins the record and everything it references. Mirrored per Section 8.8. |
+| Version history (exemplar, doc, brief, lesson versions; tombstones) | Never pruned: versions are append-only and diffs, pins, and handoff composition depend on them. Bodies are content-addressed and deduplicated in R2. |
+| Change feed | Never pruned while any retained record references its range; cursors older than the retained window return `cursor_expired` (Section 3). |
+| Audit entries (sanitized, Section 4.1) | Raw entries kept 180 days (design decision), then pruned; the daily summary records computed from them are versioned and kept indefinitely. |
+| Checkpoints | Kept while the session is active and for 30 days (design decision) after the session completes or dies, then pruned; the latest checkpoint of a completed session is kept with its run history. |
+| Renders (PNG blobs) | Unreferenced PNGs pruned 30 days (design decision) after last read; render metadata (URL, viewport, state, content hash) kept so a re-render is detectable. |
+| Idempotency keys | Kept at least as long as the longest retry window of any caller; set in the build phase. |
+| Cache entries (KV) | Not records; governed by TTLs and invalidation (Section 4.5). |
 
 ## 5. Cloudflare deployment
 
@@ -331,9 +353,19 @@ The governing rule: a cache entry is valid only while its key is valid. Content-
 
 - Repo (proposed): `ariaxhan/fleet-mcp`. `wrangler.toml` defines the Worker, the D1 database, the KV namespaces, the R2 buckets, the Durable Object classes, and the Browser Rendering binding. Secrets are set with `wrangler secret put`, never committed.
 - Pipeline: pull request opens a preview deployment (staging Worker plus a staging D1); merge to `main` deploys to production via `wrangler deploy`. Every deploy is a single deliberate deploy per environment, verified after, following the fleet's deploy discipline.
-- Post-deploy gate: a live sweep runs against the production endpoint after every deploy, modeled on the Teaching MCP sweep pattern (282 checks, all pass, Nov 20, 2026; Report Part 2). The sweep for this server exercises every tool once against staging data, checks `/health` and `/version`, and verifies the deployed commit hash matches `main`. The sweep receipt (checks run, pass/fail, latencies) is stored in R2 and linked from the deploy record. A failed sweep blocks the deploy from being called done; rollback is `wrangler rollback`.
+- Post-deploy gate: a live sweep, modeled on the Teaching MCP sweep pattern (282 checks, all pass, Nov 20, 2026; Report Part 2), runs twice per release: against staging before promotion, and against production after deploy. The sweep never writes to real repos or real records: it uses a dedicated fixture repo on the allowlist (personal, empty of real work) and a fixture namespace (fixture sessions, briefs, lessons, flights, and renders tagged `fixture`, excluded from recall results, audit summaries, and benchmark data). Read-only tools run against real data; write tools run only against the fixture repo and namespace, each with a fresh `idempotency_key`, plus one replay of a key to prove idempotency. The sweep checks `/health` and `/version` and verifies the deployed commit hash matches `main`. The sweep receipt (checks run, pass/fail, latencies) is stored in R2 and linked from the deploy record. A failed sweep blocks the deploy from being called done; rollback is `wrangler rollback`.
 - D1 migrations run as part of deploy (`wrangler d1 migrations apply`), forward-only, with the migration files in the repo. No manual schema edits.
-- Observability: Workers Logs plus structured per-call logging to D1 (the audit log, Section 4.1). A daily summary (calls per tool, cache hit rates, error rates, p50/p95 latency) is computed from the audit log and stored as a versioned record, so the server's own usage is measurable without a separate analytics service.
+- Observability: Workers Logs plus structured per-call logging to D1 (the audit log, Section 4.1). A daily summary (calls per tool, cache hit rates, error rates, p50/p95 latency) is computed from the audit log and stored as a versioned record, so the server's own usage is measurable without a separate analytics service. The summary also records per-tool Cloudflare cost attribution (Browser Rendering minutes and Worker CPU time per tool), which Section 5.3 uses.
+
+### 5.3 Render split trigger
+
+Render splits into its own Worker (same tool names, same `render://` namespace, Section 2.3) when the trigger fires on metrics the daily audit summary (Section 5.2) already computes:
+
+1. **Render share of Cloudflare spend:** `verify_render` attributed cost divided by total server Cloudflare cost, per day.
+2. **Render share of total call latency:** summed `verify_render` latency divided by summed latency of all tool calls, per day.
+3. **Impact on non-render tool p95:** p95 latency of all non-render tools on days with render load versus days without, or in hours with concurrent renders versus without.
+
+The numeric thresholds for each metric and the persistence rule (how many consecutive days over threshold) are NOT set in this PRD. They are set from Phase 3 measurements and recorded as a dated amendment to this section before Phase 4; inventing them now would violate the evidence standard.
 
 ## 6. Auth model
 
@@ -394,12 +426,12 @@ This section is governed by Aria's binding evidence standard (Nov 22, 2026, 16:4
 
 Per task, in both arms (the metric set extends the KERNEL controlled benchmark design in Report Part 3):
 
-- **Tokens:** input tokens, output tokens, and cache-read tokens, from the session record. Cache-read tokens are the cost driver in the baseline (23.5M cache-read vs about 215k output tokens across 9 recent Claude sessions; Report Part 1, recent Claude), so they are reported separately, never folded into a single token total.
+- **Tokens:** input tokens, output tokens, and cache-read tokens, from the session record. Tool-schema overhead (the tokens the MCP tool list and resource descriptors add to the with-arm context) is measured separately, as its own reported number, and is included in the with-arm input count, never subtracted. Cache-read tokens are the cost driver in the baseline (23.5M cache-read vs about 215k output tokens across 9 recent Claude sessions; Report Part 1, recent Claude), so they are reported separately, never folded into a single token total.
 - **Wall-clock time:** task start to task end, plus tool time as a subset (tool time was 75% of wall time in the recent Claude sample; Report Part 1, recent Claude).
 - **Tool calls:** total, by type, and by class (state checks, re-fetches, re-reads, verification runs, renders, sleeps). Sleep commands are counted explicitly: the "with" arm should show zero sleep loops.
 - **Cache behavior (with arm only):** cache hits and misses per tool, hit rate, bytes served from cache vs computed fresh.
 - **Errors:** failed commands, wrong-file reads, reverted edits, verification failures after done claims.
-- **Outcome correctness:** did the task complete correctly, verified independently (Section 8.5). A faster wrong answer is a failure, not a saving.
+- **Outcome correctness:** did the task complete correctly, verified independently (Section 8.8, using the Section 8.5 programmatic verifier model). A faster wrong answer is a failure, not a saving.
 - **Adoption:** did the agent actually use the server tools (recall ran? checkpoint saved? preflight run?). The report's finding is that the instructed memory path is often skipped (recall in only 3 of 9 recent Claude sessions; Report Part 1), so adoption is measured alongside the outcome, as Report Part 3 requires.
 - **Cost:** dollars per task, computed from the session token counts and the model price at run time. The baseline cannot supply dollars (runner.sqlite has no cost or token column; Codex rollouts carry no cost field; Report, Limitations), so the benchmark records cost itself from the start.
 
@@ -409,21 +441,23 @@ Per task, in both arms (the metric set extends the KERNEL controlled benchmark d
 - **Control-arm rule (preregistered decision, needs reviewer sign-off, Section 9):** the control arm works the way agents work today: brief plus files plus CLI, including bash `agentdb` access, because that is the honest "today" baseline. The claim under test is "the server improves on today's workflow", not "the server improves on an agent stripped of its memory". The treatment arm adds the MCP server on top of the same baseline. This rule is written into the preregistration (Section 8.6) before any run.
 - **Blinding:** outcome correctness is scored without the scorer knowing which arm produced the result, wherever the scoring method allows it. The scoring script reads session artifacts by run id, and the arm mapping is held separately until scoring is complete.
 
-### 8.3 Deterministic replays (no agent runs; exact numbers)
+### 8.3 Deterministic replays (no agent runs; mechanism upper bounds)
 
-These replays use the already-measured baselines as the "without" side and the server as the "with" side. They need no agent runs, produce exact counts rather than estimates, and run first, before the agent experiment. Each replay's good-result bar comes from Report Part 4 and is a target, not a measured result.
+These replays use the already-measured baselines as the "without" side and the server as the "with" side. They need no agent runs and run first, before the agent experiment. **Every replay result is labeled a mechanism upper bound, not a measured saving:** a replay assumes each repeated fetch, read, or check was avoidable, and the report states that necessity cannot be proven from transcripts alone (Section 1.2). Where file hashes are available, the replay checks whether the file changed between reads and counts a changed-file re-read as necessary, not as waste. Replays report counts (calls, bytes, invocations) only; wall-clock is dropped from replays, and any time figure a replay shows is labeled simulated. Each replay's good-result bar comes from Report Part 4 and is a target, not a measured result.
+
+**Scope check before running (Section 0).** Before any replay runs, each replay input set is verified in scope: every transcript, prompt, and session in it must come from personal-project work. Any input that is not in scope, or whose scope cannot be established, is excluded, and the replay is rebuilt from personal-project transcripts of the same waste class. The per-replay scope check is recorded with the replay's archived inputs.
 
 | Replay | Baseline (measured) | With-side method | Good-result bar (target, from Report Part 4) |
 |---|---|---|---|
 | Exemplar: replay the 134 Antigravity lane prompts with exemplar fetches instead of pastes | 148,020 redundant bytes, 27.3% of prompt bytes | Replace each pasted block with a fetch reference; measure prompt bytes plus tokens | Repeat bytes under 5% of prompt bytes (Idea 1) |
 | Issue Context: replay the sampled sessions' gh calls through the server | 500 gh calls (Claude) plus 314 (Codex), 142 extra repeated fetches | Route each call through `issue_get` / `issue_list`; measure calls plus bytes | One fetch per unique issue per session; structured JSON instead of CLI dumps; no foot-gun writes (Idea 4) |
 | Verify: replay the verification battery through the cache | 32 lanes re-running the same checks; gate 18x plus locale 15x plus hero 17x plus promotion 15x plus verify 14x; 327 Playwright launches | Run each check once per file hash; render once per content hash; measure check invocations plus launches | One check run per unique file hash; launches only for changed content; deploy-status checks catch a failed build before the verify step (Idea 3) |
-| Fleet Status: re-run the coordinator session's supervision loops via the server | 179 sqlite3 plus 131 wait/listen plus 311 sleep plus 500 gh calls (Claude); 169 `vaults ctx` polls (Codex) | Replace each poll loop with `fleet_wait_for` plus `fleet_what_changed_since`; measure state-check calls plus wall-clock time | 80% fewer state-check calls, no sleep loops, zero attempts launched with a dead credential (Idea 2) |
+| Fleet Status: re-run the coordinator session's supervision loops via the server | 179 sqlite3 plus 131 wait/listen plus 311 sleep plus 500 gh calls (Claude); 169 `vaults ctx` polls (Codex) | Replace each poll loop with `fleet_wait_for` plus `fleet_what_changed_since`; count state-check calls (wall-clock, if shown, is labeled simulated) | 80% fewer state-check calls, no sleep loops, zero attempts launched with a dead credential (Idea 2) |
 | Handoff: replay a worker-death scenario | 7 duplicate-task pairs; 76 compactions plus 209 post-compaction re-reads; 488 re-attempts; 77 worker deaths | Kill a worker mid-task, resume via `handoff_resume`; measure re-done work | Zero re-done work; the retry reads the prior attempt's state instead of re-fetching the issue and re-reading the repo (Idea 6) |
 | Brief: replay the duplicate pairs via the server | 91 pointer prompts; 7 duplicate-task pairs | The retry reads the brief once plus the prior run's outcome | The retry does not repeat the first attempt's error (Idea 8) |
 | Recall: same recall/learn via MCP | 91 agentdb calls via bash; recall in only 3 of 9 recent sessions; errors tables dead; 15 of 77 DBs with stale schema | Measure MCP call latency vs bash spawn latency; measure adoption from MCP clients; check store health visibility | Recall works from any MCP client with latency under the bash equivalent; adoption is measurable instead of assumed (Idea 5) |
 
-Replay results are exact counts, so they carry no confidence intervals, but they are still independently re-verified (Section 8.5) and their raw inputs and outputs are archived (Section 8.4). A replay is not a substitute for the agent experiment: replays prove the mechanism saves bytes and calls; only the agent experiment proves agents get faster and cheaper in practice.
+Replay results are deterministic counts under stated avoidability assumptions, so they carry no confidence intervals and are reported as upper bounds; they are still independently re-verified (Section 8.8) and their raw inputs and outputs are archived (Section 8.8). A replay is not a substitute for the agent experiment: replays prove the mechanism saves bytes and calls; only the agent experiment proves agents get faster and cheaper in practice.
 
 ### 8.4 Controlled agent experiment
 
@@ -456,7 +490,7 @@ Replay results are exact counts, so they carry no confidence intervals, but they
 
 ### 8.6 Preregistration
 
-- **Artifact:** `benchmark/preregistration.md` in the `fleet-mcp` repo, plus a machine-readable `benchmark/preregistration.json` with the same content. It contains: the hypotheses (one per primary metric), the full task list with selection rule, the arm definitions and the control-arm rule, the metric definitions and how each is captured, the sample size rule (pilot, power computation, floor of 30, cap of 50), the success thresholds (Section 8.7), the analysis plan (paired differences, 95% CIs, effect sizes, bootstrap check), the exclusion rules (which runs are excluded and why, decided before seeing results), the repeatability substudy task selection, and the verification plan (Section 8.5 and 8.8).
+- **Artifact:** `benchmark/preregistration.md` in the `fleet-mcp` repo, plus a machine-readable `benchmark/preregistration.json` with the same content. It contains: the hypotheses (one per primary metric), the full task list with selection rule, the arm definitions and the control-arm rule, the metric definitions and how each is captured, the sample size rule (pilot, power computation, floor of 30, cap of 50), the success thresholds (Section 8.7), the analysis plan (paired differences, 95% CIs, effect sizes, bootstrap check), the exclusion rules (which runs are excluded and why, decided before seeing results), the repeatability substudy task selection, the exact with-arm tool set (which tools and resources the with arm sees, whether the tool list is scope-filtered per task, and whether pure reads are exposed as resources only to cut schema tokens; all three options are evaluated during the spike and the chosen configuration is frozen here), and the verification plan (Section 8.5 and 8.8).
 - **Freezing:** the preregistration is committed and tagged (`bench-prereg-v1`) with its SHA-256 hash recorded in the tag message and in the final report, BEFORE the first "with" run (pilot included). The tag is the proof that the criteria predated the results. No moving the goalposts after seeing the results.
 - **Amendments:** if the preregistration must change, the change is a dated amendment entry appended to the artifact, stating what changed and why, committed under a new tag (`bench-prereg-v2`). The original stays in the repo. Any result affected by an amendment is flagged as such in the final report, with the amendment quoted.
 
@@ -487,14 +521,14 @@ These thresholds are written into the preregistration before any run. Each is a 
 
 | Risk | What happens | Mitigation |
 |---|---|---|
-| Single point of failure | If the server is down, agents lose state access | The server is an accelerator, never a hard dependency. Agents fall back to today's CLI paths. `/health` plus the post-deploy sweep catch outages; the runner keeps working without the server, just slower. |
+| Single point of failure | If the server is down, agents lose state access | The server is an accelerator, never a hard dependency, made true by a defined degraded mode for the two server-held records. (1) Checkpoints: `handoff_save_checkpoint` callers also write a local checkpoint mirror (the same structured state JSON) in the run's workspace; when the server is unreachable, resume reads the local mirror, and the mirror is uploaded on recovery. (2) D1-first lessons: when the server is unreachable, agents write lessons with bash `agentdb learn` directly to the local store (the source of truth, Section 4.4); a lesson whose `writeback_status` is `pending` or `failed` at outage time is listed by `recall_store_health` on recovery and written back by the sync job. Everything else falls back to today's CLI paths. `/health` plus the post-deploy sweep catch outages; the runner keeps working without the server, just slower. |
 | Cache staleness serves wrong state | An agent acts on an outdated issue body or flight state | Content-addressed keys for computed results (a changed input is a different key); short TTLs plus webhook invalidation for live state; freshness metadata on every response so the agent can see staleness. |
 | GitHub API rate limits | Heavy polling through the server exhausts the per-token hourly limit | The server is the fix, not the cause: caching plus the change feed cut upstream calls. The server tracks its remaining quota and reports it in `/health`; on quota exhaustion it serves stale cache with `cache_status: stale` instead of failing. |
 | Browser Rendering cost and latency | Renders are the most expensive tool; a runaway render loop costs real money | Content-hash dedup plus cache-first behavior; per-token render quotas; the audit log records every render with its caller, so a runaway caller is visible. |
 | Stored-content prompt injection | Lessons and exemplars are agent-written text served back into agent context; a poisoned lesson could steer future agents | Stored content is data with provenance (author, source, timestamp), never executed as instructions. The server never auto-writes lessons. A review path exists for lessons (flag and quarantine by id). |
 | Scope creep | 8 ideas in one server; the build sprawls | Phased rollout (Section 10), one area at a time, each with its replay benchmark before the next starts. The PRD's tool list is the v1 scope; anything not listed is out. |
 | Benchmark cost and time | 120 or more agent runs at 10 to 60 minutes each is real compute | Parallelize across runner workers; the compute cost is measured and reported as part of the result, so the cost of proving the saving is itself public. |
-| The server's own token cost | Tool schemas and MCP plumbing add context tokens, which could eat the savings | The benchmark measures the net effect (with-server total tokens vs without), not gross savings. A server that costs more than it saves shows up as a null or negative result. |
+| The server's own token cost | Tool schemas and MCP plumbing add context tokens, which could eat the savings | Schema overhead is measured separately (Section 8.1) and the with-arm tool set is preregistered (Section 8.6). The benchmark measures the net effect (with-server total tokens vs without), not gross savings. A server that costs more than it saves shows up as a null or negative result. |
 | Task selection bias | Benchmark tasks cherry-picked for server-friendly shapes | The task list and selection rule are preregistered; tasks are real runner jobs, chosen for representativeness across waste classes. |
 | TBS boundary failure | A misconfiguration exposes TBS data through the server | The allowlist is a whitelist enforced in code, tested by a test that proves a TBS repo is refused, and reviewed in the preregistration. The webhook receiver drops non-allowlisted repos. |
 
@@ -502,9 +536,9 @@ These thresholds are written into the preregistration before any run. Each is a 
 
 1. **Name and domain:** is Fleet MCP the name, and is `mcp.ariaxhan.com` the domain? Both are proposals in this PRD.
 2. **Client isolation:** do clients get isolated namespaces (separate D1 partitions or separate Workers) or a shared corpus with per-token scoping? The PRD proposes per-token scoping; a reviewer may prefer hard isolation.
-3. **Render split trigger:** Section 2.3 places Render inside Verify with a split trigger of "render volume or browser-rendering cost dominates the server's bill or latency budget". What is the numeric trigger (share of bill, share of latency, renders per day)?
+3. **Render split trigger:** resolved in v2 (R8): defined on three measured metrics in Section 5.3; numeric thresholds come from Phase 3 measurements as a dated amendment.
 4. **Issue cache storage:** the PRD proposes a D1 index plus KV body. Is that the right split, or should issue bodies live in D1 as well for queryability?
-5. **Retention:** how long are benchmark raw data, audit logs, checkpoints, and renders kept? The PRD proposes keeping benchmark raw data indefinitely (traceability) but does not set retention for the rest.
+5. **Retention:** resolved in v2 (R8): set per record class in Section 4.6; benchmark-linked records are never pruned.
 6. **Independent verifier:** who runs the independent verification in Section 8.8 (which agent or operator), and how is independence enforced (separate account, separate machine, no shared prompt)?
 7. **Benchmark task list:** the exact tasks are preregistered later, not decided here. Who authors the list, and who checks it for representativeness?
 8. **Control-arm rule:** Section 8.2 proposes that the control arm keeps bash agentdb access as the honest "today" baseline. Does the reviewer agree, or should the control arm be stripped (the KERNEL design's arm B)?
@@ -523,10 +557,10 @@ These thresholds are written into the preregistration before any run. Each is a 
 
 ## Appendix A: Tool inventory
 
-33 tools, 15 resource types.
+33 tools, 14 resource types.
 
-- Exemplar (5): `exemplar_get`, `exemplar_list`, `exemplar_what_changed`, `doc_get`, `doc_list_canonical`. Resources: `exemplar://`, `doc://`.
-- Recall (4): `recall_query`, `recall_learn`, `recall_list_lessons`, `recall_store_health`. Resources: `lesson://`, `gotcha://`.
+- Exemplar (5): `exemplar_get`, `exemplar_list`, `exemplar_what_changed`, `exemplar_get_doc`, `exemplar_list_docs`. Resources: `exemplar://`, `doc://`.
+- Recall (4): `recall_query`, `recall_learn`, `recall_list_lessons`, `recall_store_health`. Resources: `lesson://`.
 - Issue Context (4): `issue_get`, `issue_list`, `issue_what_changed`, `issue_comment`. Resources: `issue://`, `pr://`.
 - Brief (3): `brief_get`, `brief_create`, `brief_record_run`. Resources: `brief://`, `run://`.
 - Fleet Status (6): `fleet_get_flight`, `fleet_list_flights`, `fleet_get_job`, `fleet_what_changed_since`, `fleet_wait_for`, `fleet_preflight`. Resources: `flight://`, `job://`.
@@ -536,3 +570,25 @@ These thresholds are written into the preregistration before any run. Each is a 
 ## Appendix B: Number provenance
 
 Every measured number in this PRD comes from `report.md` in this directory (and its `analysis/` files) and is cited inline with its report section. Numbers labeled as targets, thresholds, or design decisions are not measured results. No number in this PRD is invented. Where the report states a limitation (necessity not provable from transcripts alone; runner dollars unmeasurable; the KERNEL observational control group of n=1), this PRD carries the limitation forward instead of smoothing it over.
+
+## Appendix C: Revision notes
+
+### 2026-11-22: R8 remaining review fixes sweep (execution plan Section 3.1, item R8; issue #9)
+
+Closes these review gaps (Claude review gap table, `docs/reviews/claude-review.md`):
+
+- **G11** webhook loss: per-repo `covered_through` high-water mark plus periodic reconciliation fetch (Section 3.1, Issue Context; Section 4.5).
+- **G12** waits vs client timeouts: bounded `fleet_wait_for` with a resumable `wait_id`, cap set from the Codex client timeout measured in the spike (Section 3.2).
+- **G13** write idempotency: required `idempotency_key` on every write tool (Section 3).
+- **G14** sweep target: fixture repo plus fixture namespace; staging pre-promotion and production post-deploy sweeps, read-only plus fixture writes (Section 5.2).
+- **G15** credential liveness: one rule, probed live on every call, never cached, no `fresh` parameter (Sections 3.2, 4.1, 4.5).
+- **G17** schema overhead: measured separately; with-arm tool set preregistered, scope filtering and resources-only reads evaluated (Sections 8.1, 8.6, 9.1).
+- **G18** replays: relabeled mechanism upper bounds; changed-file check where hashes exist; wall-clock dropped or labeled simulated (Section 8.3).
+- **G19** replay scope: every replay input verified in scope under Section 0, rebuilt from personal-project transcripts where not (Section 8.3).
+- **G22** cross-references: archive pointers now Section 8.8 (Sections 2.5, 4.2, 8.3); verification pointer now Section 8.8 (Sections 8.1, 8.3); "preregistered as an open question" replaced by the Section 5.3 trigger (Section 2.3).
+- **G23** lesson identity: stable id plus `content_hash` (Sections 3.1, 4.1, 4.3).
+- **G24** naming: `gotcha://` merged into `lesson://`; `doc_get` and `doc_list_canonical` renamed `exemplar_get_doc` and `exemplar_list_docs` (Section 3.1, Appendix A).
+- **G25** audit: field-allowlist sanitizer plus retention (Sections 4.1, 4.6).
+- Plan-level R8 items: delta cursor semantics standardized (Section 3, Section 4.3); Render split trigger defined on measured metrics with no invented numerics (Section 5.3; Open question 3 resolved); "accelerator, never a hard dependency" reconciled with D1-first lessons and server-only checkpoints via a local checkpoint mirror and a defined lesson degraded mode (Sections 4.4, 9.1); retention set per class with benchmark-linked records never pruned (Section 4.6; Open question 5 resolved).
+
+Deferred, with reason: numeric Render split thresholds (set from Phase 3 measurements by dated amendment, per the evidence standard); the reconciliation interval and idempotency-key retention window (build-phase parameters recorded in deploy config); the `fleet_wait_for` cap value (measured in the Phase 1 spike, criterion 4).
