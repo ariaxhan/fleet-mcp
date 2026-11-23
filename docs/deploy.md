@@ -23,7 +23,9 @@ npm run deploy:staging
 npm run sweep -- https://fleet-mcp-staging.ariaxhan.workers.dev "$(git rev-parse HEAD)" staging
 ```
 
-Deploy requires a clean checkout and embeds HEAD plus build time. Export
+Deploy requires a clean checkout and embeds HEAD plus build time. It waits for
+that exact deployed SHA within a bounded readiness budget before the sweep.
+The budget is a design decision, not a measured propagation guarantee. Export
 CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID through the credential manager.
 FLEET_SWEEP_TOKEN must match Worker secret SWEEP_TOKEN. The probe credential
 permits only fixed fixture dependency reads, no corpus access or arbitrary input.
